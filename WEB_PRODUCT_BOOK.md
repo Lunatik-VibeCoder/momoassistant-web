@@ -77,8 +77,10 @@ Stripe, Vercel, Linear, Notion, Raycast — dark-first, minimal, premium SaaS. N
 
 **Brand kit (`website.md`)**: Home, Features, Pricing, FAQ, About, Contact, Download, Roadmap.
 
-**Currently implemented**: `/`, Features, Security, Pricing, Download, FAQ, Contact, Changelog, Privacy, Terms, 404.
+**Currently implemented** (real pages, in `lib/routes.ts`'s `IMPLEMENTED_ROUTES`): `/`, `/features`, `/security`, `/how-it-works`, `/pricing`, `/about`, `/contact`.
 
-Discrepancies to resolve when the sitemap is next revisited (not done as part of brand-token integration): brand kit has no "Security" page (site has one) and no "Privacy"/"Terms"/"Changelog" (reasonable additions, brand kit is likely non-exhaustive there); site has no "About" or "Roadmap" page yet.
+**Nav/footer links only, still 404** until built: Download, FAQ, Changelog, Privacy, Terms. Not a bug — see `WEB_ARCHITECTURE.md`'s route-group convention and `CONTENT_GUIDE.md` for how each gets built out.
 
-Future (beyond brand kit, from the original site spec): Docs, Blog, Developers, API, Status, Portal (customer/org dashboard).
+Discrepancy still open: brand kit has no "Security" or "How It Works" page (site has both — reasonable additions given the product's depth) and no "Roadmap" (tracked as Changelog instead, close enough in intent).
+
+Future (beyond brand kit, from the original site spec): Docs, Blog, Developers, API, Status, Portal (customer/org dashboard), Demo, Careers, Legal (Privacy/Terms/Cookies/Security Statement).

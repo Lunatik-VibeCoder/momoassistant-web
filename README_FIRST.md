@@ -40,4 +40,4 @@ Full breakdown: [WEB_ARCHITECTURE.md](./WEB_ARCHITECTURE.md).
 
 ## Current status
 
-Foundation + homepage (`/`) are built and production-ready. Everything else in the sitemap (Features, Security, Pricing, Download, FAQ, Contact, Changelog, Privacy, Terms) exists only as nav links today and 404s — that's expected, not a bug, until each page is built.
+Foundation + homepage (`/`) plus Features, Security, How It Works, Pricing, About, and Contact are built and production-ready. Download, FAQ, Changelog, Privacy, and Terms still exist only as nav links today and 404 — that's expected, not a bug, until each is built on its own commit (see `lib/routes.ts` for the authoritative list of what's actually live).

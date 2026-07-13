@@ -4,7 +4,15 @@
 // links to those routes skip Next's automatic prefetch instead of issuing
 // doomed network requests on every homepage visit. Add a path here the
 // same commit its page ships.
-const IMPLEMENTED_ROUTES = new Set<string>(["/"]);
+const IMPLEMENTED_ROUTES = new Set<string>([
+  "/",
+  "/features",
+  "/security",
+  "/how-it-works",
+  "/pricing",
+  "/about",
+  "/contact",
+]);
 
 export function isRouteImplemented(href: string): boolean {
   return IMPLEMENTED_ROUTES.has(href);

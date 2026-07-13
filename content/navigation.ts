@@ -4,6 +4,7 @@ import type { FooterLinkGroup, NavLink } from "@/types";
 export const NAV_LINKS: NavLink[] = [
   { label: "Features", href: "/features" },
   { label: "Security", href: "/security" },
+  { label: "How It Works", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
   ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
   { label: "FAQ", href: "/faq" },
@@ -15,6 +16,7 @@ export const FOOTER_LINK_GROUPS: FooterLinkGroup[] = [
     links: [
       { label: "Features", href: "/features" },
       { label: "Security", href: "/security" },
+      { label: "How It Works", href: "/how-it-works" },
       { label: "Pricing", href: "/pricing" },
       ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
     ],
@@ -22,6 +24,7 @@ export const FOOTER_LINK_GROUPS: FooterLinkGroup[] = [
   {
     title: "Company",
     links: [
+      { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "Changelog", href: "/changelog" },
       { label: "FAQ", href: "/faq" },

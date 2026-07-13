@@ -3,6 +3,7 @@ import type { LucideIcon } from "lucide-react";
 export interface NavLink {
   label: string;
   href: string;
+  external?: boolean;
 }
 
 export interface FooterLinkGroup {
@@ -50,6 +51,7 @@ export interface PricingTier {
   cadence?: string;
   cta: NavLink;
   highlighted?: boolean;
+  features?: string[];
 }
 
 export interface FaqItem {
@@ -59,4 +61,27 @@ export interface FaqItem {
 
 export interface SocialProofLogo {
   name: string;
+}
+
+export interface FeatureGroup {
+  title: string;
+  description: string;
+  items: FeatureItem[];
+}
+
+export interface DetailSection extends IconListItem {
+  points?: string[];
+}
+
+export interface ComparisonRow {
+  feature: string;
+  starter: string | boolean;
+  business: string | boolean;
+  enterprise: string | boolean;
+}
+
+export interface ContactChannel extends IconListItem {
+  actionLabel: string;
+  href: string;
+  external?: boolean;
 }
