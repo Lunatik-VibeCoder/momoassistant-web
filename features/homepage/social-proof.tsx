@@ -1,10 +1,16 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { socialProof } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function SocialProof() {
+export async function SocialProof() {
+  const locale = (await getLocale()) as AppLocale;
+  const { socialProof } = getHomepageContent(locale);
+
   return (
     <Section aria-labelledby="social-proof-heading" className="py-10 sm:py-12">
       <h2

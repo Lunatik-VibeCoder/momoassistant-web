@@ -1,21 +1,27 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { runtimeAndSync } from "@/content/how-it-works";
+import { getHowItWorksContent } from "@/content/how-it-works";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function RuntimeSync() {
+export async function RuntimeSync() {
+  const locale = (await getLocale()) as AppLocale;
+  const { runtimeAndSync } = getHowItWorksContent(locale);
+
   return (
     <Section aria-labelledby="runtime-sync-heading">
       <h2 id="runtime-sync-heading" className="sr-only">
-        Runtime and sync
+        {runtimeAndSync.heading}
       </h2>
       <MotionSection
         variants={staggerContainer}
         className="grid gap-5 sm:grid-cols-2"
       >
-        {runtimeAndSync.map((item) => (
+        {runtimeAndSync.items.map((item) => (
           <MotionItem key={item.title}>
             <Card className="h-full">
               <CardHeader>

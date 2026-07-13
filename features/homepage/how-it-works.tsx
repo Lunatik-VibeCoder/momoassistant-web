@@ -1,10 +1,16 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { howItWorks } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function HowItWorks() {
+export async function HowItWorks() {
+  const locale = (await getLocale()) as AppLocale;
+  const { howItWorks } = getHomepageContent(locale);
+
   return (
     <Section aria-labelledby="how-it-works-heading" className="bg-muted/40">
       <div className="mx-auto max-w-2xl text-center">
@@ -12,10 +18,10 @@ export function HowItWorks() {
           id="how-it-works-heading"
           className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          How it works
+          {howItWorks.heading}
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          From onboarding to real-time auditing, in four steps.
+          {howItWorks.description}
         </p>
       </div>
 
@@ -23,7 +29,7 @@ export function HowItWorks() {
         variants={staggerContainer}
         className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
       >
-        {howItWorks.map((item) => (
+        {howItWorks.items.map((item) => (
           <MotionItem key={item.step}>
             <div className="flex size-9 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-sm font-semibold text-primary">
               {item.step}

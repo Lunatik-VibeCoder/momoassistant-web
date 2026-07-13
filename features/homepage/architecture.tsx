@@ -1,13 +1,18 @@
 import { ArrowRight } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Badge } from "@/components/ui/badge";
-import { architecture } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Architecture() {
+export async function Architecture() {
+  const locale = (await getLocale()) as AppLocale;
+  const { architecture } = getHomepageContent(locale);
+
   return (
     <Section aria-labelledby="architecture-heading" className="bg-muted/40">
       <div className="mx-auto max-w-2xl text-center">

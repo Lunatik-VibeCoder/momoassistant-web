@@ -1,10 +1,16 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { story } from "@/content/about";
+import { getAboutContent } from "@/content/about";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Story() {
+export async function Story() {
+  const locale = (await getLocale()) as AppLocale;
+  const { story } = getAboutContent(locale);
+
   return (
     <Section aria-labelledby="story-heading">
       <MotionSection variants={staggerContainer} className="max-w-2xl">

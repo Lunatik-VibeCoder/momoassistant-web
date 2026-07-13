@@ -1,40 +1,51 @@
 import { CheckCircle2, CircleDashed, Clock } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Badge } from "@/components/ui/badge";
-import { roadmap } from "@/content/changelog";
+import { getChangelogContent } from "@/content/changelog";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { RoadmapMilestone } from "@/types";
 
-const STATUS_CONFIG: Record<
+function getStatusConfig(
+  locale: AppLocale
+): Record<
   RoadmapMilestone["status"],
   { label: string; icon: typeof CheckCircle2; className: string }
-> = {
-  shipped: {
-    label: "Shipped",
-    icon: CheckCircle2,
-    className: "bg-success/15 text-success",
-  },
-  "in-progress": {
-    label: "In progress",
-    icon: Clock,
-    className: "bg-warning/15 text-warning",
-  },
-  planned: {
-    label: "Planned",
-    icon: CircleDashed,
-    className: "text-muted-foreground",
-  },
-};
+> {
+  const isFr = locale === "fr";
+  return {
+    shipped: {
+      label: isFr ? "Livré" : "Shipped",
+      icon: CheckCircle2,
+      className: "bg-success/15 text-success",
+    },
+    "in-progress": {
+      label: isFr ? "En cours" : "In progress",
+      icon: Clock,
+      className: "bg-warning/15 text-warning",
+    },
+    planned: {
+      label: isFr ? "Prévu" : "Planned",
+      icon: CircleDashed,
+      className: "text-muted-foreground",
+    },
+  };
+}
 
-export function Roadmap() {
+export async function Roadmap() {
+  const locale = (await getLocale()) as AppLocale;
+  const { roadmap, roadmapSrHeading } = getChangelogContent(locale);
+  const STATUS_CONFIG = getStatusConfig(locale);
+
   return (
     <Section aria-labelledby="roadmap-heading">
       <h2 id="roadmap-heading" className="sr-only">
-        Roadmap
+        {roadmapSrHeading}
       </h2>
       <MotionSection
         variants={staggerContainer}

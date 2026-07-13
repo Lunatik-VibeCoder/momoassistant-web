@@ -1,13 +1,20 @@
 import { Users } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { requestDemoInfo } from "@/content/demo";
+import { getDemoContent } from "@/content/demo";
+import type { AppLocale } from "@/i18n/routing";
+import { getSiteText } from "@/lib/constants";
 import { staggerContainer } from "@/lib/motion";
 
-export function RequestDemoSection() {
+export async function RequestDemoSection() {
+  const locale = (await getLocale()) as AppLocale;
+  const { requestDemoInfo } = getDemoContent(locale);
+  const text = getSiteText(locale);
+
   return (
     <Section aria-labelledby="request-demo-heading" className="bg-muted/40">
       <MotionSection
@@ -38,7 +45,7 @@ export function RequestDemoSection() {
               href="/contact"
               event="demo_page_request_demo"
             >
-              Request Demo
+              {text.secondaryCtaLabel}
             </CTAButton>
           </MotionItem>
         </div>

@@ -1,11 +1,17 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { features } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Features() {
+export async function Features() {
+  const locale = (await getLocale()) as AppLocale;
+  const { features } = getHomepageContent(locale);
+
   return (
     <Section id="features" aria-labelledby="features-heading">
       <div className="mx-auto max-w-2xl text-center">
@@ -13,11 +19,10 @@ export function Features() {
           id="features-heading"
           className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          Everything a Mobile Money station needs
+          {features.heading}
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          One application to run multi-SIM operations, automate USSD
-          workflows, and keep a reliable record of every transaction.
+          {features.description}
         </p>
       </div>
 
@@ -25,7 +30,7 @@ export function Features() {
         variants={staggerContainer}
         className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {features.map((feature) => (
+        {features.items.map((feature) => (
           <MotionItem key={feature.title}>
             <Card className="h-full">
               <CardHeader>

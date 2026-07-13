@@ -1,14 +1,20 @@
 import { CheckCircle2, Download } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { downloadInfo } from "@/content/demo";
-import { siteConfig } from "@/lib/constants";
+import { getDemoContent } from "@/content/demo";
+import type { AppLocale } from "@/i18n/routing";
+import { getSiteText, siteConfig } from "@/lib/constants";
 import { staggerContainer } from "@/lib/motion";
 
-export function DownloadSection() {
+export async function DownloadSection() {
+  const locale = (await getLocale()) as AppLocale;
+  const { downloadInfo } = getDemoContent(locale);
+  const text = getSiteText(locale);
+
   return (
     <Section aria-labelledby="download-heading">
       <MotionSection
@@ -52,7 +58,7 @@ export function DownloadSection() {
               external
               event="download_apk_demo_page"
             >
-              {siteConfig.primaryCtaLabel}
+              {text.primaryCtaLabel}
             </CTAButton>
           </MotionItem>
         </div>

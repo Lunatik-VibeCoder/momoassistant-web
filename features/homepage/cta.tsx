@@ -1,8 +1,14 @@
+import { getLocale } from "next-intl/server";
+
 import { CtaBand } from "@/components/shared/cta-band";
-import { finalCta } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { siteConfig } from "@/lib/constants";
 
-export function Cta() {
+export async function Cta() {
+  const locale = (await getLocale()) as AppLocale;
+  const { finalCta } = getHomepageContent(locale);
+
   return (
     <CtaBand
       heading={finalCta.heading}

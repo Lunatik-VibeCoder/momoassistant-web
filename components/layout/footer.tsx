@@ -1,12 +1,22 @@
 import { Mail } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
+import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/shared/logo";
 import { NavLink } from "@/components/shared/nav-link";
-import { Container } from "@/components/layout/container";
-import { FOOTER_LINK_GROUPS } from "@/content/navigation";
-import { siteConfig } from "@/lib/constants";
+import { getFooterLinkGroups } from "@/content/navigation";
+import type { AppLocale } from "@/i18n/routing";
+import { getSiteText, siteConfig } from "@/lib/constants";
 
-export function Footer() {
+interface FooterProps {
+  locale: AppLocale;
+}
+
+export async function Footer({ locale }: FooterProps) {
+  const footerLinkGroups = getFooterLinkGroups(locale);
+  const text = getSiteText(locale);
+  const t = await getTranslations("Common");
+
   return (
     <footer className="border-t border-border">
       <Container className="flex flex-col gap-12 py-12 sm:py-16">
@@ -14,11 +24,11 @@ export function Footer() {
           <div className="col-span-2 flex flex-col gap-3 sm:col-span-1">
             <Logo />
             <p className="max-w-xs text-sm text-muted-foreground">
-              Enterprise Mobile Money automation for professional operators.
+              {text.tagline}
             </p>
           </div>
 
-          {FOOTER_LINK_GROUPS.map((group) => (
+          {footerLinkGroups.map((group) => (
             <div key={group.title} className="flex flex-col gap-3">
               <h2 className="text-sm font-semibold text-foreground">
                 {group.title}
@@ -41,8 +51,8 @@ export function Footer() {
 
         <div className="flex flex-col-reverse items-center gap-4 border-t border-border pt-8 sm:flex-row sm:justify-between">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} {siteConfig.name}. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.name}.{" "}
+            {t("allRightsReserved")}
           </p>
           <a
             href={`mailto:${siteConfig.email}`}

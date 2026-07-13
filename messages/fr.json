@@ -1,0 +1,26 @@
+{
+  "Common": {
+    "skipToContent": "Aller au contenu principal",
+    "home": "Accueil",
+    "allRightsReserved": "Tous droits réservés.",
+    "openMenu": "Ouvrir le menu"
+  },
+  "LocaleSwitcher": {
+    "label": "Langue",
+    "en": "English",
+    "fr": "Français"
+  },
+  "NotFound": {
+    "eyebrow": "404",
+    "title": "Cette page n'existe pas",
+    "description": "La page que vous cherchez a peut-être été déplacée ou n'a jamais existé. Vérifiez l'URL, ou retournez à l'accueil.",
+    "backHome": "Retour à l'accueil"
+  },
+  "ServerError": {
+    "eyebrow": "500",
+    "title": "Une erreur est survenue de notre côté",
+    "description": "Ce n'est pas vous — une erreur inattendue s'est produite pendant le chargement de cette page. Réessayez, ou retournez à l'accueil.",
+    "retry": "Réessayer",
+    "backHome": "Retour à l'accueil"
+  }
+}

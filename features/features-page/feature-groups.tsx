@@ -1,11 +1,17 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { featureGroups } from "@/content/features";
+import { getFeaturesContent } from "@/content/features";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function FeatureGroups() {
+export async function FeatureGroups() {
+  const locale = (await getLocale()) as AppLocale;
+  const { featureGroups } = getFeaturesContent(locale);
+
   return (
     <>
       {featureGroups.map((group) => (

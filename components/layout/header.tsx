@@ -1,9 +1,10 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { CTAButton } from "@/components/shared/cta-button";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { Logo } from "@/components/shared/logo";
 import { NavLink } from "@/components/shared/nav-link";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_LINKS } from "@/content/navigation";
-import { siteConfig } from "@/lib/constants";
+import { getNavLinks } from "@/content/navigation";
 import { useScrollPosition } from "@/hooks";
+import type { AppLocale } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
+import { getSiteText, siteConfig } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export function Header() {
+interface HeaderProps {
+  locale: AppLocale;
+}
+
+export function Header({ locale }: HeaderProps) {
   const scrolled = useScrollPosition();
+  const navLinks = getNavLinks(locale);
+  const text = getSiteText(locale);
+  const t = useTranslations("Common");
 
   return (
     <header
@@ -44,7 +54,7 @@ export function Header() {
 
         <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <li key={link.href}>
                 <NavLink href={link.href} className={navigationMenuTriggerStyle()}>
                   {link.label}
@@ -55,13 +65,16 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <LocaleSwitcher />
+          </div>
           <CTAButton
             href={siteConfig.downloadApkUrl}
             external
             event="download_apk_header"
             className="hidden sm:inline-flex"
           >
-            {siteConfig.primaryCtaLabel}
+            {text.primaryCtaLabel}
           </CTAButton>
 
           <Sheet>
@@ -71,7 +84,7 @@ export function Header() {
                   variant="outline"
                   size="icon"
                   className="md:hidden"
-                  aria-label="Open menu"
+                  aria-label={t("openMenu")}
                 />
               }
             >
@@ -84,7 +97,7 @@ export function Header() {
                 </SheetTitle>
               </SheetHeader>
               <nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
-                {NAV_LINKS.map((link) => (
+                {navLinks.map((link) => (
                   <SheetClose
                     key={link.href}
                     nativeButton={false}
@@ -96,12 +109,13 @@ export function Header() {
                 ))}
               </nav>
               <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
+                <LocaleSwitcher />
                 <CTAButton
                   href={siteConfig.downloadApkUrl}
                   external
                   event="download_apk_header_mobile"
                 >
-                  {siteConfig.primaryCtaLabel}
+                  {text.primaryCtaLabel}
                 </CTAButton>
               </div>
             </SheetContent>

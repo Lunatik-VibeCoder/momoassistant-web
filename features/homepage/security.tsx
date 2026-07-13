@@ -1,30 +1,34 @@
 import { ShieldCheck } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { security } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Security() {
+export async function Security() {
+  const locale = (await getLocale()) as AppLocale;
+  const { security } = getHomepageContent(locale);
+
   return (
     <Section id="security" aria-labelledby="security-heading">
       <div className="mx-auto max-w-2xl text-center">
         <Badge variant="outline" className="mb-4 gap-1">
           <ShieldCheck className="size-3.5" aria-hidden="true" />
-          Security
+          {locale === "fr" ? "Sécurité" : "Security"}
         </Badge>
         <h2
           id="security-heading"
           className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          Security built for regulated, high-volume operations
+          {security.heading}
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Every layer of MoMo Assistant is designed around one rule:
-          transaction PINs never leave the device.
+          {security.description}
         </p>
       </div>
 
@@ -32,7 +36,7 @@ export function Security() {
         variants={staggerContainer}
         className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {security.map((pillar) => (
+        {security.items.map((pillar) => (
           <MotionItem key={pillar.title}>
             <Card className="h-full">
               <CardHeader>

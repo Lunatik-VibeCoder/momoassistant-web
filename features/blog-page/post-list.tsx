@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import type { BlogPost } from "@/types";
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+function formatDate(dateStr: string, locale: AppLocale) {
+  return new Date(dateStr).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -26,15 +28,18 @@ interface PostListProps {
   activeCategory?: string;
 }
 
-export function PostList({ posts, categories, activeCategory }: PostListProps) {
+export async function PostList({ posts, categories, activeCategory }: PostListProps) {
+  const locale = (await getLocale()) as AppLocale;
+  const isFr = locale === "fr";
+
   return (
     <Section aria-labelledby="posts-heading">
       <h2 id="posts-heading" className="sr-only">
         Articles
       </h2>
 
-      <nav aria-label="Filter by category" className="flex flex-wrap gap-2">
-        <CategoryPill label="All" href="/blog" active={!activeCategory} />
+      <nav aria-label={isFr ? "Filtrer par catégorie" : "Filter by category"} className="flex flex-wrap gap-2">
+        <CategoryPill label={isFr ? "Tout" : "All"} href="/blog" active={!activeCategory} />
         {categories.map((category) => (
           <CategoryPill
             key={category}
@@ -57,8 +62,8 @@ export function PostList({ posts, categories, activeCategory }: PostListProps) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground">
-                    {formatDate(post.publishedAt)} &middot; {post.readingTimeMinutes} min
-                    read
+                    {formatDate(post.publishedAt, locale)} &middot; {post.readingTimeMinutes}{" "}
+                    {isFr ? "min de lecture" : "min read"}
                   </p>
                 </CardContent>
               </Card>
@@ -67,7 +72,7 @@ export function PostList({ posts, categories, activeCategory }: PostListProps) {
         </div>
       ) : (
         <p className="mt-8 text-sm text-muted-foreground">
-          No articles in this category yet.
+          {isFr ? "Aucun article dans cette catégorie pour le moment." : "No articles in this category yet."}
         </p>
       )}
     </Section>

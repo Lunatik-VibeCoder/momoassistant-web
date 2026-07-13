@@ -1,10 +1,16 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
-import { whyMomoAssistant } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function WhyMomoAssistant() {
+export async function WhyMomoAssistant() {
+  const locale = (await getLocale()) as AppLocale;
+  const { whyMomoAssistant } = getHomepageContent(locale);
+
   return (
     <Section aria-labelledby="why-heading">
       <div className="mx-auto max-w-2xl text-center">
@@ -12,11 +18,10 @@ export function WhyMomoAssistant() {
           id="why-heading"
           className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          Why MoMo Assistant
+          {whyMomoAssistant.heading}
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Built from the ground up for professional operators — not adapted
-          from a consumer wallet.
+          {whyMomoAssistant.description}
         </p>
       </div>
 
@@ -24,7 +29,7 @@ export function WhyMomoAssistant() {
         variants={staggerContainer}
         className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2"
       >
-        {whyMomoAssistant.map((point) => (
+        {whyMomoAssistant.items.map((point) => (
           <MotionItem key={point.title} className="flex gap-4">
             <point.icon
               className="mt-0.5 size-5 shrink-0 text-primary"

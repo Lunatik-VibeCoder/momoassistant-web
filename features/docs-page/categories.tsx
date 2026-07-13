@@ -1,24 +1,29 @@
 import { ArrowRight } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { NavLink } from "@/components/shared/nav-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { docCategories } from "@/content/docs";
+import { getDocsContent } from "@/content/docs";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Categories() {
+export async function Categories() {
+  const locale = (await getLocale()) as AppLocale;
+  const { categories, categoriesSrHeading } = getDocsContent(locale);
+
   return (
     <Section aria-labelledby="doc-categories-heading">
       <h2 id="doc-categories-heading" className="sr-only">
-        Documentation categories
+        {categoriesSrHeading}
       </h2>
       <MotionSection
         variants={staggerContainer}
         className="grid gap-5 sm:grid-cols-2"
       >
-        {docCategories.map((category) => (
+        {categories.map((category) => (
           <MotionItem key={category.title}>
             <NavLink href={category.href} className="block h-full">
               <Card className="h-full transition-colors hover:border-primary/40">

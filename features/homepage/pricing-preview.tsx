@@ -1,3 +1,5 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { MotionItem } from "@/components/shared/motion-item";
@@ -12,11 +14,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { pricingPreview } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { staggerContainer } from "@/lib/motion";
 
-export function PricingPreview() {
+export async function PricingPreview() {
+  const locale = (await getLocale()) as AppLocale;
+  const { pricingPreview } = getHomepageContent(locale);
+
   return (
     <Section aria-labelledby="pricing-heading">
       <div className="mx-auto max-w-2xl text-center">
@@ -24,7 +30,7 @@ export function PricingPreview() {
           id="pricing-heading"
           className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
         >
-          Simple plans, built to scale with your stations
+          {pricingPreview.heading}
         </h2>
       </div>
 
@@ -32,7 +38,7 @@ export function PricingPreview() {
         variants={staggerContainer}
         className="mt-14 grid gap-5 lg:grid-cols-3"
       >
-        {pricingPreview.map((tier) => (
+        {pricingPreview.items.map((tier) => (
           <MotionItem key={tier.name}>
             <Card
               className={cn(
@@ -45,7 +51,7 @@ export function PricingPreview() {
                 <CardDescription>{tier.description}</CardDescription>
                 {tier.highlighted && (
                   <CardAction>
-                    <Badge>Popular</Badge>
+                    <Badge>{locale === "fr" ? "Populaire" : "Popular"}</Badge>
                   </CardAction>
                 )}
               </CardHeader>

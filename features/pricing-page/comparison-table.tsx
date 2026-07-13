@@ -1,20 +1,36 @@
 import { Check, Minus } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
-import { comparisonRows } from "@/content/pricing";
+import { getPricingContent } from "@/content/pricing";
+import type { AppLocale } from "@/i18n/routing";
 
-function Cell({ value }: { value: string | boolean }) {
+function Cell({
+  value,
+  includedLabel,
+  notIncludedLabel,
+}: {
+  value: string | boolean;
+  includedLabel: string;
+  notIncludedLabel: string;
+}) {
   if (typeof value === "boolean") {
     return value ? (
-      <Check className="size-4 text-primary" aria-label="Included" />
+      <Check className="size-4 text-primary" aria-label={includedLabel} />
     ) : (
-      <Minus className="size-4 text-muted-foreground/50" aria-label="Not included" />
+      <Minus
+        className="size-4 text-muted-foreground/50"
+        aria-label={notIncludedLabel}
+      />
     );
   }
   return <span className="text-foreground">{value}</span>;
 }
 
-export function ComparisonTable() {
+export async function ComparisonTable() {
+  const locale = (await getLocale()) as AppLocale;
+  const { comparison } = getPricingContent(locale);
+
   return (
     <Section aria-labelledby="compare-heading">
       <div className="max-w-2xl">
@@ -22,7 +38,7 @@ export function ComparisonTable() {
           id="compare-heading"
           className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
         >
-          Compare plans
+          {comparison.heading}
         </h2>
       </div>
 
@@ -31,34 +47,46 @@ export function ComparisonTable() {
           <thead>
             <tr className="border-b border-border">
               <th className="p-4 text-left font-medium text-muted-foreground">
-                Feature
+                {comparison.tableHeaders.feature}
               </th>
               <th className="p-4 text-left font-medium text-foreground">
-                Starter
+                {comparison.tableHeaders.starter}
               </th>
               <th className="p-4 text-left font-medium text-foreground">
-                Business
+                {comparison.tableHeaders.business}
               </th>
               <th className="p-4 text-left font-medium text-foreground">
-                Enterprise
+                {comparison.tableHeaders.enterprise}
               </th>
             </tr>
           </thead>
           <tbody>
-            {comparisonRows.map((row) => (
+            {comparison.rows.map((row) => (
               <tr
                 key={row.feature}
                 className="border-b border-border last:border-0"
               >
                 <td className="p-4 text-muted-foreground">{row.feature}</td>
                 <td className="p-4">
-                  <Cell value={row.starter} />
+                  <Cell
+                    value={row.starter}
+                    includedLabel={comparison.includedLabel}
+                    notIncludedLabel={comparison.notIncludedLabel}
+                  />
                 </td>
                 <td className="p-4">
-                  <Cell value={row.business} />
+                  <Cell
+                    value={row.business}
+                    includedLabel={comparison.includedLabel}
+                    notIncludedLabel={comparison.notIncludedLabel}
+                  />
                 </td>
                 <td className="p-4">
-                  <Cell value={row.enterprise} />
+                  <Cell
+                    value={row.enterprise}
+                    includedLabel={comparison.includedLabel}
+                    notIncludedLabel={comparison.notIncludedLabel}
+                  />
                 </td>
               </tr>
             ))}

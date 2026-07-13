@@ -1,8 +1,12 @@
+import type { AppLocale } from "@/i18n/routing";
+
 // Every URL, email, and brand string used across the site should be
 // imported from here — never written inline in a component.
 //
 // Sourced from the official brand kit at /brand — do not edit these values
-// without updating the source there first.
+// without updating the source there first. Fields that vary by language
+// live in SITE_TEXT below (getSiteText(locale)), not here — this file is
+// for values that are identical regardless of locale.
 
 export const SITE_NAME = "MoMo Assistant";
 // Distinct from SITE_NAME today only in intent: SITE_NAME is the marketing
@@ -11,10 +15,6 @@ export const SITE_NAME = "MoMo Assistant";
 export const APP_NAME = "MoMo Assistant";
 export const SHORT_NAME = "MoMo";
 export const CREATOR = "DEUS FEREA";
-
-export const TAGLINE = "Built for Agents. Powered by Automation.";
-export const DESCRIPTION =
-  "MoMo Assistant empowers Mobile Money agents by automating USSD operations while providing professional tools for treasury management, reporting, contacts and productivity.";
 
 // TODO: replace with the production domain before launch — not specified
 // in the brand kit.
@@ -35,23 +35,53 @@ export const PLAYSTORE_URL: string | null = null;
 // TODO: wire up to the real APK release asset once one is published.
 export const APK_URL = "#download";
 
-// Site-wide CTA pair per brand/website.md ("Website Structure").
-export const PRIMARY_CTA_LABEL = "Download Beta";
-export const SECONDARY_CTA_LABEL = "Request Demo";
-
 export const siteConfig = {
   name: SITE_NAME,
   appName: APP_NAME,
   shortName: SHORT_NAME,
   creator: CREATOR,
-  tagline: TAGLINE,
-  description: DESCRIPTION,
   url: SITE_URL,
   email: EMAIL,
   supportEmail: SUPPORT_EMAIL,
   socials: SOCIALS,
   playstoreUrl: PLAYSTORE_URL,
   downloadApkUrl: APK_URL,
-  primaryCtaLabel: PRIMARY_CTA_LABEL,
-  secondaryCtaLabel: SECONDARY_CTA_LABEL,
 } as const;
+
+// --- Localized site-wide text -----------------------------------------
+// Tagline, description, and the site's CTA pair are the only site-wide
+// (as opposed to page-specific) strings that need translation — page copy
+// itself lives in content/*.ts, translated the same way (see
+// CONTENT_GUIDE.md).
+
+interface SiteText {
+  tagline: string;
+  description: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  keywords: string[];
+}
+
+const SITE_TEXT: Record<AppLocale, SiteText> = {
+  en: {
+    tagline: "Built for Agents. Powered by Automation.",
+    description:
+      "MoMo Assistant empowers Mobile Money agents by automating USSD operations while providing professional tools for treasury management, reporting, contacts and productivity.",
+    // Site-wide CTA pair per brand/website.md ("Website Structure").
+    primaryCtaLabel: "Download Beta",
+    secondaryCtaLabel: "Request Demo",
+    keywords: ["Mobile Money", "USSD", "Automation", "Fintech", "Africa", "Payments", "Agent"],
+  },
+  fr: {
+    tagline: "Conçu pour les agents. Propulsé par l'automatisation.",
+    description:
+      "MoMo Assistant permet aux agents Mobile Money d'automatiser les opérations USSD tout en offrant des outils professionnels de gestion de trésorerie, de suivi, de contacts et de productivité.",
+    primaryCtaLabel: "Télécharger la bêta",
+    secondaryCtaLabel: "Demander une démo",
+    keywords: ["Mobile Money", "USSD", "Automatisation", "Fintech", "Afrique", "Paiements", "Agent"],
+  },
+};
+
+export function getSiteText(locale: AppLocale): SiteText {
+  return SITE_TEXT[locale];
+}

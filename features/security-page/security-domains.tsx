@@ -1,17 +1,22 @@
 import { CheckCircle2 } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { securityDomains } from "@/content/security";
+import { getSecurityContent } from "@/content/security";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function SecurityDomains() {
+export async function SecurityDomains() {
+  const locale = (await getLocale()) as AppLocale;
+  const { securityDomains, securityDomainsHeading } = getSecurityContent(locale);
+
   return (
     <Section aria-labelledby="security-domains-heading">
       <h2 id="security-domains-heading" className="sr-only">
-        Security domains
+        {securityDomainsHeading}
       </h2>
       <MotionSection
         variants={staggerContainer}

@@ -1,14 +1,20 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { Badge } from "@/components/ui/badge";
-import { hero } from "@/content/homepage";
+import { getHomepageContent } from "@/content/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { siteConfig } from "@/lib/constants";
 
 // No entrance animation here: this content is visible immediately on load
 // (never "scrolled into view"), so gating it behind Framer Motion's
 // whileInView would delay hydration-dependent paint of the LCP element
 // (the subheadline) instead of letting the browser render it right away.
-export function Hero() {
+export async function Hero() {
+  const locale = (await getLocale()) as AppLocale;
+  const { hero } = getHomepageContent(locale);
+
   return (
     <Section
       aria-labelledby="hero-heading"

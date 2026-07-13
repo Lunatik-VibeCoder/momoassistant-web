@@ -1,4 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
@@ -14,21 +15,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { pricingTiers } from "@/content/pricing";
+import { getPricingContent } from "@/content/pricing";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-export function Plans() {
+export async function Plans() {
+  const locale = (await getLocale()) as AppLocale;
+  const { tiers, plansSrHeading, popularLabel } = getPricingContent(locale);
+
   return (
     <Section aria-labelledby="plans-heading">
       <h2 id="plans-heading" className="sr-only">
-        Plans
+        {plansSrHeading}
       </h2>
       <MotionSection
         variants={staggerContainer}
         className="grid gap-5 lg:grid-cols-3"
       >
-        {pricingTiers.map((tier) => (
+        {tiers.map((tier) => (
           <MotionItem key={tier.name}>
             <Card
               className={cn(
@@ -41,7 +46,7 @@ export function Plans() {
                 <CardDescription>{tier.description}</CardDescription>
                 {tier.highlighted && (
                   <CardAction>
-                    <Badge>Popular</Badge>
+                    <Badge>{popularLabel}</Badge>
                   </CardAction>
                 )}
               </CardHeader>

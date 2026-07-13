@@ -3,11 +3,15 @@ import { join } from "node:path";
 
 import { ImageResponse } from "next/og";
 
-import { siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// A single global OG image (not nested under [locale]) — social platforms
+// mostly key off the page's own og:locale/og:title/og:description text
+// metadata, so one English image is a reasonable simplification rather
+// than generating a French variant of the artwork itself.
 export default function OpengraphImage() {
   const iconBuffer = readFileSync(
     join(process.cwd(), "public/logos/icon-mark.png")
@@ -51,7 +55,7 @@ export default function OpengraphImage() {
             maxWidth: 880,
           }}
         >
-          {siteConfig.tagline}
+          {getSiteText("en").tagline}
         </div>
       </div>
     ),

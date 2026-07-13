@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 
+import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/lib/constants";
 
 interface BreadcrumbItem {
@@ -13,8 +14,12 @@ interface BreadcrumbsProps {
   items: BreadcrumbItem[];
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
-  const allItems: BreadcrumbItem[] = [{ label: "Home", href: "/" }, ...items];
+export async function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const [locale, t] = await Promise.all([
+    getLocale(),
+    getTranslations("Common"),
+  ]);
+  const allItems: BreadcrumbItem[] = [{ label: t("home"), href: "/" }, ...items];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -22,7 +27,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       "@type": "ListItem",
       position: index + 1,
       name: item.label,
-      item: `${siteConfig.url}${item.href === "/" ? "" : item.href}`,
+      item: `${siteConfig.url}/${locale}${item.href === "/" ? "" : item.href}`,
     })),
   };
 

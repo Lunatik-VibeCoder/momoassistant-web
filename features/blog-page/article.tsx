@@ -1,18 +1,25 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { CtaBand } from "@/components/shared/cta-band";
 import { PageHero } from "@/components/shared/page-hero";
-import { siteConfig } from "@/lib/constants";
+import type { AppLocale } from "@/i18n/routing";
+import { getSiteText, siteConfig } from "@/lib/constants";
 import type { BlogPost } from "@/types";
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+function formatDate(dateStr: string, locale: AppLocale) {
+  return new Date(dateStr).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 }
 
-export function Article({ post }: { post: BlogPost }) {
+export async function Article({ post }: { post: BlogPost }) {
+  const locale = (await getLocale()) as AppLocale;
+  const isFr = locale === "fr";
+  const text = getSiteText(locale);
+
   return (
     <>
       <PageHero
@@ -24,9 +31,11 @@ export function Article({ post }: { post: BlogPost }) {
         ]}
       >
         <p className="mt-4 text-sm text-muted-foreground">
-          <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+          <time dateTime={post.publishedAt}>
+            {formatDate(post.publishedAt, locale)}
+          </time>
           {" · "}
-          {post.readingTimeMinutes} min read
+          {post.readingTimeMinutes} {isFr ? "min de lecture" : "min read"}
         </p>
       </PageHero>
 
@@ -41,16 +50,20 @@ export function Article({ post }: { post: BlogPost }) {
       </Section>
 
       <CtaBand
-        heading="See it running on your stations"
-        description="Download the beta and try it yourself, or request a demo with your team."
+        heading={isFr ? "Voyez-le tourner sur vos stations" : "See it running on your stations"}
+        description={
+          isFr
+            ? "Téléchargez la bêta et testez-la vous-même, ou demandez une démo avec votre équipe."
+            : "Download the beta and try it yourself, or request a demo with your team."
+        }
         primaryCta={{
-          label: siteConfig.primaryCtaLabel,
+          label: text.primaryCtaLabel,
           href: siteConfig.downloadApkUrl,
           external: true,
           event: "download_apk_blog_post_cta",
         }}
         secondaryCta={{
-          label: siteConfig.secondaryCtaLabel,
+          label: text.secondaryCtaLabel,
           href: "/contact",
           event: "blog_post_cta_request_demo",
         }}

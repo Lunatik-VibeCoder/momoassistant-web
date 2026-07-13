@@ -1,0 +1,26 @@
+{
+  "Common": {
+    "skipToContent": "Skip to main content",
+    "home": "Home",
+    "allRightsReserved": "All rights reserved.",
+    "openMenu": "Open menu"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "fr": "Français"
+  },
+  "NotFound": {
+    "eyebrow": "404",
+    "title": "This page doesn't exist",
+    "description": "The page you're looking for may have moved or never existed. Check the URL, or head back to the homepage.",
+    "backHome": "Back to homepage"
+  },
+  "ServerError": {
+    "eyebrow": "500",
+    "title": "Something went wrong on our end",
+    "description": "This isn't you — an unexpected error happened while loading this page. Try again, or head back to the homepage.",
+    "retry": "Try again",
+    "backHome": "Back to homepage"
+  }
+}

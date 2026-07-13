@@ -1,22 +1,28 @@
+import { getLocale } from "next-intl/server";
+
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { contactChannels } from "@/content/contact";
+import { getContactContent } from "@/content/contact";
+import type { AppLocale } from "@/i18n/routing";
 import { staggerContainer } from "@/lib/motion";
 
-export function Channels() {
+export async function Channels() {
+  const locale = (await getLocale()) as AppLocale;
+  const { channels, channelsSrHeading } = getContactContent(locale);
+
   return (
     <Section aria-labelledby="channels-heading">
       <h2 id="channels-heading" className="sr-only">
-        Contact channels
+        {channelsSrHeading}
       </h2>
       <MotionSection
         variants={staggerContainer}
         className="grid gap-5 sm:grid-cols-3"
       >
-        {contactChannels.map((channel) => (
+        {channels.map((channel) => (
           <MotionItem key={channel.title}>
             <Card className="h-full">
               <CardHeader>

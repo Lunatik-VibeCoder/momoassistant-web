@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 import {
   Architecture,
@@ -13,11 +14,24 @@ import {
   Testimonials,
   WhyMomoAssistant,
 } from "@/features/homepage";
+import type { AppLocale } from "@/i18n/routing";
 import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = createMetadata({ path: "/" });
+interface HomePageProps {
+  params: Promise<{ locale: AppLocale }>;
+}
 
-export default function HomePage() {
+export async function generateMetadata({
+  params,
+}: HomePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return createMetadata({ locale, path: "/" });
+}
+
+export default async function HomePage({ params }: HomePageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   return (
     <>
       <Hero />

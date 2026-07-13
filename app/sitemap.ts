@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
-import { blogPosts } from "@/content/blog";
+import { getBlogContent } from "@/content/blog";
+import { routing } from "@/i18n/routing";
 import { siteConfig } from "@/lib/constants";
 
 const STATIC_PAGES: { path: string; priority: number }[] = [
@@ -18,22 +19,38 @@ const STATIC_PAGES: { path: string; priority: number }[] = [
   { path: "/careers", priority: 0.4 },
 ];
 
+function localizedUrl(locale: string, path: string): string {
+  return `${siteConfig.url}/${locale}${path === "/" ? "" : path}`;
+}
+
+function languageAlternates(path: string): Record<string, string> {
+  return Object.fromEntries(
+    routing.locales.map((locale) => [locale, localizedUrl(locale, path)])
+  );
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  const staticEntries = STATIC_PAGES.map(({ path, priority }) => ({
-    url: `${siteConfig.url}${path === "/" ? "" : path}`,
-    lastModified,
-    changeFrequency: "weekly" as const,
-    priority,
-  }));
+  const staticEntries = STATIC_PAGES.flatMap(({ path, priority }) =>
+    routing.locales.map((locale) => ({
+      url: localizedUrl(locale, path),
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority,
+      alternates: { languages: languageAlternates(path) },
+    }))
+  );
 
-  const blogEntries = blogPosts.map((post) => ({
-    url: `${siteConfig.url}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: "monthly" as const,
-    priority: 0.4,
-  }));
+  const blogEntries = routing.locales.flatMap((locale) =>
+    getBlogContent(locale).posts.map((post) => ({
+      url: localizedUrl(locale, `/blog/${post.slug}`),
+      lastModified: new Date(post.publishedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.4,
+      alternates: { languages: languageAlternates(`/blog/${post.slug}`) },
+    }))
+  );
 
   return [...staticEntries, ...blogEntries];
 }
