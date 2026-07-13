@@ -1,0 +1,66 @@
+# Product Identity
+
+## Official Name
+
+MoMo Assistant
+
+## Short Name
+
+MoMo
+
+## Category
+
+Fintech Productivity Platform
+
+## Platform
+
+Android
+
+## Positioning
+
+MoMo Assistant is the operating system for professional Mobile Money agents.
+
+It automates repetitive USSD operations while helping agents manage treasury, contacts, transaction history and business operations.
+
+---
+
+## Mission
+
+Empower Mobile Money agents with intelligent automation.
+
+---
+
+## Vision
+
+Become Africa's most trusted productivity platform for Mobile Money professionals.
+
+---
+
+## Core Principles
+
+- Professional
+- Reliable
+- Fast
+- Secure
+- Multi-country
+- Offline First
+- Automation First
+
+---
+
+## Target Users
+
+- Individual Agents
+- Agencies
+- Organizations
+- Enterprises
+
+---
+
+## Supported Countries
+
+Country Agnostic.
+
+Countries are enabled through configurable Network Profiles.
+
+No country is hardcoded.

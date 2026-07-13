@@ -1,0 +1,63 @@
+# Official Colors
+
+## Primary
+
+MoMo Lime
+
+HEX
+
+#D6FF5C
+
+RGB
+
+214 255 92
+
+---
+
+## Background
+
+MoMo Black
+
+#0B0F0B
+
+---
+
+## Surface
+
+#161B16
+
+---
+
+## Elevated Surface
+
+#1D221C
+
+---
+
+## Border
+
+#2A3128
+
+---
+
+## White
+
+#FFFFFF
+
+---
+
+## Success
+
+#82FF73
+
+---
+
+## Danger
+
+#E76A5C
+
+---
+
+## Warning
+
+#FFC83D

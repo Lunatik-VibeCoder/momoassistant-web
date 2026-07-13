@@ -1,0 +1,30 @@
+{
+  "brand": {
+    "name": "MoMo Assistant",
+    "tagline": "Built for Agents. Powered by Automation."
+  },
+  "colors": {
+    "primary": "#D6FF5C",
+    "background": "#0B0F0B",
+    "surface": "#161B16",
+    "surfaceElevated": "#1D221C",
+    "border": "#2A3128",
+    "text": "#FFFFFF",
+    "textSecondary": "#8F968B",
+    "success": "#82FF73",
+    "danger": "#E76A5C",
+    "warning": "#FFC83D"
+  },
+  "radius": {
+    "card": 20,
+    "button": 18
+  },
+  "spacing": {
+    "base": 8,
+    "section": 24
+  },
+  "typography": {
+    "primary": "Inter",
+    "fallback": "Roboto"
+  }
+}

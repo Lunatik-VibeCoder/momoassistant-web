@@ -1,0 +1,11 @@
+export { Architecture } from "./architecture";
+export { Cta } from "./cta";
+export { FaqPreview } from "./faq-preview";
+export { Features } from "./features";
+export { Hero } from "./hero";
+export { HowItWorks } from "./how-it-works";
+export { PricingPreview } from "./pricing-preview";
+export { Security } from "./security";
+export { SocialProof } from "./social-proof";
+export { Testimonials } from "./testimonials";
+export { WhyMomoAssistant } from "./why-momo-assistant";

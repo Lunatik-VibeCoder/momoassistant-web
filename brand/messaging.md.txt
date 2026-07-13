@@ -1,0 +1,42 @@
+# Messaging
+
+## Primary Tagline
+
+Built for Agents.
+Powered by Automation.
+
+---
+
+## Hero Title
+
+The Professional Mobile Money Operating System.
+
+---
+
+## Hero Subtitle
+
+Automate USSD operations.
+
+Manage treasury.
+
+Increase productivity.
+
+Grow your agency.
+
+---
+
+## Primary CTA
+
+Start Free Trial
+
+---
+
+## Secondary CTA
+
+Book a Demo
+
+---
+
+## Elevator Pitch
+
+MoMo Assistant helps Mobile Money agents automate repetitive operations while providing professional business tools for treasury, reporting and productivity.

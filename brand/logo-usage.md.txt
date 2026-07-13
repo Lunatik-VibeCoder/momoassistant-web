@@ -1,0 +1,35 @@
+# Logo Usage
+
+The MoMo Assistant logo must always be displayed clearly.
+
+## Preferred Background
+
+Dark
+
+---
+
+## Minimum Size
+
+32px
+
+---
+
+## Safe Area
+
+20%
+
+---
+
+## Never
+
+Stretch
+
+Rotate
+
+Recolor
+
+Crop
+
+Add Shadows
+
+Change proportions

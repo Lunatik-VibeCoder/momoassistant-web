@@ -1,0 +1,47 @@
+# Typography
+
+## Primary
+
+Inter
+
+---
+
+## Fallback
+
+Roboto
+
+---
+
+## Headings
+
+SemiBold
+
+---
+
+## Body
+
+Regular
+
+---
+
+## Buttons
+
+Medium
+
+---
+
+## Numbers
+
+Tabular Numbers
+
+---
+
+## Corner Radius
+
+20dp
+
+---
+
+## Grid
+
+8dp

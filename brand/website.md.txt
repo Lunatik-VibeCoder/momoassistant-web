@@ -1,0 +1,45 @@
+# Website Structure
+
+## Pages
+
+Home
+
+Features
+
+Pricing
+
+FAQ
+
+About
+
+Contact
+
+Download
+
+Roadmap
+
+---
+
+## Theme
+
+Dark First
+
+Minimal
+
+Premium SaaS
+
+Fast
+
+Modern
+
+---
+
+## Main CTA
+
+Download Beta
+
+---
+
+## Secondary CTA
+
+Request Demo

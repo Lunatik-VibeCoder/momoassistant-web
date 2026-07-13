@@ -1,0 +1,29 @@
+# Google Play
+
+## Short Description
+
+Professional Mobile Money Automation Platform.
+
+---
+
+## Long Description
+
+MoMo Assistant empowers Mobile Money agents by automating USSD operations while providing professional tools for treasury management, reporting, contacts and productivity.
+
+---
+
+## Keywords
+
+Mobile Money
+
+USSD
+
+Automation
+
+Fintech
+
+Africa
+
+Payments
+
+Agent
