@@ -2,6 +2,6 @@
 // routes, or sections in the components that render them.
 
 export const DOWNLOAD_ENABLED = true;
-export const DOCS_ENABLED = false;
-export const BLOG_ENABLED = false;
+export const DOCS_ENABLED = true;
+export const BLOG_ENABLED = true;
 export const BETA_ENABLED = false;

@@ -12,8 +12,14 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/pricing",
   "/about",
   "/contact",
+  "/demo",
+  "/docs",
+  "/changelog",
+  "/blog",
+  "/careers",
 ]);
 
 export function isRouteImplemented(href: string): boolean {
-  return IMPLEMENTED_ROUTES.has(href);
+  const [path] = href.split(/[?#]/);
+  return IMPLEMENTED_ROUTES.has(path);
 }

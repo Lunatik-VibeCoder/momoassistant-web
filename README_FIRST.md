@@ -40,4 +40,4 @@ Full breakdown: [WEB_ARCHITECTURE.md](./WEB_ARCHITECTURE.md).
 
 ## Current status
 
-Foundation + homepage (`/`) plus Features, Security, How It Works, Pricing, About, and Contact are built and production-ready. Download, FAQ, Changelog, Privacy, and Terms still exist only as nav links today and 404 — that's expected, not a bug, until each is built on its own commit (see `lib/routes.ts` for the authoritative list of what's actually live).
+Foundation + homepage (`/`) plus Features, Security, How It Works, Pricing, About, Contact, Demo, Docs (landing only), Changelog, Blog, and Careers are built and production-ready. Privacy and Terms still exist only as nav links today and 404 — that's expected, not a bug, until each is built on its own commit (see `lib/routes.ts` for the authoritative list of what's actually live). The full documentation center beyond the `/docs` landing page is separate, larger scope (MDX-based docs with search/TOC/code blocks).

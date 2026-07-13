@@ -77,10 +77,14 @@ Stripe, Vercel, Linear, Notion, Raycast — dark-first, minimal, premium SaaS. N
 
 **Brand kit (`website.md`)**: Home, Features, Pricing, FAQ, About, Contact, Download, Roadmap.
 
-**Currently implemented** (real pages, in `lib/routes.ts`'s `IMPLEMENTED_ROUTES`): `/`, `/features`, `/security`, `/how-it-works`, `/pricing`, `/about`, `/contact`.
+**Currently implemented** (real pages, in `lib/routes.ts`'s `IMPLEMENTED_ROUTES`): `/`, `/features`, `/security`, `/how-it-works`, `/pricing`, `/about`, `/contact`, `/demo`, `/docs`, `/changelog`, `/blog` (+ `/blog/[slug]`), `/careers`.
 
-**Nav/footer links only, still 404** until built: Download, FAQ, Changelog, Privacy, Terms. Not a bug — see `WEB_ARCHITECTURE.md`'s route-group convention and `CONTENT_GUIDE.md` for how each gets built out.
+**Nav/footer links only, still 404** until built: Privacy, Terms (`/legal/*`). `/docs/guides`, `/docs/architecture`, `/docs/tutorials`, `/docs/api` also 404 — `/docs` today is a landing page only; the real documentation center is Prompt 3's scope. Not a bug — see `WEB_ARCHITECTURE.md`'s route-group convention and `CONTENT_GUIDE.md` for how each gets built out.
 
-Discrepancy still open: brand kit has no "Security" or "How It Works" page (site has both — reasonable additions given the product's depth) and no "Roadmap" (tracked as Changelog instead, close enough in intent).
+**IA decision**: the original nav had separate `Download` (→`/download`) and `FAQ` (→`/faq`) links from before this page rollout existed. Both were retired — `/demo` now covers Download Beta + Request Demo + FAQ together, matching the brand kit's target sitemap (which has neither `/download` nor `/faq` as its own route). FAQ content lives contextually instead: on `/pricing`, on `/demo#faq`, and as a preview on the homepage.
+
+Discrepancy still open: brand kit has no "Security" or "How It Works" page (site has both — reasonable additions given the product's depth) and no "Roadmap" (tracked as Changelog instead, close enough in intent). Brand kit also doesn't mention Docs, Blog, or Careers — added per the site's own expanded spec beyond the brand kit's marketing-page list.
+
+**Editorial note on `/changelog`**: the roadmap content there is deliberately high-level (version milestones only — `v0.9.0` Core Complete through `v2.0.0` SaaS Platform). Internal engineering detail (sprint names, bug fixes, device-testing notes) from the Android project's own docs was reviewed and intentionally excluded from this public page.
 
 Future (beyond brand kit, from the original site spec): Docs, Blog, Developers, API, Status, Portal (customer/org dashboard), Demo, Careers, Legal (Privacy/Terms/Cookies/Security Statement).

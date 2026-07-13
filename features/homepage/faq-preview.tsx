@@ -1,12 +1,7 @@
 import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
+import { FaqAccordion } from "@/components/shared/faq-accordion";
 import { MotionSection } from "@/components/shared/motion-section";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { faqPreview } from "@/content/homepage";
 
 export function FaqPreview() {
@@ -22,19 +17,10 @@ export function FaqPreview() {
       </div>
 
       <MotionSection className="mx-auto mt-12 max-w-2xl">
-        <Accordion>
-          {faqPreview.map((item) => (
-            <AccordionItem key={item.question} value={item.question}>
-              <AccordionTrigger>{item.question}</AccordionTrigger>
-              <AccordionContent>
-                <p>{item.answer}</p>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <FaqAccordion items={faqPreview} />
 
         <div className="mt-8 text-center">
-          <CTAButton variant="outline" href="/faq" event="faq_view_all">
+          <CTAButton variant="outline" href="/demo#faq" event="faq_view_all">
             View all FAQs
           </CTAButton>
         </div>

@@ -85,3 +85,20 @@ export interface ContactChannel extends IconListItem {
   href: string;
   external?: boolean;
 }
+
+export interface RoadmapMilestone {
+  version: string;
+  label: string;
+  status: "shipped" | "in-progress" | "planned";
+  description: string;
+}
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  publishedAt: string;
+  readingTimeMinutes: number;
+  content: string[];
+}
