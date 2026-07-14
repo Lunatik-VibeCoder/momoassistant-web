@@ -17,6 +17,11 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/changelog",
   "/blog",
   "/careers",
+  "/legal/privacy",
+  "/legal/terms",
+  "/legal/cookies",
+  "/legal/security",
+  "/status",
 ]);
 
 export function isRouteImplemented(href: string): boolean {

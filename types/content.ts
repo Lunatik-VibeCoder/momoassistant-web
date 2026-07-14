@@ -102,3 +102,24 @@ export interface BlogPost {
   readingTimeMinutes: number;
   content: string[];
 }
+
+export interface LegalSection {
+  heading: string;
+  paragraphs: string[];
+  list?: string[];
+}
+
+export interface LegalDocument {
+  eyebrow: string;
+  title: string;
+  description: string;
+  lastUpdatedLabel: string;
+  lastUpdated: string;
+  sections: LegalSection[];
+}
+
+export interface StatusService {
+  name: string;
+  status: "operational" | "beta" | "planned";
+  description: string;
+}

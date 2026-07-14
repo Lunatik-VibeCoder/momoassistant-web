@@ -17,6 +17,11 @@ const STATIC_PAGES: { path: string; priority: number }[] = [
   { path: "/changelog", priority: 0.5 },
   { path: "/blog", priority: 0.5 },
   { path: "/careers", priority: 0.4 },
+  { path: "/status", priority: 0.3 },
+  { path: "/legal/privacy", priority: 0.2 },
+  { path: "/legal/terms", priority: 0.2 },
+  { path: "/legal/cookies", priority: 0.2 },
+  { path: "/legal/security", priority: 0.2 },
 ];
 
 function localizedUrl(locale: string, path: string): string {
