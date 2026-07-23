@@ -23,7 +23,7 @@ function build(locale: AppLocale): DemoContent {
           "La façon la plus rapide d'évaluer MoMo Assistant — installez-la, configurez une station et automatisez votre première séquence USSD.",
         points: [
           "Gratuit pour une station unique, jusqu'à deux appareils",
-          "Le même Runtime V2, moteur de confiance des appareils et coffre-fort PIN que chaque offre payante",
+          "Le même Runtime V2, Device Trust et coffre-fort PIN que chaque offre payante",
           "Aucune inscription requise pour l'installation — vos données restent les vôtres dès la première transaction",
         ],
       },

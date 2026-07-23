@@ -36,7 +36,7 @@ function build(locale: AppLocale): AboutContent {
         paragraphs: [
           "Les agents Mobile Money professionnels ne gèrent pas un portefeuille grand public — ils font tourner une activité à travers un menu USSD. Chaque transaction signifie composer un code, naviguer dans des menus et ressaisir des numéros à la main, des dizaines ou des centaines de fois par jour, sur autant de SIM et d'appareils qu'une station en fait fonctionner.",
           "C'est lent, et facile à mal faire quand le volume augmente. Mais la réponse ne pouvait pas être de « supprimer l'agent » — Mobile Money est une activité réglementée et de haute confiance, et c'est justement l'agent qui confirme chaque transaction qui la rend fiable. La réponse devait être d'automatiser la partie répétitive tout en laissant l'agent décider.",
-          "MoMo Assistant est cette réponse : Runtime V2 exécute la séquence USSD, l'architecture Organisation/Station modélise la structure réelle d'une entreprise, et le moteur de confiance des appareils, SIM Trust et le coffre-fort PIN existent pour qu'aucune de ces automatisations ne se fasse au prix de la sécurité ou de la traçabilité.",
+          "MoMo Assistant est cette réponse : Runtime V2 exécute la séquence USSD, l'architecture Organisation/Station modélise la structure réelle d'une entreprise, et Device Trust, SIM Trust et le coffre-fort PIN existent pour qu'aucune de ces automatisations ne se fasse au prix de la sécurité ou de la traçabilité.",
         ],
       },
       mission: "Donner aux agents Mobile Money les moyens d'une automatisation intelligente.",
@@ -68,7 +68,7 @@ function build(locale: AppLocale): AboutContent {
           icon: Lock,
           title: "Sécurisé",
           description:
-            "Le moteur de confiance des appareils, SIM Trust et le coffre-fort PIN existent pour que la rapidité ne se fasse jamais au prix du contrôle.",
+            "Device Trust, SIM Trust et le coffre-fort PIN existent pour que la rapidité ne se fasse jamais au prix du contrôle.",
         },
         {
           icon: Bot,

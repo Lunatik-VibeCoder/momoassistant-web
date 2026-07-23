@@ -31,7 +31,7 @@ export async function Plans() {
       </h2>
       <MotionSection
         variants={staggerContainer}
-        className="grid gap-5 lg:grid-cols-3"
+        className="grid gap-5 lg:grid-cols-2 xl:grid-cols-4"
       >
         {tiers.map((tier) => (
           <MotionItem key={tier.name}>

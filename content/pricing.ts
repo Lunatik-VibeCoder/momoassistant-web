@@ -12,17 +12,24 @@ export interface PricingContent {
     tableHeaders: {
       feature: string;
       starter: string;
+      professional: string;
       business: string;
       enterprise: string;
     };
     includedLabel: string;
     notIncludedLabel: string;
+    comingSoonLabel: string;
     rows: ComparisonRow[];
   };
   enterprise: { heading: string; description: string; ctaLabel: string };
   faq: { heading: string; items: FaqItem[] };
 }
 
+// Packaging, Entitlements, and Limits below come directly from
+// docs/com-001-saas-packaging-entitlements.md (Proposed) — nothing here
+// is a new commercial decision. Values marked "Coming soon" / "À venir"
+// are COM-001's own open items (exact SIM Seat/storage/retention
+// numbers for Professional/Business/Enterprise), not invented here.
 function build(locale: AppLocale): PricingContent {
   const text = getSiteText(locale);
 
@@ -30,9 +37,9 @@ function build(locale: AppLocale): PricingContent {
     return {
       hero: {
         eyebrow: "Tarifs",
-        title: "Des offres qui évoluent avec vos stations",
+        title: "Des offres qui évoluent avec votre organisation",
         description:
-          "Commencez avec une station unique gratuitement. Passez à Business dès que vous en gérez plusieurs, et parlez-nous directement dès que vous avez besoin de politiques et d'une intégration sur mesure.",
+          "Commencez avec une station unique gratuitement. Passez à Professional ou Business dès que votre organisation grandit, et parlez-nous directement pour Enterprise, avec politiques et intégration sur mesure.",
       },
       plansSrHeading: "Offres",
       popularLabel: "Populaire",
@@ -48,24 +55,40 @@ function build(locale: AppLocale): PricingContent {
           },
           features: [
             "1 station, jusqu'à 2 appareils",
+            "Automatisation USSD (Runtime V2)",
             "Gestion multi-SIM",
-            "Automatisation USSD avec Runtime V2",
+            "SMS Intelligence",
+            "Device Trust & SIM Trust",
+            "Financial Runtime",
             "Historique des transactions",
             "Coffre-fort PIN sécurisé",
           ],
         },
         {
+          name: "Professional",
+          description: "Pour une agence qui dépasse la station unique.",
+          price: "Contacter les ventes",
+          cta: { label: "Parler aux ventes", href: "/contact" },
+          features: [
+            "Tout ce qui est inclus dans Débutant",
+            "Jusqu'à 3 stations, 6 appareils",
+            "Sauvegarde chiffrée & restauration",
+            "Privacy Mode",
+            "Synchronisation cloud entre appareils",
+            "Multi-Agent par appareil",
+          ],
+        },
+        {
           name: "Business",
-          description: "Pour les organisations gérant plusieurs stations et appareils.",
+          description: "Pour les organisations gérant plusieurs stations.",
           price: "Contacter les ventes",
           cta: { label: "Parler aux ventes", href: "/contact" },
           highlighted: true,
           features: [
-            "Tout ce qui est inclus dans Débutant",
+            "Tout ce qui est inclus dans Professional",
             "Stations et appareils illimités",
-            "Architecture Organisation / Station",
-            "Synchronisation cloud entre appareils",
-            "Restauration d'appareil",
+            "Station Trust & gestion des stations",
+            "Unified Runtime Policy",
             "Journaux d'audit sur toutes les stations",
           ],
         },
@@ -76,6 +99,7 @@ function build(locale: AppLocale): PricingContent {
           cta: { label: "Nous contacter", href: "/contact" },
           features: [
             "Tout ce qui est inclus dans Business",
+            "Rôles & permissions (RBAC)",
             "Politiques du moteur d'exécution personnalisées",
             "Intégration entreprise dédiée",
             "Support prioritaire",
@@ -87,29 +111,41 @@ function build(locale: AppLocale): PricingContent {
         tableHeaders: {
           feature: "Fonctionnalité",
           starter: "Débutant",
+          professional: "Professional",
           business: "Business",
           enterprise: "Enterprise",
         },
         includedLabel: "Inclus",
         notIncludedLabel: "Non inclus",
+        comingSoonLabel: "À venir",
         rows: [
-          { feature: "Stations", starter: "1", business: "Illimité", enterprise: "Illimité" },
-          { feature: "Gestion multi-SIM", starter: true, business: true, enterprise: true },
-          { feature: "Automatisation USSD (Runtime V2)", starter: true, business: true, enterprise: true },
-          { feature: "Historique des transactions", starter: true, business: true, enterprise: true },
-          { feature: "Coffre-fort PIN sécurisé", starter: true, business: true, enterprise: true },
-          { feature: "Synchronisation cloud", starter: false, business: true, enterprise: true },
-          { feature: "Restauration d'appareil", starter: false, business: true, enterprise: true },
-          { feature: "Architecture Organisation / Station", starter: false, business: true, enterprise: true },
-          { feature: "Politiques du moteur d'exécution personnalisées", starter: false, business: false, enterprise: true },
-          { feature: "Intégration dédiée", starter: false, business: false, enterprise: true },
-          { feature: "Support prioritaire", starter: false, business: false, enterprise: true },
+          { feature: "Stations", starter: "1", professional: "3", business: "Illimité", enterprise: "Illimité" },
+          { feature: "Appareils", starter: "2", professional: "6", business: "Illimité", enterprise: "Illimité" },
+          { feature: "SIM Seats", starter: "2", professional: "8", business: "À venir", enterprise: "À venir" },
+          { feature: "Automatisation USSD (Runtime V2)", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Gestion multi-SIM", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "SMS Intelligence", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Device Trust & SIM Trust", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Financial Runtime", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Historique des transactions", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Coffre-fort PIN sécurisé", starter: true, professional: true, business: true, enterprise: true },
+          { feature: "Sauvegarde chiffrée & restauration", starter: false, professional: true, business: true, enterprise: true },
+          { feature: "Privacy Mode", starter: false, professional: true, business: true, enterprise: true },
+          { feature: "Synchronisation cloud", starter: false, professional: true, business: true, enterprise: true },
+          { feature: "Multi-Agent par appareil", starter: false, professional: true, business: true, enterprise: true },
+          { feature: "Station Trust & gestion des stations", starter: false, professional: false, business: true, enterprise: true },
+          { feature: "Unified Runtime Policy", starter: false, professional: false, business: true, enterprise: true },
+          { feature: "Journaux d'audit multi-stations", starter: false, professional: false, business: true, enterprise: true },
+          { feature: "Rôles & permissions (RBAC)", starter: false, professional: false, business: false, enterprise: true },
+          { feature: "Politiques du moteur d'exécution personnalisées", starter: false, professional: false, business: false, enterprise: true },
+          { feature: "Intégration dédiée", starter: false, professional: false, business: false, enterprise: true },
+          { feature: "Support prioritaire", starter: false, professional: false, business: false, enterprise: true },
         ],
       },
       enterprise: {
         heading: "Vous gérez plus qu'une poignée de stations ?",
         description:
-          "Enterprise ajoute des politiques du moteur d'exécution personnalisées, une intégration dédiée et un support prioritaire en plus de tout ce qui est inclus dans Business — adapté à la façon dont votre organisation fonctionne réellement.",
+          "Enterprise ajoute les rôles et permissions, des politiques du moteur d'exécution personnalisées, une intégration dédiée et un support prioritaire en plus de tout ce qui est inclus dans Business — adapté à la façon dont votre organisation fonctionne réellement.",
         ctaLabel: "Parler aux ventes",
       },
       faq: {
@@ -118,27 +154,27 @@ function build(locale: AppLocale): PricingContent {
           {
             question: "Existe-t-il une offre gratuite ?",
             answer:
-              "Oui — Débutant est gratuit pour une station unique fonctionnant sur jusqu'à deux appareils, avec la même automatisation USSD et le même modèle de sécurité que toutes les autres offres.",
+              "Oui — Débutant est gratuit pour une station unique fonctionnant sur jusqu'à deux appareils, avec la même automatisation et le même modèle de sécurité que toutes les autres offres.",
+          },
+          {
+            question: "Comment fonctionne l'accès aux offres payantes ?",
+            answer:
+              "Votre organisation détient un abonnement (Subscription), matérialisé par une licence technique qui active les entitlements de votre offre — les capacités, limites et modules listés ci-dessus.",
           },
           {
             question: "Comment les tarifs sont-ils structurés au-delà de Débutant ?",
             answer:
-              "Les tarifs Business et Enterprise dépendent du nombre de stations, d'appareils et des besoins de support de votre organisation, donc nous les définissons directement avec vous plutôt que de publier un tarif unique.",
+              "Les tarifs Professional, Business et Enterprise dépendent du nombre de stations, d'appareils et des besoins de support de votre organisation, donc nous les définissons directement avec vous plutôt que de publier un tarif unique.",
           },
           {
-            question: "Puis-je passer de Débutant à Business plus tard ?",
+            question: "Puis-je monter en gamme plus tard ?",
             answer:
-              "Oui. La configuration et l'historique de votre station sont conservés — monter en gamme ne signifie pas repartir de zéro.",
+              "Oui. La configuration, les stations et l'historique de votre organisation sont conservés — monter en gamme ne signifie jamais repartir de zéro.",
           },
           {
             question: "Qu'est-ce qui différencie Enterprise ?",
             answer:
-              "Enterprise ajoute des politiques du moteur d'exécution personnalisées, une intégration dédiée et un support prioritaire en plus de tout ce qui est inclus dans Business — conçu pour les organisations ayant leurs propres exigences de conformité ou d'exploitation.",
-          },
-          {
-            question: "Proposez-vous des remises pour les engagements annuels ?",
-            answer:
-              "Parlez à notre équipe commerciale — les conditions annuelles sont discutées dans le cadre de votre échange Business ou Enterprise.",
+              "Enterprise ajoute les rôles et permissions, des politiques du moteur d'exécution personnalisées, une intégration dédiée et un support prioritaire en plus de tout ce qui est inclus dans Business — conçu pour les organisations ayant leurs propres exigences de conformité ou d'exploitation.",
           },
         ],
       },
@@ -148,9 +184,9 @@ function build(locale: AppLocale): PricingContent {
   return {
     hero: {
       eyebrow: "Pricing",
-      title: "Plans that scale with your stations",
+      title: "Plans that scale with your organization",
       description:
-        "Start with a single station for free. Move to Business when you're running more than one, and talk to us directly once you need custom policies and onboarding.",
+        "Start with a single station for free. Move to Professional or Business as your organization grows, and talk to us directly for Enterprise, with custom policies and onboarding.",
     },
     plansSrHeading: "Plans",
     popularLabel: "Popular",
@@ -166,24 +202,40 @@ function build(locale: AppLocale): PricingContent {
         },
         features: [
           "1 station, up to 2 devices",
+          "USSD Automation (Runtime V2)",
           "Multi-SIM management",
-          "USSD automation with Runtime V2",
+          "SMS Intelligence",
+          "Device Trust & SIM Trust",
+          "Financial Runtime",
           "Transaction history",
           "Secure PIN Vault",
         ],
       },
       {
+        name: "Professional",
+        description: "For an agency that's outgrown a single station.",
+        price: "Contact Sales",
+        cta: { label: "Talk to Sales", href: "/contact" },
+        features: [
+          "Everything in Starter",
+          "Up to 3 stations, 6 devices",
+          "Encrypted Backup & Restore",
+          "Privacy Mode",
+          "Cloud synchronization across devices",
+          "Multi-Agent per device",
+        ],
+      },
+      {
         name: "Business",
-        description: "For organizations running multiple stations and devices.",
+        description: "For organizations running multiple stations.",
         price: "Contact Sales",
         cta: { label: "Talk to Sales", href: "/contact" },
         highlighted: true,
         features: [
-          "Everything in Starter",
+          "Everything in Professional",
           "Unlimited stations and devices",
-          "Organization / Station architecture",
-          "Cloud synchronization across devices",
-          "Device restoration",
+          "Station Trust & Station Management",
+          "Unified Runtime Policy",
           "Audit logs across every station",
         ],
       },
@@ -194,6 +246,7 @@ function build(locale: AppLocale): PricingContent {
         cta: { label: "Talk to Us", href: "/contact" },
         features: [
           "Everything in Business",
+          "Roles & permissions (RBAC)",
           "Custom runtime policies",
           "Dedicated enterprise onboarding",
           "Priority support",
@@ -205,29 +258,41 @@ function build(locale: AppLocale): PricingContent {
       tableHeaders: {
         feature: "Feature",
         starter: "Starter",
+        professional: "Professional",
         business: "Business",
         enterprise: "Enterprise",
       },
       includedLabel: "Included",
       notIncludedLabel: "Not included",
+      comingSoonLabel: "Coming soon",
       rows: [
-        { feature: "Stations", starter: "1", business: "Unlimited", enterprise: "Unlimited" },
-        { feature: "Multi-SIM management", starter: true, business: true, enterprise: true },
-        { feature: "USSD automation (Runtime V2)", starter: true, business: true, enterprise: true },
-        { feature: "Transaction history", starter: true, business: true, enterprise: true },
-        { feature: "Secure PIN Vault", starter: true, business: true, enterprise: true },
-        { feature: "Cloud synchronization", starter: false, business: true, enterprise: true },
-        { feature: "Device restoration", starter: false, business: true, enterprise: true },
-        { feature: "Organization / Station architecture", starter: false, business: true, enterprise: true },
-        { feature: "Custom runtime policies", starter: false, business: false, enterprise: true },
-        { feature: "Dedicated onboarding", starter: false, business: false, enterprise: true },
-        { feature: "Priority support", starter: false, business: false, enterprise: true },
+        { feature: "Stations", starter: "1", professional: "3", business: "Unlimited", enterprise: "Unlimited" },
+        { feature: "Devices", starter: "2", professional: "6", business: "Unlimited", enterprise: "Unlimited" },
+        { feature: "SIM Seats", starter: "2", professional: "8", business: "Coming soon", enterprise: "Coming soon" },
+        { feature: "USSD Automation (Runtime V2)", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Multi-SIM management", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "SMS Intelligence", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Device Trust & SIM Trust", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Financial Runtime", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Transaction history", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Secure PIN Vault", starter: true, professional: true, business: true, enterprise: true },
+        { feature: "Encrypted Backup & Restore", starter: false, professional: true, business: true, enterprise: true },
+        { feature: "Privacy Mode", starter: false, professional: true, business: true, enterprise: true },
+        { feature: "Cloud synchronization", starter: false, professional: true, business: true, enterprise: true },
+        { feature: "Multi-Agent per device", starter: false, professional: true, business: true, enterprise: true },
+        { feature: "Station Trust & Station Management", starter: false, professional: false, business: true, enterprise: true },
+        { feature: "Unified Runtime Policy", starter: false, professional: false, business: true, enterprise: true },
+        { feature: "Multi-station audit logs", starter: false, professional: false, business: true, enterprise: true },
+        { feature: "Roles & permissions (RBAC)", starter: false, professional: false, business: false, enterprise: true },
+        { feature: "Custom runtime policies", starter: false, professional: false, business: false, enterprise: true },
+        { feature: "Dedicated onboarding", starter: false, professional: false, business: false, enterprise: true },
+        { feature: "Priority support", starter: false, professional: false, business: false, enterprise: true },
       ],
     },
     enterprise: {
       heading: "Running more than a handful of stations?",
       description:
-        "Enterprise adds custom runtime policies, dedicated onboarding, and priority support on top of everything in Business — scoped to how your organization actually operates.",
+        "Enterprise adds roles & permissions, custom runtime policies, dedicated onboarding, and priority support on top of everything in Business — scoped to how your organization actually operates.",
       ctaLabel: "Talk to Sales",
     },
     faq: {
@@ -236,27 +301,27 @@ function build(locale: AppLocale): PricingContent {
         {
           question: "Is there a free plan?",
           answer:
-            "Yes — Starter is free for a single station running on up to two devices, with the same USSD automation and security model as every other plan.",
+            "Yes — Starter is free for a single station running on up to two devices, with the same automation and security model as every other plan.",
+        },
+        {
+          question: "How does access to a paid plan actually work?",
+          answer:
+            "Your organization holds a Subscription, materialized by a technical license that activates your plan's entitlements — the capabilities, limits, and modules listed above.",
         },
         {
           question: "How is pricing structured beyond Starter?",
           answer:
-            "Business and Enterprise pricing depends on the number of stations, devices, and support needs your organization has, so we work it out directly rather than publishing a one-size number.",
+            "Professional, Business, and Enterprise pricing depends on the number of stations, devices, and support needs your organization has, so we work it out directly rather than publishing a one-size number.",
         },
         {
-          question: "Can I move from Starter to Business later?",
+          question: "Can I move up a plan later?",
           answer:
-            "Yes. Your station's configuration and history carry over — moving up a plan doesn't mean starting over.",
+            "Yes. Your organization's configuration, stations, and history carry over — moving up a plan never means starting over.",
         },
         {
           question: "What's different about Enterprise?",
           answer:
-            "Enterprise adds custom runtime policies, dedicated onboarding, and priority support on top of everything in Business — built for organizations with their own compliance or operating requirements.",
-        },
-        {
-          question: "Do you offer discounts for annual commitments?",
-          answer:
-            "Talk to our sales team — annual terms are discussed as part of your Business or Enterprise conversation.",
+            "Enterprise adds roles & permissions, custom runtime policies, dedicated onboarding, and priority support on top of everything in Business — built for organizations with their own compliance or operating requirements.",
         },
       ],
     },

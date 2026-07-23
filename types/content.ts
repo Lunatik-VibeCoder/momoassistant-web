@@ -76,6 +76,7 @@ export interface DetailSection extends IconListItem {
 export interface ComparisonRow {
   feature: string;
   starter: string | boolean;
+  professional: string | boolean;
   business: string | boolean;
   enterprise: string | boolean;
 }

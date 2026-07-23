@@ -1,6 +1,8 @@
+import { ArrowRight } from "lucide-react";
 import { getLocale } from "next-intl/server";
 
 import { Section } from "@/components/layout/section";
+import { ButtonLink } from "@/components/shared/button-link";
 import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +53,13 @@ export async function Features() {
           </MotionItem>
         ))}
       </MotionSection>
+
+      <div className="mt-10 text-center">
+        <ButtonLink href={features.ctaHref} variant="link">
+          {features.ctaLabel}
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </ButtonLink>
+      </div>
     </Section>
   );
 }

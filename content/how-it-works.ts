@@ -38,7 +38,7 @@ function build(locale: AppLocale): HowItWorksContent {
             step: 2,
             title: "Enregistrez appareils et SIM",
             description:
-              "Enregistrez des appareils de confiance et liez-y des SIM via le moteur de confiance des appareils et SIM Trust avant que l'un ou l'autre puisse transiger.",
+              "Enregistrez des appareils de confiance et liez-y des SIM via Device Trust et SIM Trust avant que l'un ou l'autre puisse transiger.",
           },
           {
             step: 3,
@@ -81,7 +81,7 @@ function build(locale: AppLocale): HowItWorksContent {
             icon: CreditCard,
             title: "SIM",
             description:
-              "Chaque SIM est liée à l'appareil sur lequel elle a été enregistrée via SIM Trust, gardant les lignes des stations multi-SIM approuvées indépendamment plutôt que mutualisées.",
+              "Chaque SIM est liée et vérifiée via SIM Trust dès son enregistrement, quel que soit le nombre de SIM qu'une station fait tourner.",
           },
           {
             icon: ServerCog,
@@ -133,7 +133,7 @@ function build(locale: AppLocale): HowItWorksContent {
           step: 2,
           title: "Register devices and SIMs",
           description:
-            "Enroll trusted devices and bind SIMs to them through the Device Trust Engine and SIM Trust before either can transact.",
+            "Enroll trusted devices and bind SIMs to them through Device Trust and SIM Trust before either can transact.",
         },
         {
           step: 3,
@@ -176,7 +176,7 @@ function build(locale: AppLocale): HowItWorksContent {
           icon: CreditCard,
           title: "SIMs",
           description:
-            "Each SIM is bound to the device it's enrolled on through SIM Trust, keeping multi-SIM stations' lines independently trusted rather than pooled.",
+            "Each SIM is bound and verified through SIM Trust the moment it's enrolled, however many SIMs a station is running.",
         },
         {
           icon: ServerCog,

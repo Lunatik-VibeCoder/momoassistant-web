@@ -1,18 +1,17 @@
 import {
   BarChart3,
   Building2,
-  Cloud,
   EyeOff,
   History,
   KeyRound,
   Layers,
   Network,
-  RefreshCw,
   ScrollText,
   ServerCog,
   ShieldCheck,
   Smartphone,
   Users,
+  Wallet,
   Zap,
 } from "lucide-react";
 
@@ -39,12 +38,20 @@ export interface HomepageContent {
     secondaryCta: { label: string; href: string };
   };
   socialProof: { heading: string; logos: SocialProofLogo[] };
-  features: { heading: string; description: string; items: FeatureItem[] };
+  features: {
+    heading: string;
+    description: string;
+    items: FeatureItem[];
+    ctaLabel: string;
+    ctaHref: string;
+  };
   architecture: {
     eyebrow: string;
     heading: string;
     description: string;
     layers: ArchitectureLayer[];
+    ctaLabel: string;
+    ctaHref: string;
   };
   security: { heading: string; description: string; items: SecurityPillar[] };
   howItWorks: { heading: string; description: string; items: HowItWorksStep[] };
@@ -52,6 +59,8 @@ export interface HomepageContent {
     heading: string;
     description: string;
     items: WhyPoint[];
+    ctaLabel: string;
+    ctaHref: string;
   };
   testimonials: { heading: string; items: Testimonial[] };
   pricingPreview: { heading: string; items: PricingTier[] };
@@ -70,10 +79,10 @@ function build(locale: AppLocale): HomepageContent {
   if (locale === "fr") {
     return {
       hero: {
-        eyebrow: "Automatisation Mobile Money pour entreprises",
+        eyebrow: "La plateforme SaaS d'opérations Mobile Money pour entreprises",
         headline: "Automatisez Mobile Money. Gardez le contrôle.",
         subheadline:
-          "MoMo Assistant aide les opérateurs Mobile Money professionnels à exécuter des transactions USSD plus rapides, plus sûres et plus fiables, tout en gardant chaque action traçable.",
+          "MoMo Assistant est la plateforme qui pilote vos opérations Mobile Money : Organisations, Stations, appareils de confiance et Runtime, réunis pour exécuter des transactions USSD plus rapides et plus sûres, avec chaque action traçable.",
         primaryCtaLabel: text.primaryCtaLabel,
         secondaryCta: { label: text.secondaryCtaLabel, href: "/contact" },
       },
@@ -117,18 +126,20 @@ function build(locale: AppLocale): HomepageContent {
               "Les codes PIN Mobile Money sont scellés dans l'Android KeyStore de l'appareil et ne sont jamais transmis ni stockés dans le cloud.",
           },
           {
-            icon: Cloud,
-            title: "Synchronisation cloud",
+            icon: Wallet,
+            title: "Financial Runtime",
             description:
-              "La configuration de la station et les métadonnées de transaction se synchronisent en toute sécurité entre appareils, sans jamais synchroniser les PIN sensibles.",
+              "Vérifie le solde disponible avant chaque transaction — refuse une transaction impossible avant qu'elle ne coûte de l'argent.",
           },
           {
-            icon: RefreshCw,
-            title: "Restauration d'appareil",
+            icon: ShieldCheck,
+            title: "Trust Platform",
             description:
-              "Remplacez ou réinitialisez un appareil et restaurez rapidement la configuration de station d'un agent, en minimisant les interruptions.",
+              "Device Trust, SIM Trust et Station Trust, réunis dans une politique d'exécution unifiée qui décide ce qui peut s'automatiser.",
           },
         ],
+        ctaLabel: "Voir toutes les fonctionnalités",
+        ctaHref: "/features",
       },
       architecture: {
         eyebrow: "Architecture",
@@ -147,7 +158,7 @@ function build(locale: AppLocale): HomepageContent {
               "Un point d'opération physique avec ses propres agents, appareils et SIM, rattaché à l'organisation.",
           },
           {
-            title: "Moteur de confiance des appareils",
+            title: "Device Trust",
             description:
               "Chaque appareil est vérifié et approuvé avant de pouvoir exécuter des transactions pour une station.",
           },
@@ -157,6 +168,8 @@ function build(locale: AppLocale): HomepageContent {
               "Le moteur d'exécution qui automatise le USSD de manière fiable, avec l'agent aux commandes à chaque étape.",
           },
         ],
+        ctaLabel: "Comment ça marche",
+        ctaHref: "/how-it-works",
       },
       security: {
         heading: "Une sécurité conçue pour des opérations réglementées et à fort volume",
@@ -171,7 +184,7 @@ function build(locale: AppLocale): HomepageContent {
           },
           {
             icon: Smartphone,
-            title: "Moteur de confiance des appareils",
+            title: "Device Trust",
             description:
               "Les appareils doivent être vérifiés et approuvés avant de pouvoir exécuter des transactions automatisées pour une station.",
           },
@@ -215,7 +228,7 @@ function build(locale: AppLocale): HomepageContent {
             step: 2,
             title: "Enregistrez appareils et SIM",
             description:
-              "Enregistrez des appareils et SIM de confiance, vérifiés par le moteur de confiance des appareils et SIM Trust avant leur première utilisation.",
+              "Enregistrez des appareils et SIM de confiance, vérifiés par Device Trust et SIM Trust avant leur première utilisation.",
           },
           {
             step: 3,
@@ -261,6 +274,8 @@ function build(locale: AppLocale): HomepageContent {
               "Les stations et appareils sont provisionnés et approuvés de façon délibérée : ajouter des agents n'augmente pas le risque.",
           },
         ],
+        ctaLabel: "Pourquoi MoMo Assistant",
+        ctaHref: "/why",
       },
       testimonials: {
         heading: "Ce que disent les opérateurs",
@@ -274,7 +289,7 @@ function build(locale: AppLocale): HomepageContent {
           },
           {
             quote:
-              "Témoignage provisoire : le moteur de confiance des appareils nous a donné la confiance nécessaire pour laisser les agents utiliser leurs propres appareils sans perdre le contrôle des SIM.",
+              "Témoignage provisoire : Device Trust nous a donné la confiance nécessaire pour laisser les agents utiliser leurs propres appareils sans perdre le contrôle des SIM.",
             name: "Kwabena Asante",
             role: "Responsable de station",
             initials: "KA",
@@ -289,7 +304,7 @@ function build(locale: AppLocale): HomepageContent {
         ],
       },
       pricingPreview: {
-        heading: "Des offres simples, conçues pour évoluer avec vos stations",
+        heading: "Des offres simples, conçues pour évoluer avec votre organisation",
         items: [
           {
             name: "Débutant",
@@ -298,8 +313,14 @@ function build(locale: AppLocale): HomepageContent {
             cta: { label: "Commencer", href: "/pricing" },
           },
           {
+            name: "Professional",
+            description: "Pour une agence qui dépasse la station unique.",
+            price: "Contacter les ventes",
+            cta: { label: "Voir les tarifs", href: "/pricing" },
+          },
+          {
             name: "Business",
-            description: "Pour les organisations gérant plusieurs stations et appareils.",
+            description: "Pour les organisations gérant plusieurs stations.",
             price: "Contacter les ventes",
             cta: { label: "Voir les tarifs", href: "/pricing" },
             highlighted: true,
@@ -354,10 +375,10 @@ function build(locale: AppLocale): HomepageContent {
 
   return {
     hero: {
-      eyebrow: "Enterprise Mobile Money Automation",
+      eyebrow: "The Enterprise Mobile Money Operations SaaS Platform",
       headline: "Automate Mobile Money. Stay in Control.",
       subheadline:
-        "MoMo Assistant helps professional Mobile Money operators execute faster, safer and more reliable USSD transactions while keeping every action auditable.",
+        "MoMo Assistant is the platform running your Mobile Money operations: Organizations, Stations, trusted devices, and Runtime, working together to execute faster, safer USSD transactions with every action auditable.",
       primaryCtaLabel: text.primaryCtaLabel,
       secondaryCta: { label: text.secondaryCtaLabel, href: "/contact" },
     },
@@ -401,18 +422,20 @@ function build(locale: AppLocale): HomepageContent {
             "Mobile Money PINs are sealed in the Android KeyStore on-device and are never transmitted or stored in the cloud.",
         },
         {
-          icon: Cloud,
-          title: "Cloud Synchronization",
+          icon: Wallet,
+          title: "Financial Runtime",
           description:
-            "Station configuration and transaction metadata sync securely across devices, without ever syncing sensitive PINs.",
+            "Checks available balance before every transaction — rejects an impossible transaction before it costs money.",
         },
         {
-          icon: RefreshCw,
-          title: "Device Restoration",
+          icon: ShieldCheck,
+          title: "Trust Platform",
           description:
-            "Replace or reset a device and restore an agent's station configuration quickly, minimizing operational downtime.",
+            "Device Trust, SIM Trust, and Station Trust, unified into one runtime policy that decides what can be automated.",
         },
       ],
+      ctaLabel: "See all features",
+      ctaHref: "/features",
     },
     architecture: {
       eyebrow: "Architecture",
@@ -431,7 +454,7 @@ function build(locale: AppLocale): HomepageContent {
             "A physical point of operation with its own agents, devices, and SIMs, reporting up to the organization.",
         },
         {
-          title: "Device Trust Engine",
+          title: "Device Trust",
           description:
             "Every device is verified and trusted before it can execute transactions on behalf of a station.",
         },
@@ -441,6 +464,8 @@ function build(locale: AppLocale): HomepageContent {
             "The execution engine that carries out USSD automation reliably, with the agent in control at every step.",
         },
       ],
+      ctaLabel: "How it works",
+      ctaHref: "/how-it-works",
     },
     security: {
       heading: "Security built for regulated, high-volume operations",
@@ -455,7 +480,7 @@ function build(locale: AppLocale): HomepageContent {
         },
         {
           icon: Smartphone,
-          title: "Device Trust Engine",
+          title: "Device Trust",
           description:
             "Devices must be verified and trusted before they can run automated transactions for a station.",
         },
@@ -499,7 +524,7 @@ function build(locale: AppLocale): HomepageContent {
           step: 2,
           title: "Register devices and SIMs",
           description:
-            "Enroll trusted devices and SIMs, verified through the Device Trust Engine and SIM Trust before first use.",
+            "Enroll trusted devices and SIMs, verified through Device Trust and SIM Trust before first use.",
         },
         {
           step: 3,
@@ -545,6 +570,8 @@ function build(locale: AppLocale): HomepageContent {
             "Stations and devices are provisioned and trusted deliberately, so scaling to more agents doesn't mean scaling risk.",
         },
       ],
+      ctaLabel: "Why MoMo Assistant",
+      ctaHref: "/why",
     },
     testimonials: {
       heading: "What operators are saying",
@@ -558,7 +585,7 @@ function build(locale: AppLocale): HomepageContent {
         },
         {
           quote:
-            "Placeholder testimonial: the Device Trust Engine gave us the confidence to let agents use their own devices without losing control of the SIMs.",
+            "Placeholder testimonial: Device Trust gave us the confidence to let agents use their own devices without losing control of the SIMs.",
           name: "Kwabena Asante",
           role: "Station Manager",
           initials: "KA",
@@ -573,7 +600,7 @@ function build(locale: AppLocale): HomepageContent {
       ],
     },
     pricingPreview: {
-      heading: "Simple plans, built to scale with your stations",
+      heading: "Simple plans, built to scale with your organization",
       items: [
         {
           name: "Starter",
@@ -582,8 +609,14 @@ function build(locale: AppLocale): HomepageContent {
           cta: { label: "Get Started", href: "/pricing" },
         },
         {
+          name: "Professional",
+          description: "For an agency that's outgrown a single station.",
+          price: "Contact Sales",
+          cta: { label: "View Pricing", href: "/pricing" },
+        },
+        {
           name: "Business",
-          description: "For organizations running multiple stations and devices.",
+          description: "For organizations running multiple stations.",
           price: "Contact Sales",
           cta: { label: "View Pricing", href: "/pricing" },
           highlighted: true,

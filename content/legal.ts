@@ -94,7 +94,7 @@ function build(locale: AppLocale): LegalContent {
           {
             heading: "Comptes et organisations",
             paragraphs: [
-              "Vous êtes responsable de la sécurité de vos identifiants et des appareils enregistrés dans votre organisation. Le moteur de confiance des appareils et SIM Trust existent pour vous aider à limiter les accès non autorisés, mais la responsabilité finale de la gestion des accès vous revient.",
+              "Vous êtes responsable de la sécurité de vos identifiants et des appareils enregistrés dans votre organisation. Device Trust et SIM Trust existent pour vous aider à limiter les accès non autorisés, mais la responsabilité finale de la gestion des accès vous revient.",
             ],
           },
           {
@@ -289,7 +289,7 @@ function build(locale: AppLocale): LegalContent {
         {
           heading: "Accounts and organizations",
           paragraphs: [
-            "You're responsible for the security of your credentials and the devices enrolled in your organization. The Device Trust Engine and SIM Trust exist to help limit unauthorized access, but managing access ultimately remains your responsibility.",
+            "You're responsible for the security of your credentials and the devices enrolled in your organization. Device Trust and SIM Trust exist to help limit unauthorized access, but managing access ultimately remains your responsibility.",
           ],
         },
         {

@@ -1,12 +1,13 @@
 import {
   Building2,
-  Cloud,
-  History,
-  KeyRound,
-  Layers,
-  RefreshCw,
+  Globe,
+  Lock,
+  MessageSquare,
+  Network,
   ServerCog,
+  Smartphone,
   Users,
+  Wallet,
   Zap,
 } from "lucide-react";
 
@@ -18,88 +19,106 @@ export interface FeaturesContent {
   featureGroups: FeatureGroup[];
 }
 
+// Grouped around the real capabilities documented in
+// docs/marketing-audit-2026-07-23.md and docs/com-001-saas-packaging-entitlements.md
+// — deliberately excludes Fleet Management, external API access, Analytics,
+// and Autonomous Gateway (COM-001 classifies all four as Future modules,
+// not implemented today).
 function build(locale: AppLocale): FeaturesContent {
   if (locale === "fr") {
     return {
       hero: {
         eyebrow: "Fonctionnalités",
-        title: "Tout ce sur quoi tourne une station Mobile Money",
+        title: "Tout ce sur quoi tourne votre plateforme d'opérations Mobile Money",
         description:
-          "Opérations multi-SIM, flux USSD automatisés, historique des transactions et synchronisation cloud — conçus autour de la façon dont les agents et stations professionnels travaillent réellement au quotidien.",
+          "Automatisation, confiance des appareils et des SIM, Financial Runtime, SMS Intelligence — les capacités réelles qui font tourner MoMo Assistant, organisées comme votre organisation les utilise réellement.",
       },
       featureGroups: [
         {
           title: "Automatisation",
           description:
-            "Runtime V2 exécute les séquences USSD courantes avec un minutage précis, tandis que l'agent reste le décisionnaire final sur chaque transaction.",
+            "Runtime V2 exécute les séquences USSD courantes avec un minutage précis, tandis que l'agent reste le décisionnaire final sur chaque transaction — désormais disponible sur 7 pays et opérateurs.",
           items: [
             {
               icon: Zap,
-              title: "Automatisation USSD",
+              title: "Runtime V2",
               description:
-                "Automatise les séquences USSD répétitives avec un minutage précis, supprimant la ressaisie manuelle sans retirer l'agent de la boucle — chaque transaction requiert toujours une confirmation.",
+                "Le moteur d'exécution derrière chaque séquence USSD automatisée : un minutage constant, un comportement prévisible sur tous les appareils, et des politiques que l'organisation peut définir pour ce qui est autorisé à tourner sans supervision.",
             },
             {
-              icon: ServerCog,
-              title: "Moteur d'exécution Runtime V2",
+              icon: Globe,
+              title: "Country Expansion",
               description:
-                "Le moteur derrière chaque séquence automatisée : un minutage constant, un comportement prévisible sur tous les appareils, et des politiques que l'organisation peut définir pour ce qui est autorisé à tourner sans supervision.",
+                "MTN Ghana et Bénin, MTN Togo et Côte d'Ivoire, Moov Bénin, Burkina Faso et Côte d'Ivoire, Orange Burkina Faso, Celtis Bénin — la même automatisation, configurée par profil réseau plutôt que codée pour un seul marché.",
+            },
+          ],
+        },
+        {
+          title: "Trust Platform",
+          description:
+            "Trois moteurs de confiance indépendants — appareil, SIM, station — qui alimentent une politique d'exécution unifiée décidant ce qui peut s'exécuter automatiquement.",
+          items: [
+            {
+              icon: Smartphone,
+              title: "Device Trust",
+              description:
+                "Chaque appareil est vérifié et approuvé avant de pouvoir exécuter des transactions automatisées pour une station — jamais automatiquement, toujours de façon délibérée.",
+            },
+            {
+              icon: Network,
+              title: "SIM Trust",
+              description:
+                "Les SIM sont liées et vérifiées par appareil, empêchant qu'un échange de SIM non autorisé ne prenne le contrôle d'une ligne en silence.",
+            },
+            {
+              icon: Building2,
+              title: "Station Trust",
+              description:
+                "Un score unique agrège la confiance des appareils et des SIM d'une station entière, pas seulement d'un appareil isolé — pour que le responsable de station voie un seul indicateur fiable.",
+            },
+          ],
+        },
+        {
+          title: "Financial Runtime",
+          description:
+            "La couche qui répond à une question avant chaque transaction : cette SIM peut-elle réellement se le permettre ?",
+          items: [
+            {
+              icon: Wallet,
+              title: "Financial Runtime",
+              description:
+                "Vérifie le solde disponible avant chaque dial — l'application refuse d'exécuter une transaction impossible avant qu'elle ne coûte de l'argent, plutôt que de le découvrir après coup.",
+            },
+            {
+              icon: MessageSquare,
+              title: "SMS Intelligence",
+              description:
+                "Transforme automatiquement les SMS de confirmation Mobile Money en historique de transaction structuré et consultable — vérifié pour MTN Ghana et Bénin.",
             },
           ],
         },
         {
           title: "Opérations",
           description:
-            "Les outils du quotidien dont une station a besoin pour gérer plusieurs lignes, garder des registres exacts et récupérer rapidement lorsqu'un appareil change de main.",
+            "Les outils du quotidien dont une organisation multi-appareils et multi-agents a besoin.",
           items: [
             {
-              icon: Layers,
-              title: "Gestion multi-SIM",
+              icon: Lock,
+              title: "Encrypted Backup",
               description:
-                "Gérez plusieurs SIM et lignes Mobile Money depuis un seul appareil, en basculant entre elles sans interrompre une transaction en cours.",
-            },
-            {
-              icon: History,
-              title: "Historique des transactions",
-              description:
-                "Chaque transaction est enregistrée et consultable, donnant aux agents et responsables de station un registre complet et fiable, sans avoir à réconcilier des registres papier.",
-            },
-            {
-              icon: Cloud,
-              title: "Synchronisation cloud",
-              description:
-                "La configuration de la station et les métadonnées de transaction se synchronisent en toute sécurité entre appareils — les PIN Mobile Money ne font jamais partie de cette synchronisation.",
-            },
-            {
-              icon: RefreshCw,
-              title: "Restauration d'appareil",
-              description:
-                "Remplacez ou réinitialisez un appareil et restaurez rapidement la configuration de station d'un agent, en minimisant l'interruption qu'un appareil perdu ou cassé aurait sinon causée.",
-            },
-          ],
-        },
-        {
-          title: "Organisation",
-          description:
-            "Conçu pour les entreprises gérant plus d'un agent, appareil ou site — pas pour un portefeuille grand public mono-utilisateur.",
-          items: [
-            {
-              icon: Building2,
-              title: "Architecture Organisation / Station",
-              description:
-                "Modélisez votre entreprise telle qu'elle fonctionne réellement : une organisation composée de stations, chacune avec ses propres agents, appareils et SIM, rattachées à un seul endroit.",
+                "Sauvegarde chiffrée (AES-256-GCM) et restauration : perdre un téléphone ne signifie plus perdre la configuration d'une station ni son historique de transactions.",
             },
             {
               icon: Users,
-              title: "Intégration entreprise",
+              title: "Multi-Agent",
               description:
-                "Les stations et appareils sont provisionnés et approuvés de façon délibérée, pour qu'ajouter des agents ne fasse pas perdre la trace de qui a accès à quoi.",
+                "Plusieurs agents peuvent partager un même appareil, chacun avec son propre code d'accès et ses propres permissions, sans jamais partager le code PIN de transaction d'un autre.",
             },
             {
-              icon: KeyRound,
-              title: "Coffre-fort PIN sécurisé",
+              icon: ServerCog,
+              title: "Privacy Mode",
               description:
-                "Les PIN Mobile Money sont scellés dans l'Android KeyStore de l'appareil et ne sont jamais transmis ni stockés dans le cloud. Détails complets sur la page sécurité.",
+                "Masque instantanément soldes, montants et noms à l'écran — utile dès que quelqu'un regarde par-dessus l'épaule d'un agent.",
             },
           ],
         },
@@ -110,83 +129,96 @@ function build(locale: AppLocale): FeaturesContent {
   return {
     hero: {
       eyebrow: "Features",
-      title: "Everything a Mobile Money station runs on",
+      title: "Everything your Mobile Money operations platform runs on",
       description:
-        "Multi-SIM operations, automated USSD workflows, transaction records, and cloud sync — built around how professional agents and stations actually work day to day.",
+        "Automation, device and SIM trust, Financial Runtime, SMS Intelligence — the real capabilities behind MoMo Assistant, organized the way your organization actually uses them.",
     },
     featureGroups: [
       {
         title: "Automation",
         description:
-          "Runtime V2 executes routine USSD sequences with precision timing, while the agent stays the final decision-maker on every transaction.",
+          "Runtime V2 executes routine USSD sequences with precision timing, while the agent stays the final decision-maker on every transaction — now live across 7 countries and operators.",
         items: [
           {
             icon: Zap,
-            title: "USSD Automation",
+            title: "Runtime V2",
             description:
-              "Automates repetitive USSD sequences with precision timing, removing manual re-entry without removing the agent from the loop — every transaction still requires confirmation.",
+              "The execution engine behind every automated USSD sequence: consistent timing, predictable behavior across devices, and policies an organization can define for what's allowed to run unattended.",
           },
           {
-            icon: ServerCog,
-            title: "Runtime V2 execution engine",
+            icon: Globe,
+            title: "Country Expansion",
             description:
-              "The engine behind every automated sequence: consistent timing, predictable behavior across devices, and policies an organization can define for what's allowed to run unattended.",
+              "MTN Ghana and Bénin, MTN Togo and Côte d'Ivoire, Moov Bénin, Burkina Faso, and Côte d'Ivoire, Orange Burkina Faso, Celtis Bénin — the same automation, configured per Network Profile rather than built for a single market.",
+          },
+        ],
+      },
+      {
+        title: "Trust Platform",
+        description:
+          "Three independent trust engines — device, SIM, station — feeding one Unified Runtime Policy that decides what's allowed to run automatically.",
+        items: [
+          {
+            icon: Smartphone,
+            title: "Device Trust",
+            description:
+              "Every device is verified and trusted before it can run automated transactions for a station — never automatically, always deliberately.",
+          },
+          {
+            icon: Network,
+            title: "SIM Trust",
+            description:
+              "SIMs are bound and verified per device, preventing an unauthorized SIM swap from silently taking over a line.",
+          },
+          {
+            icon: Building2,
+            title: "Station Trust",
+            description:
+              "One score rolls up device and SIM trust across an entire station, not just a single device — so a station manager sees one reliable signal, not a dozen.",
+          },
+        ],
+      },
+      {
+        title: "Financial Runtime",
+        description:
+          "The layer that answers one question before every transaction: can this SIM actually afford it?",
+        items: [
+          {
+            icon: Wallet,
+            title: "Financial Runtime",
+            description:
+              "Checks available balance before every dial — the app refuses to attempt an impossible transaction before it costs money, instead of finding out after the fact.",
+          },
+          {
+            icon: MessageSquare,
+            title: "SMS Intelligence",
+            description:
+              "Automatically turns Mobile Money confirmation SMS into structured, searchable transaction history — field-verified for MTN Ghana and Bénin.",
           },
         ],
       },
       {
         title: "Operations",
         description:
-          "The day-to-day tools a station needs to run multiple lines, keep records straight, and recover quickly when a device changes hands.",
+          "The day-to-day tools a multi-device, multi-agent organization needs.",
         items: [
           {
-            icon: Layers,
-            title: "Multi-SIM Management",
+            icon: Lock,
+            title: "Encrypted Backup",
             description:
-              "Run multiple SIMs and Mobile Money lines from a single device, switching between them without breaking a workflow mid-transaction.",
-          },
-          {
-            icon: History,
-            title: "Transaction History",
-            description:
-              "Every transaction is logged and searchable, giving agents and station managers a complete, reliable record without reconciling paper logs.",
-          },
-          {
-            icon: Cloud,
-            title: "Cloud Synchronization",
-            description:
-              "Station configuration and transaction metadata sync securely across devices — Mobile Money PINs are never included in that sync.",
-          },
-          {
-            icon: RefreshCw,
-            title: "Device Restoration",
-            description:
-              "Replace or reset a device and restore an agent's station configuration quickly, minimizing the downtime a lost or broken device would otherwise cause.",
-          },
-        ],
-      },
-      {
-        title: "Organization",
-        description:
-          "Built for businesses running more than one agent, device, or location — not a single-user consumer wallet.",
-        items: [
-          {
-            icon: Building2,
-            title: "Organization / Station architecture",
-            description:
-              "Model your business the way it actually operates: an organization made up of stations, each with its own agents, devices, and SIMs, reporting up to one place.",
+              "AES-256-GCM encrypted backup and restore — losing a phone no longer means losing a station's setup or its transaction history.",
           },
           {
             icon: Users,
-            title: "Enterprise onboarding",
+            title: "Multi-Agent",
             description:
-              "Stations and devices are provisioned and trusted deliberately, so adding more agents doesn't mean losing track of who has access to what.",
+              "Multiple agents can share one device, each with their own access code and permissions, without ever sharing another agent's transaction PIN.",
           },
           {
-            icon: KeyRound,
-            title: "Secure PIN Vault",
+            icon: ServerCog,
+            title: "Privacy Mode",
             description:
-              "Mobile Money PINs are sealed in the Android KeyStore on-device and never transmitted or stored in the cloud. Full detail on the security page.",
+              "Instantly hides balances, amounts, and names on screen — useful the moment someone's looking over an agent's shoulder.",
           },
         ],
       },

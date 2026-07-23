@@ -32,7 +32,7 @@ function build(locale: AppLocale): DocsContent {
           icon: Layers,
           title: "Architecture",
           description:
-            "Comment Organisations, Stations, moteur de confiance des appareils et Runtime V2 s'assemblent — le même modèle que sur la page Comment ça marche, avec plus de profondeur technique.",
+            "Comment Organisations, Stations, Device Trust et Runtime V2 s'assemblent — le même modèle que sur la page Comment ça marche, avec plus de profondeur technique.",
           label: "Architecture",
           href: "/docs/architecture",
         },

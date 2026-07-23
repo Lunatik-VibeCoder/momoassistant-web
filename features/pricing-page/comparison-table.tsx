@@ -53,6 +53,9 @@ export async function ComparisonTable() {
                 {comparison.tableHeaders.starter}
               </th>
               <th className="p-4 text-left font-medium text-foreground">
+                {comparison.tableHeaders.professional}
+              </th>
+              <th className="p-4 text-left font-medium text-foreground">
                 {comparison.tableHeaders.business}
               </th>
               <th className="p-4 text-left font-medium text-foreground">
@@ -70,6 +73,13 @@ export async function ComparisonTable() {
                 <td className="p-4">
                   <Cell
                     value={row.starter}
+                    includedLabel={comparison.includedLabel}
+                    notIncludedLabel={comparison.notIncludedLabel}
+                  />
+                </td>
+                <td className="p-4">
+                  <Cell
+                    value={row.professional}
                     includedLabel={comparison.includedLabel}
                     notIncludedLabel={comparison.notIncludedLabel}
                   />

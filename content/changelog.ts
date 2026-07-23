@@ -30,9 +30,16 @@ function build(locale: AppLocale): ChangelogContent {
         {
           version: "v0.9.5",
           label: "Bêta privée",
-          status: "in-progress",
+          status: "shipped",
           description:
-            "Déploiement d'une bêta fermée auprès d'un groupe restreint de stations avant la disponibilité générale.",
+            "Déploiement d'une bêta fermée auprès d'un groupe restreint de stations, avec Trust Platform, Financial Runtime, SMS Intelligence et Privacy Mode.",
+        },
+        {
+          version: "v0.9.6",
+          label: "Release Candidate",
+          status: "shipped",
+          description:
+            "Gel des fonctionnalités pour la bêta — extension à 7 pays et opérateurs (Ghana, Bénin, Togo, Côte d'Ivoire, Burkina Faso), sauvegarde chiffrée et gestion des stations.",
         },
         {
           version: "v1.0.0",
@@ -78,9 +85,16 @@ function build(locale: AppLocale): ChangelogContent {
       {
         version: "v0.9.5",
         label: "Private Beta",
-        status: "in-progress",
+        status: "shipped",
         description:
-          "Closed beta rolling out to a limited group of stations ahead of general availability.",
+          "Closed beta rolled out to a limited group of stations, with Trust Platform, Financial Runtime, SMS Intelligence, and Privacy Mode.",
+      },
+      {
+        version: "v0.9.6",
+        label: "Release Candidate",
+        status: "shipped",
+        description:
+          "Feature freeze for beta — expanded to 7 countries and operators (Ghana, Bénin, Togo, Côte d'Ivoire, Burkina Faso), Encrypted Backup, and Station Management.",
       },
       {
         version: "v1.0.0",
