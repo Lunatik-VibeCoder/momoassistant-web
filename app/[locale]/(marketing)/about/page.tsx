@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getAboutContent } from "@/content/about";
 import { MissionVision, Story, Values } from "@/features/about-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface AboutPageProps {
@@ -53,8 +53,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_about_cta",
         }}
         secondaryCta={{

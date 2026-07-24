@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getFeaturesContent } from "@/content/features";
 import { FeatureGroups } from "@/features/features-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface FeaturesPageProps {
@@ -51,8 +51,7 @@ export default async function FeaturesPage({ params }: FeaturesPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_features_cta",
         }}
         secondaryCta={{

@@ -20,7 +20,7 @@ function build(locale: AppLocale): BlogContent {
           slug: "introducing-momo-assistant",
           title: "Présentation de MoMo Assistant",
           excerpt:
-            "Pourquoi nous avons construit un système d'exploitation pour les agents Mobile Money professionnels plutôt qu'un nouveau portefeuille grand public — et ce qui arrive dans la bêta privée.",
+            "Pourquoi nous avons construit un système d'exploitation pour les agents Mobile Money professionnels plutôt qu'un nouveau portefeuille grand public — et ce qui arrive dans la bêta publique.",
           category: "Annonces",
           publishedAt: "2026-07-01",
           readingTimeMinutes: 4,
@@ -28,7 +28,7 @@ function build(locale: AppLocale): BlogContent {
             "Les agents Mobile Money professionnels ne gèrent pas un portefeuille grand public — ils font tourner une activité à travers un menu USSD. Chaque transaction signifie composer un code, naviguer dans des menus et ressaisir des numéros à la main, souvent des dizaines de fois par jour sur plusieurs SIM et appareils.",
             "Cette répétition, c'est le point de départ de MoMo Assistant. Runtime V2, notre moteur d'exécution USSD, automatise la séquence elle-même — composer, naviguer, saisir les montants — tandis que l'agent reste celui qui confirme chaque transaction avant sa validation. L'automatisation supprime la ressaisie, pas la décision.",
             "Le reste du produit découle de la façon dont les stations professionnelles fonctionnent réellement. L'architecture Organisation/Station modélise une entreprise avec plusieurs agents, appareils et SIM, pas un utilisateur unique. Device Trust et SIM Trust signifient qu'un appareil ou une SIM doit être vérifié avant de pouvoir transiger. Et la règle autour de laquelle tout le reste est construit : les PIN de transaction Mobile Money sont scellés dans l'Android KeyStore de l'appareil et ne touchent jamais le cloud.",
-            "Nous ouvrons d'abord une bêta privée à un groupe restreint de stations. Si vous gérez une station aujourd'hui et souhaitez y participer, la page Démo est le moyen le plus rapide de nous joindre — ou téléchargez simplement la bêta et testez-la sur un seul appareil.",
+            "MoMo Assistant est maintenant en bêta publique. Téléchargez-la directement depuis la page Téléchargement et testez-la sur un appareil, ou demandez une démo avec votre équipe si vous préférez être accompagné.",
           ],
         },
         {
@@ -62,7 +62,7 @@ function build(locale: AppLocale): BlogContent {
         slug: "introducing-momo-assistant",
         title: "Introducing MoMo Assistant",
         excerpt:
-          "Why we built an operating system for professional Mobile Money agents instead of another consumer wallet — and what's shipping in the private beta.",
+          "Why we built an operating system for professional Mobile Money agents instead of another consumer wallet — and what's shipping in the public beta.",
         category: "Announcements",
         publishedAt: "2026-07-01",
         readingTimeMinutes: 4,
@@ -70,7 +70,7 @@ function build(locale: AppLocale): BlogContent {
           "Professional Mobile Money agents don't run a consumer wallet — they run a business through a USSD menu. Every transaction means dialing a code, navigating menus, and re-entering numbers by hand, often dozens of times a day across multiple SIMs and devices.",
           "That repetition is where MoMo Assistant starts. Runtime V2, our USSD execution engine, automates the sequence itself — dialing, navigating, entering amounts — while the agent stays the one who confirms every transaction before it commits. Automation removes the retyping, not the decision.",
           "The rest of the product follows from how professional stations actually operate. Organization/Station architecture models a business with multiple agents, devices, and SIMs, not a single user. Device Trust and SIM Trust mean a device or SIM has to be verified before it can transact. And the one rule everything else is built around: Mobile Money transaction PINs are sealed in the Android KeyStore on-device and never touch the cloud.",
-          "We're opening a private beta to a limited group of stations first. If you're running a station today and want in, the Demo page is the fastest way to reach us — or just download the beta and try it on a single device.",
+          "MoMo Assistant is now in public beta. Download it directly from the Download page and try it on a device, or request a demo with your team if you'd rather be walked through it.",
         ],
       },
       {

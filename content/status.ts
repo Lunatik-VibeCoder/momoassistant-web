@@ -33,7 +33,7 @@ function build(locale: AppLocale): StatusContent {
         {
           name: "Distribution de la bêta",
           status: "operational",
-          description: "Téléchargement de l'application MoMo Assistant en bêta privée.",
+          description: "Téléchargement de l'application MoMo Assistant en bêta publique.",
         },
         {
           name: "Support par e-mail",
@@ -73,7 +73,7 @@ function build(locale: AppLocale): StatusContent {
       {
         name: "Beta distribution",
         status: "operational",
-        description: "Downloading the MoMo Assistant app in private beta.",
+        description: "Downloading the MoMo Assistant app in public beta.",
       },
       {
         name: "Email support",

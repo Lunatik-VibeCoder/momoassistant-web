@@ -32,8 +32,12 @@ export const SOCIALS: { label: string; href: string }[] = [];
 // brand/playstore.md.txt for the store copy prepared ahead of launch.
 export const PLAYSTORE_URL: string | null = null;
 
-// TODO: wire up to the real APK release asset once one is published.
-export const APK_URL = "#download";
+// Signed release APK (RELEASE-001, 2026-07-24) — version 1.0.0-beta.1,
+// versionCode 10001, served as a static file from public/downloads/. Every
+// download button on the site reads this one value (all routed through
+// /download as of MARKETING-UPDATE-02), so publishing the next build is a
+// one-line change here.
+export const APK_URL = "/downloads/momoassistant-1.0.0-beta.1.apk";
 
 export const siteConfig = {
   name: SITE_NAME,

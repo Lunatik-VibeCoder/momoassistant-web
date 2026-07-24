@@ -69,8 +69,7 @@ export function Header({ locale }: HeaderProps) {
             <LocaleSwitcher />
           </div>
           <CTAButton
-            href={siteConfig.downloadApkUrl}
-            external
+            href="/download"
             event="download_apk_header"
             className="hidden sm:inline-flex"
           >
@@ -111,8 +110,7 @@ export function Header({ locale }: HeaderProps) {
               <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
                 <LocaleSwitcher />
                 <CTAButton
-                  href={siteConfig.downloadApkUrl}
-                  external
+                  href="/download"
                   event="download_apk_header_mobile"
                 >
                   {text.primaryCtaLabel}

@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getDocsContent } from "@/content/docs";
 import { Categories } from "@/features/docs-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface DocsPageProps {
@@ -51,8 +51,7 @@ export default async function DocsPage({ params }: DocsPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_docs_cta",
         }}
         secondaryCta={{

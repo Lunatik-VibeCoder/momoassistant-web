@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getPricingContent } from "@/content/pricing";
 import { ComparisonTable, Enterprise, Faq, Plans } from "@/features/pricing-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface PricingPageProps {
@@ -54,8 +54,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_pricing_cta",
         }}
         secondaryCta={{

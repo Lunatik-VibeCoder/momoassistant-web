@@ -25,7 +25,7 @@ function build(locale: AppLocale): LegalContent {
           {
             heading: "Qui nous sommes",
             paragraphs: [
-              `MoMo Assistant est conçu et édité par DEUS FEREA. Cette politique décrit comment nous traitons les données lorsque vous visitez ${siteConfig.url} ou utilisez l'application MoMo Assistant, actuellement en bêta privée.`,
+              `MoMo Assistant est conçu et édité par DEUS FEREA. Cette politique décrit comment nous traitons les données lorsque vous visitez ${siteConfig.url} ou utilisez l'application MoMo Assistant, actuellement en bêta publique.`,
             ],
           },
           {
@@ -82,7 +82,7 @@ function build(locale: AppLocale): LegalContent {
           {
             heading: "Statut bêta",
             paragraphs: [
-              "MoMo Assistant est actuellement en bêta privée. Cela signifie que des fonctionnalités peuvent changer, que des interruptions de service peuvent survenir, et que nous recommandons de commencer sur un seul appareil avant de déployer l'application sur toutes vos stations.",
+              "MoMo Assistant est actuellement en bêta publique. Cela signifie que des fonctionnalités peuvent changer, que des interruptions de service peuvent survenir, et que nous recommandons de commencer sur un seul appareil avant de déployer l'application sur toutes vos stations.",
             ],
           },
           {
@@ -220,7 +220,7 @@ function build(locale: AppLocale): LegalContent {
         {
           heading: "Who we are",
           paragraphs: [
-            `MoMo Assistant is built and published by DEUS FEREA. This policy describes how we handle data when you visit ${siteConfig.url} or use the MoMo Assistant app, currently in private beta.`,
+            `MoMo Assistant is built and published by DEUS FEREA. This policy describes how we handle data when you visit ${siteConfig.url} or use the MoMo Assistant app, currently in public beta.`,
           ],
         },
         {
@@ -277,7 +277,7 @@ function build(locale: AppLocale): LegalContent {
         {
           heading: "Beta status",
           paragraphs: [
-            "MoMo Assistant is currently in private beta. That means features may change, service interruptions can happen, and we recommend starting on a single device before rolling the app out across every station.",
+            "MoMo Assistant is currently in public beta. That means features may change, service interruptions can happen, and we recommend starting on a single device before rolling the app out across every station.",
           ],
         },
         {

@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getContactContent } from "@/content/contact";
 import { Channels } from "@/features/contact-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface ContactPageProps {
@@ -51,8 +51,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_contact_cta",
         }}
         secondaryCta={{

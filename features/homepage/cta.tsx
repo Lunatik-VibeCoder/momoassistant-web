@@ -3,7 +3,6 @@ import { getLocale } from "next-intl/server";
 import { CtaBand } from "@/components/shared/cta-band";
 import { getHomepageContent } from "@/content/homepage";
 import type { AppLocale } from "@/i18n/routing";
-import { siteConfig } from "@/lib/constants";
 
 export async function Cta() {
   const locale = (await getLocale()) as AppLocale;
@@ -15,8 +14,7 @@ export async function Cta() {
       description={finalCta.description}
       primaryCta={{
         label: finalCta.primaryCtaLabel,
-        href: siteConfig.downloadApkUrl,
-        external: true,
+        href: "/download",
         event: "download_apk_final_cta",
       }}
       secondaryCta={{

@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getWhoContent } from "@/content/who";
 import { Profiles } from "@/features/who-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface WhoPageProps {
@@ -51,8 +51,7 @@ export default async function WhoPage({ params }: WhoPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_who_cta",
         }}
         secondaryCta={{

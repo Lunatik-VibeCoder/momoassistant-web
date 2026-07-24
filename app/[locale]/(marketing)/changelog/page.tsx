@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { getChangelogContent } from "@/content/changelog";
 import { Roadmap } from "@/features/changelog-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface ChangelogPageProps {
@@ -51,8 +51,7 @@ export default async function ChangelogPage({ params }: ChangelogPageProps) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_changelog_cta",
         }}
         secondaryCta={{

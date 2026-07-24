@@ -4,7 +4,7 @@ import { Section } from "@/components/layout/section";
 import { CtaBand } from "@/components/shared/cta-band";
 import { PageHero } from "@/components/shared/page-hero";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import type { BlogPost } from "@/types";
 
 function formatDate(dateStr: string, locale: AppLocale) {
@@ -58,8 +58,7 @@ export async function Article({ post }: { post: BlogPost }) {
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_blog_post_cta",
         }}
         secondaryCta={{

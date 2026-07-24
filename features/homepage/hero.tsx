@@ -5,7 +5,6 @@ import { CTAButton } from "@/components/shared/cta-button";
 import { Badge } from "@/components/ui/badge";
 import { getHomepageContent } from "@/content/homepage";
 import type { AppLocale } from "@/i18n/routing";
-import { siteConfig } from "@/lib/constants";
 
 // No entrance animation here: this content is visible immediately on load
 // (never "scrolled into view"), so gating it behind Framer Motion's
@@ -37,8 +36,7 @@ export async function Hero() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <CTAButton
               size="lg"
-              href={siteConfig.downloadApkUrl}
-              external
+              href="/download"
               event="download_apk_hero"
             >
               {hero.primaryCtaLabel}

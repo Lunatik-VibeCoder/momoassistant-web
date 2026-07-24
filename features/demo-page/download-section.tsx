@@ -7,7 +7,7 @@ import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { getDemoContent } from "@/content/demo";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { staggerContainer } from "@/lib/motion";
 
 export async function DownloadSection() {
@@ -54,8 +54,7 @@ export async function DownloadSection() {
           <MotionItem className="mt-6">
             <CTAButton
               size="lg"
-              href={siteConfig.downloadApkUrl}
-              external
+              href="/download"
               event="download_apk_demo_page"
             >
               {text.primaryCtaLabel}

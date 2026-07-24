@@ -124,3 +124,8 @@ export interface StatusService {
   status: "operational" | "beta" | "planned";
   description: string;
 }
+
+export interface SpecItem {
+  label: string;
+  value: string;
+}

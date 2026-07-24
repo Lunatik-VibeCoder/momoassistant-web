@@ -10,7 +10,7 @@ import {
   RuntimeSync,
 } from "@/features/how-it-works-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 
 interface HowItWorksPageProps {
@@ -59,8 +59,7 @@ export default async function HowItWorksPage({
         }
         primaryCta={{
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
           event: "download_apk_how_it_works_cta",
         }}
         secondaryCta={{

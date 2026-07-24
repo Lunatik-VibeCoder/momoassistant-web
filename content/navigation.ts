@@ -7,9 +7,11 @@ interface NavigationText {
   footerLinkGroups: FooterLinkGroup[];
 }
 
-// "Demo" intentionally covers Download Beta + Request Demo + FAQ together
-// (see content/demo.ts) rather than separate /download or /faq routes —
-// matches the brand kit's target sitemap, which has neither.
+// MARKETING-UPDATE-02: /download is now the single official entry point
+// for the APK (see content/download.ts); "Demo" (content/demo.ts) still
+// separately covers Request Demo + FAQ. This supersedes the brand kit's
+// original target sitemap, which had neither a separate /download nor
+// /faq route.
 const NAVIGATION: Record<AppLocale, NavigationText> = {
   en: {
     navLinks: [
@@ -20,6 +22,7 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
       { label: "Pricing", href: "/pricing" },
       ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Demo", href: "/demo" }] : []),
+      ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
     ],
     footerLinkGroups: [
       {
@@ -35,6 +38,7 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
           { label: "Workspace Access", href: "/workspace-access" },
           ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
           ...(DOWNLOAD_ENABLED ? [{ label: "Demo", href: "/demo" }] : []),
+          ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
         ],
       },
       {
@@ -69,6 +73,7 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
       { label: "Tarifs", href: "/pricing" },
       ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Démo", href: "/demo" }] : []),
+      ...(DOWNLOAD_ENABLED ? [{ label: "Télécharger", href: "/download" }] : []),
     ],
     footerLinkGroups: [
       {
@@ -84,6 +89,7 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
           { label: "Workspace Access", href: "/workspace-access" },
           ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
           ...(DOWNLOAD_ENABLED ? [{ label: "Démo", href: "/demo" }] : []),
+          ...(DOWNLOAD_ENABLED ? [{ label: "Télécharger", href: "/download" }] : []),
         ],
       },
       {
