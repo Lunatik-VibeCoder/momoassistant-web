@@ -4,6 +4,15 @@ import type { FooterLinkGroup, NavLink } from "@/types";
 
 interface NavigationText {
   navLinks: NavLink[];
+  // WS-005M.1 -- Documentation/Blog/Changelog grouped under one "Resources"
+  // menu instead of living as separate flat top-level entries (Blog/
+  // Changelog previously only existed in the footer's "Company" group, not
+  // the header nav at all). Organizes existing content, adds no new pages.
+  resourcesLabel: string;
+  resourcesLinks: NavLink[];
+  loginLabel: string;
+  getStartedLabel: string;
+  dashboardLabel: string;
   footerLinkGroups: FooterLinkGroup[];
 }
 
@@ -20,10 +29,18 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
       { label: "Enterprise", href: "/enterprise" },
       { label: "How It Works", href: "/how-it-works" },
       { label: "Pricing", href: "/pricing" },
-      ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Demo", href: "/demo" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
     ],
+    resourcesLabel: "Resources",
+    resourcesLinks: [
+      ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
+      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
+      { label: "Changelog", href: "/changelog" },
+    ],
+    loginLabel: "Login",
+    getStartedLabel: "Get Started",
+    dashboardLabel: "Dashboard",
     footerLinkGroups: [
       {
         title: "Product",
@@ -71,10 +88,18 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
       { label: "Enterprise", href: "/enterprise" },
       { label: "Fonctionnement", href: "/how-it-works" },
       { label: "Tarifs", href: "/pricing" },
-      ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Démo", href: "/demo" }] : []),
       ...(DOWNLOAD_ENABLED ? [{ label: "Télécharger", href: "/download" }] : []),
     ],
+    resourcesLabel: "Ressources",
+    resourcesLinks: [
+      ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
+      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
+      { label: "Journal des mises à jour", href: "/changelog" },
+    ],
+    loginLabel: "Connexion",
+    getStartedLabel: "Commencer",
+    dashboardLabel: "Tableau de bord",
     footerLinkGroups: [
       {
         title: "Produit",
@@ -119,6 +144,17 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
 
 export function getNavLinks(locale: AppLocale): NavLink[] {
   return NAVIGATION[locale].navLinks;
+}
+
+export function getResourcesMenu(locale: AppLocale): { label: string; links: NavLink[] } {
+  return { label: NAVIGATION[locale].resourcesLabel, links: NAVIGATION[locale].resourcesLinks };
+}
+
+export function getAuthNavText(
+  locale: AppLocale,
+): { loginLabel: string; getStartedLabel: string; dashboardLabel: string } {
+  const { loginLabel, getStartedLabel, dashboardLabel } = NAVIGATION[locale];
+  return { loginLabel, getStartedLabel, dashboardLabel };
 }
 
 export function getFooterLinkGroups(locale: AppLocale): FooterLinkGroup[] {
