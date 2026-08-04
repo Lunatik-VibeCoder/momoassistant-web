@@ -20,6 +20,11 @@ export interface IconListItem {
 export type FeatureItem = IconListItem;
 export type SecurityPillar = IconListItem;
 
+export interface TrustBadge {
+  icon: LucideIcon;
+  label: string;
+}
+
 export interface ArchitectureLayer {
   title: string;
   description: string;
