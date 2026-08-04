@@ -25,7 +25,10 @@ export function RegisterForm({ content, locale }: { content: RegisterContent; lo
           <p className="mt-2 text-sm text-muted-foreground">{content.successDescription}</p>
         </CardContent>
         <CardFooter>
-          <ButtonLink href={`/${locale}/verify-email?email=${encodeURIComponent(state.email ?? "")}`}>
+          {/* NavLink (behind ButtonLink) is next-intl's own Link -- it
+              auto-prefixes the locale itself; a manually-prefixed href here
+              would double it (caught live during WS-005A browser testing). */}
+          <ButtonLink href={`/verify-email?email=${encodeURIComponent(state.email ?? "")}`}>
             {content.continueToVerifyLabel}
           </ButtonLink>
         </CardFooter>
