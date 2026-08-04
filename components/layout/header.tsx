@@ -26,7 +26,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getAuthNavText, getNavLinks, getResourcesMenu } from "@/content/navigation";
+import { getAuthNavText, getProductMenu, getResourcesMenu } from "@/content/navigation";
 import { useScrollPosition } from "@/hooks";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
@@ -39,7 +39,7 @@ interface HeaderProps {
 
 export function Header({ locale }: HeaderProps) {
   const scrolled = useScrollPosition();
-  const navLinks = getNavLinks(locale);
+  const product = getProductMenu(locale);
   const resources = getResourcesMenu(locale);
   const auth = getAuthNavText(locale);
   const t = useTranslations("Common");
@@ -83,15 +83,37 @@ export function Header({ locale }: HeaderProps) {
           <Logo />
         </Link>
 
-        <nav aria-label="Primary" className="hidden md:block">
+        {/*
+          lg:, not md: — at 768-1023px the full nav + locale switcher +
+          auth CTAs genuinely don't fit (confirmed via WS-005R: real
+          horizontal overflow at exactly 768px, reproduced on every
+          marketing/auth page). lg: matches the site's actual desktop
+          breakpoint everywhere else (Hero's 2-col grid, etc.).
+        */}
+        <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-1">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <NavLink href={link.href} className={navigationMenuTriggerStyle()}>
-                  {link.label}
-                </NavLink>
+            {product.links.length > 0 && (
+              <li>
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger>{product.label}</NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="flex w-48 flex-col gap-0.5">
+                          {product.links.map((link) => (
+                            <li key={link.href}>
+                              <NavigationMenuLink render={<NavLink href={link.href} />}>
+                                {link.label}
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
               </li>
-            ))}
+            )}
             {resources.links.length > 0 && (
               <li>
                 <NavigationMenu>
@@ -118,23 +140,23 @@ export function Header({ locale }: HeaderProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:block">
+          <div className="hidden lg:block">
             <LocaleSwitcher />
           </div>
 
           {isAuthenticated ? (
-            <CTAButton href="/app" event="header_dashboard" className="hidden sm:inline-flex">
+            <CTAButton href="/app" event="header_dashboard" className="hidden lg:inline-flex">
               {auth.dashboardLabel}
             </CTAButton>
           ) : (
             <>
               <NavLink
                 href="/login"
-                className={cn(navigationMenuTriggerStyle(), "hidden sm:inline-flex")}
+                className={cn(navigationMenuTriggerStyle(), "hidden lg:inline-flex")}
               >
                 {auth.loginLabel}
               </NavLink>
-              <CTAButton href="/register" event="header_get_started" className="hidden sm:inline-flex">
+              <CTAButton href="/register" event="header_get_started" className="hidden lg:inline-flex">
                 {auth.getStartedLabel}
               </CTAButton>
             </>
@@ -146,7 +168,7 @@ export function Header({ locale }: HeaderProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden"
+                  className="lg:hidden"
                   aria-label={t("openMenu")}
                 />
               }
@@ -160,16 +182,23 @@ export function Header({ locale }: HeaderProps) {
                 </SheetTitle>
               </SheetHeader>
               <nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
-                {navLinks.map((link) => (
-                  <SheetClose
-                    key={link.href}
-                    nativeButton={false}
-                    render={<NavLink href={link.href} />}
-                    className="rounded-lg px-3 py-2 text-left text-sm font-medium hover:bg-muted"
-                  >
-                    {link.label}
-                  </SheetClose>
-                ))}
+                {product.links.length > 0 && (
+                  <>
+                    <p className="px-3 text-xs font-semibold text-muted-foreground uppercase">
+                      {product.label}
+                    </p>
+                    {product.links.map((link) => (
+                      <SheetClose
+                        key={link.href}
+                        nativeButton={false}
+                        render={<NavLink href={link.href} />}
+                        className="rounded-lg px-3 py-2 text-left text-sm font-medium hover:bg-muted"
+                      >
+                        {link.label}
+                      </SheetClose>
+                    ))}
+                  </>
+                )}
                 {resources.links.length > 0 && (
                   <>
                     <p className="mt-2 px-3 text-xs font-semibold text-muted-foreground uppercase">

@@ -1,13 +1,15 @@
 import type { AppLocale } from "@/i18n/routing";
-import { BLOG_ENABLED, DOCS_ENABLED, DOWNLOAD_ENABLED } from "@/lib/features";
+import { BLOG_ENABLED, DOCS_ENABLED } from "@/lib/features";
 import type { FooterLinkGroup, NavLink } from "@/types";
 
 interface NavigationText {
-  navLinks: NavLink[];
-  // WS-005M.1 -- Documentation/Blog/Changelog grouped under one "Resources"
-  // menu instead of living as separate flat top-level entries (Blog/
-  // Changelog previously only existed in the footer's "Company" group, not
-  // the header nav at all). Organizes existing content, adds no new pages.
+  // WS-006N -- header nav collapsed from 8 flat top-level links to two
+  // grouped dropdowns (Product, Resources) plus Pricing folded into
+  // Product; matches the density review that flagged the old flat list as
+  // reading like a "catalogue site" rather than a premium SaaS nav
+  // (Stripe/Vercel/Linear-style: few top-level items, clear grouping).
+  productLabel: string;
+  productLinks: NavLink[];
   resourcesLabel: string;
   resourcesLinks: NavLink[];
   loginLabel: string;
@@ -16,27 +18,27 @@ interface NavigationText {
   footerLinkGroups: FooterLinkGroup[];
 }
 
-// MARKETING-UPDATE-02: /download is now the single official entry point
-// for the APK (see content/download.ts); "Demo" (content/demo.ts) still
-// separately covers Request Demo + FAQ. This supersedes the brand kit's
-// original target sitemap, which had neither a separate /download nor
-// /faq route.
+// WS-006N -- How It Works, Demo, and Download are deliberately no longer
+// header/footer nav items. Pages stay live, reachable from within their
+// natural context instead of the header: How It Works folds into the
+// Features page, Demo folds into the Get Started journey, and Download is
+// reached from the Hero CTA, the authenticated Customer Hub, Pricing, and
+// the footer's Product group -- never a standalone primary nav item.
 const NAVIGATION: Record<AppLocale, NavigationText> = {
   en: {
-    navLinks: [
+    productLabel: "Product",
+    productLinks: [
       { label: "Features", href: "/features" },
       { label: "Security", href: "/security" },
       { label: "Enterprise", href: "/enterprise" },
-      { label: "How It Works", href: "/how-it-works" },
       { label: "Pricing", href: "/pricing" },
-      ...(DOWNLOAD_ENABLED ? [{ label: "Demo", href: "/demo" }] : []),
-      ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
     ],
     resourcesLabel: "Resources",
     resourcesLinks: [
       ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
-      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
       { label: "Changelog", href: "/changelog" },
+      { label: "Roadmap", href: "/roadmap" },
+      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
     ],
     loginLabel: "Login",
     getStartedLabel: "Get Started",
@@ -46,16 +48,18 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
         title: "Product",
         links: [
           { label: "Features", href: "/features" },
-          { label: "Why MoMo Assistant", href: "/why" },
-          { label: "Who It's For", href: "/who-its-for" },
+          { label: "Pricing", href: "/pricing" },
           { label: "Security", href: "/security" },
           { label: "Enterprise", href: "/enterprise" },
-          { label: "How It Works", href: "/how-it-works" },
-          { label: "Pricing", href: "/pricing" },
-          { label: "Workspace Access", href: "/workspace-access" },
-          ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
-          ...(DOWNLOAD_ENABLED ? [{ label: "Demo", href: "/demo" }] : []),
-          ...(DOWNLOAD_ENABLED ? [{ label: "Download", href: "/download" }] : []),
+        ],
+      },
+      {
+        title: "Resources",
+        links: [
+          ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
+          { label: "Changelog", href: "/changelog" },
+          { label: "Roadmap", href: "/roadmap" },
+          { label: "Status", href: "/status" },
         ],
       },
       {
@@ -63,9 +67,6 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
         links: [
           { label: "About", href: "/about" },
           { label: "Contact", href: "/contact" },
-          { label: "Changelog", href: "/changelog" },
-          { label: "Roadmap", href: "/roadmap" },
-          ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
           { label: "Careers", href: "/careers" },
         ],
       },
@@ -75,27 +76,24 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
           { label: "Privacy Policy", href: "/legal/privacy" },
           { label: "Terms of Service", href: "/legal/terms" },
           { label: "Cookie Policy", href: "/legal/cookies" },
-          { label: "Security Statement", href: "/legal/security" },
-          { label: "Status", href: "/status" },
         ],
       },
     ],
   },
   fr: {
-    navLinks: [
+    productLabel: "Produit",
+    productLinks: [
       { label: "Fonctionnalités", href: "/features" },
       { label: "Sécurité", href: "/security" },
       { label: "Enterprise", href: "/enterprise" },
-      { label: "Fonctionnement", href: "/how-it-works" },
       { label: "Tarifs", href: "/pricing" },
-      ...(DOWNLOAD_ENABLED ? [{ label: "Démo", href: "/demo" }] : []),
-      ...(DOWNLOAD_ENABLED ? [{ label: "Télécharger", href: "/download" }] : []),
     ],
     resourcesLabel: "Ressources",
     resourcesLinks: [
       ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
-      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
       { label: "Journal des mises à jour", href: "/changelog" },
+      { label: "Roadmap", href: "/roadmap" },
+      ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
     ],
     loginLabel: "Connexion",
     getStartedLabel: "Commencer",
@@ -105,16 +103,18 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
         title: "Produit",
         links: [
           { label: "Fonctionnalités", href: "/features" },
-          { label: "Pourquoi MoMo Assistant", href: "/why" },
-          { label: "Pour qui", href: "/who-its-for" },
+          { label: "Tarifs", href: "/pricing" },
           { label: "Sécurité", href: "/security" },
           { label: "Enterprise", href: "/enterprise" },
-          { label: "Fonctionnement", href: "/how-it-works" },
-          { label: "Tarifs", href: "/pricing" },
-          { label: "Workspace Access", href: "/workspace-access" },
-          ...(DOCS_ENABLED ? [{ label: "Docs", href: "/docs" }] : []),
-          ...(DOWNLOAD_ENABLED ? [{ label: "Démo", href: "/demo" }] : []),
-          ...(DOWNLOAD_ENABLED ? [{ label: "Télécharger", href: "/download" }] : []),
+        ],
+      },
+      {
+        title: "Ressources",
+        links: [
+          ...(DOCS_ENABLED ? [{ label: "Documentation", href: "/docs" }] : []),
+          { label: "Journal des mises à jour", href: "/changelog" },
+          { label: "Roadmap", href: "/roadmap" },
+          { label: "Statut", href: "/status" },
         ],
       },
       {
@@ -122,9 +122,6 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
         links: [
           { label: "À propos", href: "/about" },
           { label: "Contact", href: "/contact" },
-          { label: "Journal des mises à jour", href: "/changelog" },
-          { label: "Roadmap", href: "/roadmap" },
-          ...(BLOG_ENABLED ? [{ label: "Blog", href: "/blog" }] : []),
           { label: "Carrières", href: "/careers" },
         ],
       },
@@ -134,16 +131,14 @@ const NAVIGATION: Record<AppLocale, NavigationText> = {
           { label: "Politique de confidentialité", href: "/legal/privacy" },
           { label: "Conditions d'utilisation", href: "/legal/terms" },
           { label: "Politique de cookies", href: "/legal/cookies" },
-          { label: "Déclaration de sécurité", href: "/legal/security" },
-          { label: "Statut", href: "/status" },
         ],
       },
     ],
   },
 };
 
-export function getNavLinks(locale: AppLocale): NavLink[] {
-  return NAVIGATION[locale].navLinks;
+export function getProductMenu(locale: AppLocale): { label: string; links: NavLink[] } {
+  return { label: NAVIGATION[locale].productLabel, links: NAVIGATION[locale].productLinks };
 }
 
 export function getResourcesMenu(locale: AppLocale): { label: string; links: NavLink[] } {

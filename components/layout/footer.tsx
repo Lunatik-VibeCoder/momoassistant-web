@@ -20,8 +20,8 @@ export async function Footer({ locale }: FooterProps) {
   return (
     <footer className="border-t border-border">
       <Container className="flex flex-col gap-12 py-12 sm:py-16">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          <div className="col-span-2 flex flex-col gap-3 sm:col-span-1">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="col-span-2 flex flex-col gap-3 sm:col-span-3 lg:col-span-1">
             <Logo />
             <p className="max-w-xs text-sm text-muted-foreground">
               {text.tagline}
