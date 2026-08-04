@@ -4,10 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Geist_Mono, Inter } from "next/font/google";
 
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
-import { SkipLink } from "@/components/shared/skip-link";
-import { routing, type AppLocale } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { createRootMetadata, rootViewport } from "@/lib/seo";
 
 import "../globals.css";
@@ -66,14 +63,7 @@ export default async function LocaleLayout({
       className={`dark ${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider>
-          <SkipLink />
-          <Header locale={locale as AppLocale} />
-          <main id="main-content" className="flex-1">
-            {children}
-          </main>
-          <Footer locale={locale as AppLocale} />
-        </NextIntlClientProvider>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

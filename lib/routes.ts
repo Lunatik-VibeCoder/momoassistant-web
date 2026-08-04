@@ -22,6 +22,15 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/legal/cookies",
   "/legal/security",
   "/status",
+  // WS-006 (Customer Hub) -- authenticated (app)/(hub) routes.
+  "/app",
+  "/organization",
+  "/members",
+  "/health",
+  "/license",
+  "/subscription",
+  "/billing",
+  "/settings",
 ]);
 
 export function isRouteImplemented(href: string): boolean {

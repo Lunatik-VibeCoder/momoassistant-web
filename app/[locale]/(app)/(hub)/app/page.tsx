@@ -25,28 +25,29 @@ export async function generateMetadata({ params }: DashboardPageProps): Promise<
   };
 }
 
-// Deliberately minimal for WS-005 (see the plan's own scope note) -- a
-// landing point proving the full chain works end to end, not the full
-// Customer Portal (Members/License/Billing/Notifications/Health are
-// WS-006+, per WS-002 SS1).
+// Deliberately minimal (see WS-005's original scope note) -- a landing
+// point proving the full chain works end to end. WS-006 built the rest of
+// the Customer Hub around this page rather than into it.
 export default async function DashboardPage({ params }: DashboardPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // The (app) layout already guarantees a session exists; re-fetching it
-  // here is cheap (requireSession() only refreshes near expiry) and this
-  // page still needs the access token to call MCP directly.
+  // The (app) layout already guarantees a session exists, and the (hub)
+  // layout wrapping this page already guarantees an Organization exists
+  // (WS-006, moved up from here so every Hub page gets it for free) --
+  // re-fetching the session here is cheap (requireSession() only refreshes
+  // near expiry) and this page still needs the access token to call MCP
+  // directly.
   const session = await requireSession();
   if (!session) {
     redirect(`/${locale}/login`);
   }
 
   // RFC-0011 SS3 -- the session cookie is never a data source of truth;
-  // Organization detail is read fresh from MCP on every load.
+  // Organization detail is read fresh from MCP on every load. `organization`
+  // is guaranteed non-null by the (hub) layout's own guard.
   const profile = await getMe(session.accessToken);
-  if (!profile.organization) {
-    redirect(`/${locale}/onboarding`);
-  }
+  const organization = profile.organization!;
 
   const content = getDashboardContent(locale);
   const logoutWithLocale = logoutAction.bind(null, locale);
@@ -59,7 +60,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            {content.organizationLabel}: <span className="text-foreground">{profile.organization.name}</span>
+            {content.organizationLabel}: <span className="text-foreground">{organization.name}</span>
           </p>
           <ButtonLink href={`/${locale}/app/download`} external>
             {content.downloadCtaLabel}

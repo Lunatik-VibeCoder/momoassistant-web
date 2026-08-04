@@ -74,6 +74,22 @@ export async function getSession(): Promise<SessionData | null> {
 // RFC-0011 SS2 -- silent, server-side renewal before the access token's own
 // expiry, reusing MCP's existing refresh-token rotation (R4). The browser
 // never sees this happen.
+//
+// Found during WS-006 manual verification, not previously caught: this
+// function's only real callers are page/layout Server Components, but
+// Next.js only allows cookies().set()/.delete() from a Server Action,
+// Route Handler, or Middleware -- never from a plain render. Both
+// session.save() and session.destroy() below hit that restriction and
+// throw once a request actually lands in the near-expiry window (every
+// earlier verification pass happened to finish within one access token's
+// 15-minute lifetime, so this never fired before). Catching here stops the
+// 500 and keeps the redirect-to-login behavior working; it does not fully
+// fix the underlying gap -- a successful-but-unpersisted refresh still
+// leaves a now-rotated-away refresh token in the browser's cookie, so the
+// next request's retry can trip R4's reuse-detection and force a real
+// logout instead of silently renewing. The correct fix is renewing the
+// session in Next Middleware (where cookie mutation is actually legal),
+// not patched here -- flagged as its own follow-up, out of WS-006's scope.
 export async function requireSession(): Promise<SessionData | null> {
   const session = await getIronSessionInstance();
   const data = session.data;
@@ -88,12 +104,21 @@ export async function requireSession(): Promise<SessionData | null> {
 
   const refreshed = await mcpRefresh(data.refreshToken);
   if (!refreshed) {
-    session.destroy();
+    try {
+      session.destroy();
+    } catch {
+      // See note above -- expected when called from a Server Component.
+    }
     return null;
   }
 
   const updated: SessionData = { ...data, ...refreshed };
   session.data = updated;
-  await session.save();
+  try {
+    await session.save();
+  } catch {
+    // See note above -- the render still gets the fresh tokens in memory
+    // even though the cookie itself couldn't be persisted here.
+  }
   return updated;
 }
