@@ -73,7 +73,7 @@ interface RequestOptions {
 
 async function mcpFetch<T>(
   path: string,
-  init: { method: "GET" | "POST"; body?: unknown },
+  init: { method: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown },
   options: RequestOptions = {},
 ): Promise<T> {
   if (!MCP_API_URL) {
@@ -153,6 +153,9 @@ export interface McpUserProfile {
   id: string;
   email: string | null;
   displayName: string;
+  // Mini MCP sprint (Account Settings) -- GET /users/me now returns this;
+  // null for every pre-existing user until they set it via PATCH /users/me.
+  locale: "FR" | "EN" | null;
   organization: { id: string; name: string; status: string } | null;
 }
 
@@ -231,4 +234,234 @@ export async function refreshSession(
 
 export async function getMe(accessToken: string): Promise<McpUserProfile> {
   return fetchProfile(accessToken);
+}
+
+// ---------------------------------------------------------------------------
+// WS-006 (Customer Hub) -- every type below mirrors the real backend
+// interface field-for-field (momoassistant-platform's own service files),
+// not re-invented.
+
+export interface OrganizationSummary {
+  id: string;
+  tenantId: string;
+  name: string;
+  slug: string;
+  organizationCode: string;
+  status: string;
+  ownerUserId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getOrganization(
+  accessToken: string,
+  organizationId: string,
+): Promise<OrganizationSummary> {
+  return mcpFetch<OrganizationSummary>(
+    `/organizations/${organizationId}`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+export interface MemberSummary {
+  id: string;
+  userId: string;
+  organizationId: string;
+  workspaceId: string | null;
+  status: string;
+  invitedAt: string;
+  joinedAt: string | null;
+  role: { id: string; code: string; name: string };
+  user: { displayName: string; email: string | null };
+}
+
+export async function listMembers(
+  accessToken: string,
+  organizationId: string,
+): Promise<MemberSummary[]> {
+  return mcpFetch<MemberSummary[]>(
+    `/organizations/${organizationId}/members`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+// Never SUPER_ADMIN -- the backend already forbids assigning it through
+// this path (MembersService); the UI only ever offers the other 4.
+export type InvitableRole = "TENANT_ADMIN" | "ORG_ADMIN" | "STATION_MANAGER" | "AGENT";
+
+export interface InvitationSummary {
+  id: string;
+  organizationId: string;
+  email: string;
+  workspaceId: string | null;
+  status: "PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED";
+  expiresAt: string;
+  invitedAt: string;
+  role: { id: string; code: string; name: string };
+}
+
+export async function inviteMember(
+  accessToken: string,
+  organizationId: string,
+  input: { email: string; role: InvitableRole },
+): Promise<InvitationSummary> {
+  return mcpFetch<InvitationSummary>(
+    `/organizations/${organizationId}/invitations`,
+    { method: "POST", body: input },
+    { accessToken },
+  );
+}
+
+export async function removeMember(
+  accessToken: string,
+  organizationId: string,
+  memberId: string,
+): Promise<void> {
+  await mcpFetch(
+    `/organizations/${organizationId}/members/${memberId}`,
+    { method: "DELETE" },
+    { accessToken },
+  );
+}
+
+export interface LicenseSummary {
+  id: string;
+  organizationId: string;
+  productId: string;
+  planId: string;
+  seats: number | null;
+  status: "TRIAL" | "ACTIVE" | "EXPIRED" | "REVOKED";
+  issuedAt: string;
+  expiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  // Mini backend enrichment (sprint-ws006-part0-license-plan-enrichment) --
+  // product-plans:read/products:read are SUPER_ADMIN-only, so this is the
+  // only way an org's own admin ever sees a human plan name.
+  product: { code: string; name: string };
+  plan: { code: string; name: string; price: string; currency: string; billingPeriod: "MONTHLY" | "YEARLY" };
+}
+
+// @@unique([organizationId]) on the backend means 0 or 1 -- this flattens
+// the array response every caller would otherwise have to do themselves.
+export async function getLicense(
+  accessToken: string,
+  organizationId: string,
+): Promise<LicenseSummary | null> {
+  const licenses = await mcpFetch<LicenseSummary[]>(
+    `/organizations/${organizationId}/licenses`,
+    { method: "GET" },
+    { accessToken },
+  );
+  return licenses[0] ?? null;
+}
+
+export interface SubscriptionSummary {
+  id: string;
+  organizationId: string;
+  licenseId: string;
+  billingProvider: string | null;
+  billingReference: string | null;
+  status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELED";
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// @@unique([licenseId]) means 0 or 1 subscription per organization today
+// (one License per Organization too) -- same flattening as getLicense.
+export async function getSubscription(
+  accessToken: string,
+  organizationId: string,
+): Promise<SubscriptionSummary | null> {
+  const subscriptions = await mcpFetch<SubscriptionSummary[]>(
+    `/organizations/${organizationId}/subscriptions`,
+    { method: "GET" },
+    { accessToken },
+  );
+  return subscriptions[0] ?? null;
+}
+
+export interface InvoiceLineItemSummary {
+  id: string;
+  invoiceId: string;
+  organizationId: string;
+  subscriptionId: string;
+  amount: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface InvoiceSummary {
+  id: string;
+  tenantId: string;
+  status: "DRAFT" | "OPEN" | "PAID" | "VOID";
+  currency: string;
+  paymentReference: string | null;
+  issuedAt: string | null;
+  dueAt: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  lineItems: InvoiceLineItemSummary[];
+}
+
+export async function listInvoices(
+  accessToken: string,
+  tenantId: string,
+): Promise<InvoiceSummary[]> {
+  return mcpFetch<InvoiceSummary[]>(`/tenants/${tenantId}/invoices`, { method: "GET" }, { accessToken });
+}
+
+export interface WorkspaceSummary {
+  id: string;
+  organizationId: string;
+  name: string;
+}
+
+export async function listWorkspaces(
+  accessToken: string,
+  organizationId: string,
+): Promise<WorkspaceSummary[]> {
+  return mcpFetch<WorkspaceSummary[]>(
+    `/organizations/${organizationId}/workspaces`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+export interface StationSummary {
+  id: string;
+  name: string;
+}
+
+export async function listStations(
+  accessToken: string,
+  workspaceId: string,
+): Promise<StationSummary[]> {
+  return mcpFetch<StationSummary[]>(
+    `/workspaces/${workspaceId}/stations`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+export type Locale = "FR" | "EN";
+
+export async function updateMe(
+  accessToken: string,
+  input: { displayName?: string; locale?: Locale },
+): Promise<McpUserProfile> {
+  return mcpFetch(`/users/me`, { method: "PATCH", body: input }, { accessToken });
+}
+
+export async function changePassword(
+  accessToken: string,
+  input: { currentPassword: string; newPassword: string },
+): Promise<void> {
+  await mcpFetch("/auth/change-password", { method: "POST", body: input }, { accessToken });
 }
