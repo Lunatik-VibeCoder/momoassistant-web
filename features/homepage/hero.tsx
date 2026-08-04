@@ -274,9 +274,15 @@ function HeroVisual() {
           </div>
         </div>
 
-        {/* phone — lower-right, light overlap, Apple-product-page style */}
+        {/*
+          Mobile: stacked below the dashboard, own block, no overlap — a
+          phone pinned mid-card at mobile width just looks cramped and
+          covers real numbers, it's not "the same design, smaller."
+          sm: (tablet) introduces a partial corner overlap; lg: (desktop)
+          is the full Apple-product-page-style cascade.
+        */}
         <div
-          className="absolute top-[92%] left-[83%] w-40 rounded-2xl border border-border bg-accent p-3 pb-4 shadow-lifted animate-hero-float sm:w-44"
+          className="relative mx-auto mt-6 w-44 rounded-2xl border border-border bg-accent p-3 pb-4 shadow-lifted animate-hero-float sm:absolute sm:top-[82%] sm:left-[58%] sm:mt-0 sm:ml-0 lg:top-[92%] lg:left-[83%]"
           style={{
             transform: "rotateY(-8deg) rotateX(2deg) translateZ(40px)",
           }}
@@ -308,9 +314,16 @@ function HeroVisual() {
           </div>
         </div>
 
-        {/* floating status chips */}
+        {/*
+          Mobile: a plain stacked row, own box (generous gap-3 breathing
+          room). sm:contents drops this wrapper's own box at tablet+, so
+          both chips fall back to being positioned children of the
+          dashboard/phone stack above (their sm:/lg: absolute corner
+          placement) instead of two different layout systems to maintain.
+        */}
+        <div className="mt-4 flex items-center justify-center gap-3 sm:contents">
         <div
-          className="absolute -top-[7%] -left-[9%] flex items-center gap-2 rounded-xl border border-border bg-accent px-3 py-2 text-[0.6875rem] font-medium shadow-soft animate-hero-float"
+          className="relative flex items-center gap-2 rounded-xl border border-border bg-accent px-3 py-2 text-[0.6875rem] font-medium shadow-soft animate-hero-float sm:absolute sm:-top-[7%] sm:-left-[9%]"
           style={{ animationDuration: "5.6s" }}
         >
           <ShieldCheck className="size-3.5 text-success" />
@@ -322,7 +335,7 @@ function HeroVisual() {
           </span>
         </div>
         <div
-          className="absolute -top-[7%] -right-[9%] hidden items-center gap-2 rounded-xl border border-border bg-accent px-3 py-2 text-[0.6875rem] font-medium shadow-soft animate-hero-float sm:flex"
+          className="relative flex items-center gap-2 rounded-xl border border-border bg-accent px-3 py-2 text-[0.6875rem] font-medium shadow-soft animate-hero-float sm:absolute sm:-top-[7%] sm:-right-[9%]"
           style={{ animationDuration: "4.4s", animationDelay: "0.6s" }}
         >
           <span className="size-1.5 rounded-full bg-success" />
@@ -332,6 +345,7 @@ function HeroVisual() {
             </span>
             All Online
           </span>
+        </div>
         </div>
       </div>
     </div>
