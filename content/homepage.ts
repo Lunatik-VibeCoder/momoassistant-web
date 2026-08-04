@@ -1,4 +1,5 @@
 import {
+  Activity,
   BarChart3,
   Building2,
   EyeOff,
@@ -10,6 +11,7 @@ import {
   ServerCog,
   ShieldCheck,
   Smartphone,
+  TrendingUp,
   Users,
   Wallet,
   Zap,
@@ -26,6 +28,7 @@ import type {
   SecurityPillar,
   SocialProofLogo,
   Testimonial,
+  TrustBadge,
   WhyPoint,
 } from "@/types";
 
@@ -36,6 +39,7 @@ export interface HomepageContent {
     subheadline: string;
     primaryCtaLabel: string;
     secondaryCta: { label: string; href: string };
+    trustBadges: TrustBadge[];
   };
   socialProof: { heading: string; logos: SocialProofLogo[] };
   features: {
@@ -79,12 +83,18 @@ function build(locale: AppLocale): HomepageContent {
   if (locale === "fr") {
     return {
       hero: {
-        eyebrow: "La plateforme SaaS d'opérations Mobile Money pour entreprises",
+        eyebrow: "Le système d'exploitation des opérations Mobile Money pour entreprises",
         headline: "Automatisez Mobile Money. Gardez le contrôle.",
         subheadline:
           "MoMo Assistant est la plateforme qui pilote vos opérations Mobile Money : Organisations, Stations, appareils de confiance et Runtime, réunis pour exécuter des transactions USSD plus rapides et plus sûres, avec chaque action traçable.",
         primaryCtaLabel: text.primaryCtaLabel,
         secondaryCta: { label: text.secondaryCtaLabel, href: "/contact" },
+        trustBadges: [
+          { icon: ShieldCheck, label: "Sécurité de niveau bancaire" },
+          { icon: Activity, label: "Surveillance en temps réel" },
+          { icon: ScrollText, label: "Piste d'audit 24/7" },
+          { icon: TrendingUp, label: "Conçu pour l'échelle" },
+        ],
       },
       socialProof: {
         heading: "Utilisé par des opérateurs Mobile Money professionnels",
@@ -375,12 +385,18 @@ function build(locale: AppLocale): HomepageContent {
 
   return {
     hero: {
-      eyebrow: "The Enterprise Mobile Money Operations SaaS Platform",
+      eyebrow: "The Operating System for Enterprise Mobile Money Operations",
       headline: "Automate Mobile Money. Stay in Control.",
       subheadline:
         "MoMo Assistant is the platform running your Mobile Money operations: Organizations, Stations, trusted devices, and Runtime, working together to execute faster, safer USSD transactions with every action auditable.",
       primaryCtaLabel: text.primaryCtaLabel,
       secondaryCta: { label: text.secondaryCtaLabel, href: "/contact" },
+      trustBadges: [
+        { icon: ShieldCheck, label: "Bank-grade Security" },
+        { icon: Activity, label: "Real-time Monitoring" },
+        { icon: ScrollText, label: "24/7 Audit Trail" },
+        { icon: TrendingUp, label: "Built for Scale" },
+      ],
     },
     socialProof: {
       heading: "Trusted by professional Mobile Money operators",
