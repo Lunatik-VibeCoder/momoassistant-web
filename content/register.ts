@@ -8,9 +8,6 @@ export interface RegisterContent {
   submitLabel: string;
   loginPrompt: string;
   loginLinkLabel: string;
-  successTitle: string;
-  successDescription: string;
-  continueToVerifyLabel: string;
 }
 
 export function getRegisterContent(locale: AppLocale): RegisterContent {
@@ -27,10 +24,6 @@ export function getRegisterContent(locale: AppLocale): RegisterContent {
       submitLabel: "Créer mon compte",
       loginPrompt: "Vous avez déjà un compte ?",
       loginLinkLabel: "Se connecter",
-      successTitle: "Vérifiez votre boîte mail",
-      successDescription:
-        "Nous avons envoyé un code à 6 chiffres à votre adresse email. Saisissez-le sur la page suivante pour activer votre compte.",
-      continueToVerifyLabel: "Saisir mon code",
     };
   }
   return {
@@ -45,9 +38,5 @@ export function getRegisterContent(locale: AppLocale): RegisterContent {
     submitLabel: "Create my account",
     loginPrompt: "Already have an account?",
     loginLinkLabel: "Sign in",
-    successTitle: "Check your inbox",
-    successDescription:
-      "We sent a 6-digit code to your email address. Enter it on the next page to activate your account.",
-    continueToVerifyLabel: "Enter my code",
   };
 }

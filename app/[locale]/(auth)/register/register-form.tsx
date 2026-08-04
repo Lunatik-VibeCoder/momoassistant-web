@@ -9,32 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ButtonLink } from "@/components/shared/button-link";
+import type { AppLocale } from "@/i18n/routing";
 import type { RegisterContent } from "@/content/register";
 
 const initialState: RegisterFormState = { status: "idle" };
 
-export function RegisterForm({ content, locale }: { content: RegisterContent; locale: string }) {
-  const [state, formAction, isPending] = useActionState(registerAction, initialState);
-
-  if (state.status === "success") {
-    return (
-      <Card className="mx-auto max-w-md px-6">
-        <CardContent>
-          <h2 className="text-lg font-semibold text-foreground">{content.successTitle}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{content.successDescription}</p>
-        </CardContent>
-        <CardFooter>
-          {/* NavLink (behind ButtonLink) is next-intl's own Link -- it
-              auto-prefixes the locale itself; a manually-prefixed href here
-              would double it (caught live during WS-005A browser testing). */}
-          <ButtonLink href={`/verify-email?email=${encodeURIComponent(state.email ?? "")}`}>
-            {content.continueToVerifyLabel}
-          </ButtonLink>
-        </CardFooter>
-      </Card>
-    );
-  }
+export function RegisterForm({ content, locale }: { content: RegisterContent; locale: AppLocale }) {
+  // BUG-ONBOARDING-001 -- registerAction now redirects to /verify-email
+  // itself on success (a real URL, not ephemeral component state that a
+  // refresh could discard); there is no "success" render branch anymore.
+  const [state, formAction, isPending] = useActionState(
+    registerAction.bind(null, locale),
+    initialState,
+  );
 
   return (
     <Card className="mx-auto max-w-md px-6">
