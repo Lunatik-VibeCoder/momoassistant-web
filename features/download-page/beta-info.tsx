@@ -5,14 +5,54 @@ import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { getDownloadContent } from "@/content/download";
 import type { AppLocale } from "@/i18n/routing";
+import type { PublicBetaRelease } from "@/lib/mcp-client";
 import { staggerContainer } from "@/lib/motion";
 
-export async function BetaInfo() {
+interface BetaInfoProps {
+  release: PublicBetaRelease | null;
+}
+
+// WS-006N (follow-up) -- version/channel/last-updated used to be static
+// content; now prepended live from the backend's public-latest release,
+// falling back to unavailableLabel ("—") rather than a stale hardcoded
+// value if the fetch failed. Every other entry in betaInfo stays static
+// (BetaRelease has no column for Android-minimum/version-code/architecture
+// today -- would need a schema migration to make those live too).
+export async function BetaInfo({ release }: BetaInfoProps) {
   const locale = (await getLocale()) as AppLocale;
-  const { betaInfo, betaInfoHeading, fileSize, fileSizeLabel } = getDownloadContent(locale);
+  const {
+    betaInfo,
+    betaInfoHeading,
+    fileSize,
+    fileSizeLabel,
+    currentVersionLabel,
+    releaseChannelLabel,
+    lastUpdatedLabel,
+    unavailableLabel,
+    channelNames,
+  } = getDownloadContent(locale);
+
+  const liveItems = [
+    { label: currentVersionLabel, value: release?.version ?? unavailableLabel },
+    {
+      label: releaseChannelLabel,
+      value: release ? channelNames[release.channel] : unavailableLabel,
+    },
+    {
+      label: lastUpdatedLabel,
+      value: release?.publishedAt
+        ? new Date(release.publishedAt).toLocaleDateString(locale, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : unavailableLabel,
+    },
+  ];
+
   const items = fileSize
-    ? [...betaInfo, { label: fileSizeLabel, value: fileSize }]
-    : betaInfo;
+    ? [...liveItems, ...betaInfo, { label: fileSizeLabel, value: fileSize }]
+    : [...liveItems, ...betaInfo];
 
   return (
     <Section className="pt-0" aria-labelledby="beta-info-heading">

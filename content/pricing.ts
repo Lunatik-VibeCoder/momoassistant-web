@@ -1,5 +1,5 @@
 import type { AppLocale } from "@/i18n/routing";
-import { getSiteText, siteConfig } from "@/lib/constants";
+import { getSiteText } from "@/lib/constants";
 import type { ComparisonRow, FaqItem, PricingTier } from "@/types";
 
 export interface PricingContent {
@@ -50,8 +50,7 @@ function build(locale: AppLocale): PricingContent {
           price: "Gratuit",
           cta: {
             label: text.primaryCtaLabel,
-            href: siteConfig.downloadApkUrl,
-            external: true,
+            href: "/download",
           },
           features: [
             "1 station, jusqu'à 2 appareils",
@@ -197,8 +196,7 @@ function build(locale: AppLocale): PricingContent {
         price: "Free",
         cta: {
           label: text.primaryCtaLabel,
-          href: siteConfig.downloadApkUrl,
-          external: true,
+          href: "/download",
         },
         features: [
           "1 station, up to 2 devices",

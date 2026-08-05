@@ -12,6 +12,7 @@ import {
   ReleaseNotes,
 } from "@/features/download-page";
 import type { AppLocale } from "@/i18n/routing";
+import { getPublicLatestBetaRelease, type PublicBetaRelease } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 
 interface DownloadPageProps {
@@ -35,6 +36,10 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const { hero } = getDownloadContent(locale);
+  // WS-006N (follow-up) -- fetched once here and passed down, rather than
+  // each section independently calling this itself, so the page makes
+  // exactly one live call to the backend per render/revalidation.
+  const release: PublicBetaRelease | null = await getPublicLatestBetaRelease().catch(() => null);
 
   return (
     <>
@@ -45,7 +50,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
         breadcrumbs={[{ label: hero.eyebrow, href: "/download" }]}
       />
       <DownloadCta />
-      <BetaInfo />
+      <BetaInfo release={release} />
       <ReleaseNotes />
       <BeforeYouInstall />
       <Integrity />

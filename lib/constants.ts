@@ -34,12 +34,17 @@ export const SOCIALS: { label: string; href: string }[] = [];
 // brand/playstore.md.txt for the store copy prepared ahead of launch.
 export const PLAYSTORE_URL: string | null = null;
 
-// Signed release APK (RELEASE-001, 2026-07-24) — version 1.0.0-beta.1,
-// versionCode 10001, served as a static file from public/downloads/. Every
-// download button on the site reads this one value (all routed through
-// /download as of MARKETING-UPDATE-02), so publishing the next build is a
-// one-line change here.
-export const APK_URL = "/downloads/momoassistant-1.0.0-beta.1.apk";
+// TECHNICAL DEBT (WS-006N follow-up) -- signed release APK (RELEASE-001,
+// 2026-07-24), served as a static file from public/downloads/. No longer
+// the primary path: every download now goes through /api/download, which
+// redirects to whatever the backend's Beta Distribution system currently
+// has published (see lib/mcp-client.ts getPublicLatestBetaRelease /
+// app/api/download/route.ts). This constant is only a fallback for that
+// route's own failure path (backend unreachable, nothing published yet).
+// Remove once Beta Distribution has run in production for 2-4 weeks with
+// no fallback triggers observed -- temporary fallbacks left undocumented
+// have a habit of living forever.
+export const FALLBACK_APK_URL = "/downloads/momoassistant-1.0.0-beta.1.apk";
 
 export const siteConfig = {
   name: SITE_NAME,
@@ -51,7 +56,7 @@ export const siteConfig = {
   supportEmail: SUPPORT_EMAIL,
   socials: SOCIALS,
   playstoreUrl: PLAYSTORE_URL,
-  downloadApkUrl: APK_URL,
+  fallbackApkUrl: FALLBACK_APK_URL,
 } as const;
 
 // --- Localized site-wide text -----------------------------------------
