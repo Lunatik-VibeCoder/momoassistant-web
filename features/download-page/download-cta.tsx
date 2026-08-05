@@ -5,7 +5,6 @@ import { Section } from "@/components/layout/section";
 import { CTAButton } from "@/components/shared/cta-button";
 import { getDownloadContent } from "@/content/download";
 import type { AppLocale } from "@/i18n/routing";
-import { siteConfig } from "@/lib/constants";
 
 export async function DownloadCta() {
   const locale = (await getLocale()) as AppLocale;
@@ -19,7 +18,7 @@ export async function DownloadCta() {
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-10 text-center shadow-soft">
         <CTAButton
           size="lg"
-          href={siteConfig.downloadApkUrl}
+          href="/api/download"
           external
           event="download_apk_download_page"
           className="h-14 px-10 text-base"

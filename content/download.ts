@@ -7,11 +7,20 @@ export interface DownloadContent {
   hero: { eyebrow: string; title: string; description: string };
   downloadCta: { label: string; note: string };
   betaInfoHeading: string;
+  // Live labels for the three per-release facts BetaInfo prepends from the
+  // backend (WS-006N follow-up) -- unavailableLabel covers the case where
+  // the live fetch fails and there's nothing to show for them.
+  currentVersionLabel: string;
+  releaseChannelLabel: string;
+  lastUpdatedLabel: string;
+  unavailableLabel: string;
+  channelNames: { STABLE: string; BETA: string; RC: string };
   betaInfo: SpecItem[];
-  // Not published anywhere yet (no real APK release asset exists — see
-  // lib/constants.ts APK_URL). Kept as its own field, separate from the
-  // static betaInfo array, so BetaInfo (features/download-page/beta-info.tsx)
-  // can append it to the grid the moment a real size is known, with no
+  // Not published anywhere yet -- BetaRelease has no fileSizeBytes column
+  // (WS-006N follow-up scoped that out; would need a schema migration).
+  // Kept as its own field, separate from the static betaInfo array, so
+  // BetaInfo (features/download-page/beta-info.tsx) can append it to the
+  // grid the moment a real size is known, with no
   // structural change to this content shape or that component.
   fileSizeLabel: string;
   fileSize: string | null;
@@ -43,11 +52,16 @@ function build(locale: AppLocale): DownloadContent {
         note: "Gratuit, sans inscription. Nécessite Android 8.0 ou version ultérieure.",
       },
       betaInfoHeading: "Informations sur cette version",
+      currentVersionLabel: "Version actuelle",
+      releaseChannelLabel: "Canal de diffusion",
+      lastUpdatedLabel: "Dernière mise à jour",
+      unavailableLabel: "Indisponible",
+      channelNames: { STABLE: "Stable", BETA: "Bêta publique", RC: "Release Candidate" },
+      // "Version actuelle" / "Canal de diffusion" / "Dernière mise à jour"
+      // are no longer static entries here (WS-006N follow-up) -- BetaInfo
+      // prepends them live from the backend's public-latest release.
       betaInfo: [
-        { label: "Version actuelle", value: "1.0.0-beta.1" },
-        { label: "Canal de diffusion", value: "Bêta publique" },
         { label: "Android minimum", value: "Android 8.0 (Oreo) ou ultérieur" },
-        { label: "Dernière mise à jour", value: "24 juillet 2026" },
         { label: "Code de version", value: "10001" },
         { label: "Architecture", value: "APK universel (tous les appareils)" },
       ],
@@ -124,11 +138,16 @@ function build(locale: AppLocale): DownloadContent {
       note: "Free, no signup required. Requires Android 8.0 or later.",
     },
     betaInfoHeading: "About this release",
+    currentVersionLabel: "Current version",
+    releaseChannelLabel: "Release channel",
+    lastUpdatedLabel: "Last updated",
+    unavailableLabel: "Unavailable",
+    channelNames: { STABLE: "Stable", BETA: "Public Beta", RC: "Release Candidate" },
+    // "Current version" / "Release channel" / "Last updated" are no longer
+    // static entries here (WS-006N follow-up) -- BetaInfo prepends them
+    // live from the backend's public-latest release.
     betaInfo: [
-      { label: "Current version", value: "1.0.0-beta.1" },
-      { label: "Release channel", value: "Public Beta" },
       { label: "Android minimum", value: "Android 8.0 (Oreo) or later" },
-      { label: "Last updated", value: "July 24, 2026" },
       { label: "Version code", value: "10001" },
       { label: "Architecture", value: "Universal APK (all devices)" },
     ],

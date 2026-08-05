@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { APK_URL } from "@/lib/constants";
+import { authorizeBetaDownload, getActiveBetaRelease, McpError } from "@/lib/mcp-client";
 import { requireSession } from "@/lib/session";
 
-// Review amendment (WS-005 plan) -- the Dashboard's download CTA hits this
-// BFF route rather than linking straight to the static APK. No license
-// check, download logging, or stable/beta/RC selection is built yet
-// (nothing in this sprint needs it) -- only the indirection, so those can
-// be added later without moving where the button points.
+// WS-006N (follow-up) -- now actually calls the license-gated Beta
+// Distribution flow this route was always meant to front (see the
+// superseded review-amendment note this replaces): GET /beta-releases/active
+// to find the current release, then POST .../authorize-download to resolve
+// a real URL. Both calls carry the user's own session token, so MCP's own
+// per-organization License check (LicensesService.canDownloadBeta) is what
+// actually gates this now, not just "is logged in."
 //
 // `locale` is typed as a plain string, not `AppLocale` -- Next's generated
 // route type validator expects Promise<{ locale: string }> for this route
@@ -22,5 +24,17 @@ export async function GET(
   if (!session) {
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
-  return NextResponse.redirect(new URL(APK_URL, request.url));
+  try {
+    const release = await getActiveBetaRelease(session.accessToken);
+    const authorization = await authorizeBetaDownload(session.accessToken, release.id);
+    return NextResponse.redirect(authorization.downloadUrl);
+  } catch (error) {
+    // No License, no organization, or no published release for this
+    // channel -- land on Subscription rather than throwing an unhandled
+    // error; that page is where a licensing problem is actually visible.
+    if (error instanceof McpError && (error.kind === "forbidden" || error.kind === "not_found")) {
+      return NextResponse.redirect(new URL(`/${locale}/app/subscription`, request.url));
+    }
+    throw error;
+  }
 }
