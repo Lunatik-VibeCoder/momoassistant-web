@@ -53,7 +53,16 @@ export default async function MembersPage({ params }: MembersPageProps) {
         <InviteMemberDialog organizationId={organizationId} content={content} />
       </div>
 
-      <div className="overflow-x-auto rounded-xl ring-1 ring-foreground/10">
+      {/*
+        WS-005R found a real 768px-and-below overflow here: the Hub
+        sidebar + this table's 7 columns don't both fit below `lg:`.
+        Below `lg:`, one card per member instead of shrinking the table
+        (a table with this many columns has no good "smaller" version —
+        columns would either clip or force a second axis of scrolling on
+        top of the sidebar's own). At `lg:`+, the full table remains
+        exactly as before.
+      */}
+      <div className="hidden overflow-x-auto rounded-xl ring-1 ring-foreground/10 lg:block">
         <table className="w-full text-left text-sm">
           <thead className="bg-muted/50 text-xs text-muted-foreground uppercase">
             <tr>
@@ -98,6 +107,46 @@ export default async function MembersPage({ params }: MembersPageProps) {
           </tbody>
         </table>
       </div>
+
+      <ul className="flex flex-col gap-3 lg:hidden">
+        {members.map((member) => (
+          <li
+            key={member.id}
+            className="rounded-xl border border-border bg-card p-4 ring-1 ring-foreground/10"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-foreground">
+                  {member.user.displayName}
+                </p>
+                <p className="truncate text-sm text-muted-foreground">
+                  {member.user.email ?? "—"}
+                </p>
+              </div>
+              <Badge variant="outline" className="shrink-0">
+                {member.role.name}
+              </Badge>
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span>{member.status}</span>
+              <span>
+                {content.columns.joined} {formatDate(locale, member.joinedAt)}
+              </span>
+            </div>
+
+            {member.userId !== session.user.id && (
+              <div className="mt-3 border-t border-border pt-3">
+                <RemoveMemberButton
+                  organizationId={organizationId}
+                  memberId={member.id}
+                  content={content}
+                />
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
