@@ -26,7 +26,7 @@ function build(locale: AppLocale): StatusContent {
       },
       services: [
         {
-          name: "Site web (momoassistant.app)",
+          name: "Site web (momoassistant.com)",
           status: "operational",
           description: "Le site web marketing et la documentation.",
         },
@@ -38,7 +38,7 @@ function build(locale: AppLocale): StatusContent {
         {
           name: "Support par e-mail",
           status: "operational",
-          description: "Ventes, support et demandes générales via hello@momoassistant.app.",
+          description: "Ventes, support et demandes générales via support@momoassistant.com.",
         },
         {
           name: "Plateforme SaaS (backend multi-tenant)",
@@ -66,7 +66,7 @@ function build(locale: AppLocale): StatusContent {
     },
     services: [
       {
-        name: "Website (momoassistant.app)",
+        name: "Website (momoassistant.com)",
         status: "operational",
         description: "The marketing website and documentation.",
       },
@@ -78,7 +78,7 @@ function build(locale: AppLocale): StatusContent {
       {
         name: "Email support",
         status: "operational",
-        description: "Sales, support, and general inquiries via hello@momoassistant.app.",
+        description: "Sales, support, and general inquiries via support@momoassistant.com.",
       },
       {
         name: "SaaS platform (multi-tenant backend)",

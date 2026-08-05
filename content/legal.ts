@@ -125,7 +125,7 @@ function build(locale: AppLocale): LegalContent {
         eyebrow: "Légal",
         title: "Politique de cookies",
         description:
-          "Ce que le site web momoassistant.app stocke dans votre navigateur, et pourquoi.",
+          "Ce que le site web momoassistant.com stocke dans votre navigateur, et pourquoi.",
         lastUpdatedLabel: "Dernière mise à jour :",
         lastUpdated: LAST_UPDATED,
         sections: [
@@ -320,7 +320,7 @@ function build(locale: AppLocale): LegalContent {
       eyebrow: "Legal",
       title: "Cookie Policy",
       description:
-        "What the momoassistant.app website stores in your browser, and why.",
+        "What the momoassistant.com website stores in your browser, and why.",
       lastUpdatedLabel: "Last updated:",
       lastUpdated: LAST_UPDATED,
       sections: [
