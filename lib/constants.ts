@@ -16,12 +16,14 @@ export const APP_NAME = "MoMo Assistant";
 export const SHORT_NAME = "MoMo";
 export const CREATOR = "DEUS FEREA";
 
-// TODO: replace with the production domain before launch — not specified
-// in the brand kit.
-export const SITE_URL = "https://momoassistant.app";
+export const SITE_URL = "https://www.momoassistant.com";
 
-// TODO: not specified in the brand kit — replace with the real inbox.
-export const EMAIL = "hello@momoassistant.app";
+// Standardized on the real momoassistant.com domain — noreply@ for
+// transactional email (Sprint E1/Brevo) already used it; support@ is the
+// one other customer-facing address needed at this stage. Everything else
+// (security@, sales@, partners@, billing@, beta@) can be added once there's
+// a real need — not before.
+export const EMAIL = "support@momoassistant.com";
 export const SUPPORT_EMAIL = EMAIL;
 
 // No verified public profiles yet — populate once they exist rather than
