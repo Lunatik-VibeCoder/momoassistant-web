@@ -1,9 +1,17 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { getIronSession, type IronSession } from "iron-session";
+import { getIronSession, sealData, unsealData, type IronSession } from "iron-session";
 
 import { refreshSession as mcpRefresh } from "@/lib/mcp-client";
+
+export const SESSION_COOKIE_NAME = "momo_session";
+export const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+};
 
 // RFC-0011 (Web Platform <-> MCP Communication Boundary) -- the browser
 // never holds a raw MCP JWT (Invariant 1). This is the only place those
@@ -42,14 +50,9 @@ function getSessionSecret(): string {
 async function getIronSessionInstance(): Promise<IronSession<IronSessionShape>> {
   const cookieStore = await cookies();
   return getIronSession<IronSessionShape>(cookieStore, {
-    cookieName: "momo_session",
+    cookieName: SESSION_COOKIE_NAME,
     password: getSessionSecret(),
-    cookieOptions: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    },
+    cookieOptions: SESSION_COOKIE_OPTIONS,
   });
 }
 
@@ -75,21 +78,122 @@ export async function getSession(): Promise<SessionData | null> {
 // expiry, reusing MCP's existing refresh-token rotation (R4). The browser
 // never sees this happen.
 //
-// Found during WS-006 manual verification, not previously caught: this
-// function's only real callers are page/layout Server Components, but
-// Next.js only allows cookies().set()/.delete() from a Server Action,
-// Route Handler, or Middleware -- never from a plain render. Both
-// session.save() and session.destroy() below hit that restriction and
-// throw once a request actually lands in the near-expiry window (every
-// earlier verification pass happened to finish within one access token's
-// 15-minute lifetime, so this never fired before). Catching here stops the
-// 500 and keeps the redirect-to-login behavior working; it does not fully
-// fix the underlying gap -- a successful-but-unpersisted refresh still
-// leaves a now-rotated-away refresh token in the browser's cookie, so the
-// next request's retry can trip R4's reuse-detection and force a real
-// logout instead of silently renewing. The correct fix is renewing the
-// session in Next Middleware (where cookie mutation is actually legal),
-// not patched here -- flagged as its own follow-up, out of WS-006's scope.
+// WS-005R -- the real fix now lives in proxy.ts/refreshSessionCookie()
+// above, which runs in Middleware where cookie mutation is actually legal
+// and refreshes before a request ever reaches a page. This function's own
+// refresh branch is now just a fallback for whatever Middleware's matcher
+// doesn't cover (e.g. Route Handlers it's configured to skip) -- it still
+// can't persist a refresh from a plain render, so session.save()/.destroy()
+// below are still wrapped in try/catch for that case, same as before.
+// --- Middleware-safe silent refresh (WS-005R P1 fix) ---------------------
+//
+// requireSession() below can't legally persist a refresh (Next.js only
+// allows cookies().set()/.delete() from a Server Action, Route Handler, or
+// Middleware). Middleware is the one place that's actually true, but
+// Middleware has no next/headers `cookies()`/`headers()` context (that's
+// App Router-render-scoped, not available here) and shouldn't assume a
+// Node runtime, so this section is deliberately self-contained: it doesn't
+// import getIronSession, mcp-client's mcpFetch (which calls next/headers'
+// headers()), or Buffer -- only iron-session's standalone sealData/
+// unsealData (edge-safe) and the Web-standard atob/fetch.
+//
+// proxy.ts calls refreshSessionCookie() with the raw cookie string from
+// NextRequest.cookies, then applies the result to the outgoing
+// NextResponse.cookies itself -- that's the only place cookie mutation is
+// legal for a request already past render.
+
+function base64UrlDecode(segment: string): string {
+  const padded =
+    segment.replace(/-/g, "+").replace(/_/g, "/") +
+    "=".repeat((4 - (segment.length % 4)) % 4);
+  return atob(padded);
+}
+
+function decodeAccessTokenExpiryMsEdgeSafe(accessToken: string): number {
+  const payloadSegment = accessToken.split(".")[1];
+  if (!payloadSegment) {
+    return Date.now();
+  }
+  try {
+    const payload = JSON.parse(base64UrlDecode(payloadSegment)) as { exp?: number };
+    return payload.exp ? payload.exp * 1000 : Date.now();
+  } catch {
+    return Date.now();
+  }
+}
+
+async function refreshViaMcpEdgeSafe(
+  refreshToken: string,
+): Promise<Pick<SessionData, "accessToken" | "refreshToken" | "accessTokenExpiresAt"> | null> {
+  const MCP_API_URL = process.env.MCP_API_URL;
+  if (!MCP_API_URL) {
+    return null;
+  }
+  try {
+    const res = await fetch(`${MCP_API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+    if (!res.ok) {
+      return null;
+    }
+    const tokens = (await res.json()) as { accessToken: string; refreshToken: string };
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      accessTokenExpiresAt: decodeAccessTokenExpiryMsEdgeSafe(tokens.accessToken),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export type MiddlewareSessionRefreshResult =
+  | { action: "none" }
+  | { action: "clear" }
+  | { action: "set"; value: string };
+
+export async function refreshSessionCookie(
+  rawCookieValue: string | undefined,
+): Promise<MiddlewareSessionRefreshResult> {
+  if (!rawCookieValue) {
+    return { action: "none" };
+  }
+
+  let parsed: IronSessionShape;
+  try {
+    parsed = await unsealData<IronSessionShape>(rawCookieValue, {
+      password: getSessionSecret(),
+    });
+  } catch {
+    // Undecryptable/corrupt cookie -- not this function's job to clear it,
+    // requireSession()'s own read will simply see no valid session.
+    return { action: "none" };
+  }
+
+  const data = parsed.data;
+  if (!data) {
+    return { action: "none" };
+  }
+
+  const isExpiringSoon = data.accessTokenExpiresAt - Date.now() < 30_000;
+  if (!isExpiringSoon) {
+    return { action: "none" };
+  }
+
+  const refreshed = await refreshViaMcpEdgeSafe(data.refreshToken);
+  if (!refreshed) {
+    return { action: "clear" };
+  }
+
+  const updated: SessionData = { ...data, ...refreshed };
+  const sealed = await sealData({ data: updated } satisfies IronSessionShape, {
+    password: getSessionSecret(),
+  });
+  return { action: "set", value: sealed };
+}
+
 export async function requireSession(): Promise<SessionData | null> {
   const session = await getIronSessionInstance();
   const data = session.data;
