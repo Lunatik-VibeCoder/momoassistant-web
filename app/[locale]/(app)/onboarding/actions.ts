@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { completeOnboarding, McpError } from "@/lib/mcp-client";
+import { appDashboardPath, marketingPath } from "@/lib/constants";
 import { requireSession } from "@/lib/session";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -18,7 +19,7 @@ export async function completeOnboardingAction(
 ): Promise<OnboardingFormState> {
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
 
   const tenantName = String(formData.get("tenantName") ?? "").trim();
@@ -38,5 +39,5 @@ export async function completeOnboardingAction(
     return { status: "error", message: "Something went wrong. Please try again." };
   }
 
-  redirect(`/${locale}/app`);
+  redirect(appDashboardPath(locale));
 }

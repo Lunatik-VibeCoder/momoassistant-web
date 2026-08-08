@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { appDashboardPath } from "@/lib/constants";
 import { createSession } from "@/lib/session";
 import { McpError, login } from "@/lib/mcp-client";
 import type { AppLocale } from "@/i18n/routing";
@@ -30,5 +31,5 @@ export async function loginAction(
   }
 
   await createSession(sessionData);
-  redirect(`/${locale}/app`);
+  redirect(appDashboardPath(locale));
 }

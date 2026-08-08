@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
+import { marketingPath } from "@/lib/constants";
 import { requireSession } from "@/lib/session";
 
 interface AppLayoutProps {
@@ -20,7 +21,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   const { locale } = await params;
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   return children;
 }

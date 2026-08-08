@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { getMembersContent } from "@/content/members";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import { getMe, listMembers } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
@@ -32,7 +33,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   const profile = await getMe(session.accessToken);
   const organizationId = profile.organization!.id;

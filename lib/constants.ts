@@ -18,6 +18,45 @@ export const CREATOR = "DEUS FEREA";
 
 export const SITE_URL = "https://www.momoassistant.com";
 
+// The Customer Hub (WS-006) lives on its own subdomain in production,
+// sharing the session cookie with SITE_URL above (see
+// SESSION_COOKIE_OPTIONS' `domain`) -- not to be confused with APP_NAME
+// (the Android app's product name). Empty string in dev, since there's no
+// real app.* host locally -- every helper below falls back to a relative,
+// same-origin path in that case, keeping local dev unchanged.
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
+
+// `locale` is a plain `string`, not `AppLocale`, on all three helpers below
+// -- several call sites (layouts shared across a route-type-validator
+// pattern, e.g. app/[locale]/(app)/layout.tsx) only have a plain string at
+// that point (Next's generated route types constraint, not a real
+// narrowing loss -- it's always one of the two real locales by the time it
+// gets here). A plain string is all these need anyway; every real
+// `AppLocale` value is still assignable.
+
+// Every Hub page other than the dashboard already sits at its real path in
+// both dev and prod (never nested under /app) -- this just prefixes the
+// host when there's one to cross to.
+export function appPath(locale: string, path: string): string {
+  return `${APP_URL}/${locale}${path}`;
+}
+
+// The dashboard is the one path that differs: bare root in prod
+// (Middleware rewrites app.momoassistant.com's bare locale root to /app
+// internally), but still /app itself in dev (no such rewrite fires without
+// the real app.* host, and the route folder is unmoved).
+export function appDashboardPath(locale: string): string {
+  return APP_URL ? `${APP_URL}/${locale}` : `/${locale}/app`;
+}
+
+// No public env var needed here -- every caller is server-only (a Server
+// Action/Component redirecting to /login), so this just reuses SITE_URL,
+// gated the same way SESSION_COOKIE_OPTIONS' `secure`/`domain` already are.
+export function marketingPath(locale: string, path: string): string {
+  const base = process.env.NODE_ENV === "production" ? SITE_URL : "";
+  return `${base}/${locale}${path}`;
+}
+
 // Standardized on the real momoassistant.com domain — noreply@ for
 // transactional email (Sprint E1/Brevo) already used it; support@ is the
 // one other customer-facing address needed at this stage. Everything else

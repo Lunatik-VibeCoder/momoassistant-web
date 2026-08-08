@@ -11,6 +11,14 @@ export const SESSION_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   path: "/",
+  // Marketing (www.momoassistant.com) and the Customer Hub
+  // (app.momoassistant.com) are now separate hosts sharing one session --
+  // login happens on www, the Hub lives on app, so the cookie has to be
+  // valid across both. Omitted in dev (no domain = host-only, keeps
+  // localhost working exactly as before), same env-conditional as `secure`.
+  ...(process.env.NODE_ENV === "production"
+    ? { domain: ".momoassistant.com" }
+    : {}),
 };
 
 // RFC-0011 (Web Platform <-> MCP Communication Boundary) -- the browser
