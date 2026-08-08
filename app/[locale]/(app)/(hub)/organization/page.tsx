@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getOrganizationContent } from "@/content/organization";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import {
   getLicense,
   getMe,
@@ -40,7 +41,7 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
 
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   // The (hub) layout already guarantees an Organization exists.
   const profile = await getMe(session.accessToken);

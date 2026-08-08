@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Section } from "@/components/layout/section";
 import { getDashboardContent } from "@/content/dashboard";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import { getMe } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
@@ -20,7 +21,7 @@ interface DashboardPageProps {
 export async function generateMetadata({ params }: DashboardPageProps): Promise<Metadata> {
   const { locale } = await params;
   return {
-    ...createMetadata({ locale, title: "Dashboard", path: "/app" }),
+    ...createMetadata({ locale, title: "Dashboard", path: "/" }),
     robots: { index: false, follow: false },
   };
 }
@@ -40,7 +41,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
   // directly.
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
 
   // RFC-0011 SS3 -- the session cookie is never a data source of truth;

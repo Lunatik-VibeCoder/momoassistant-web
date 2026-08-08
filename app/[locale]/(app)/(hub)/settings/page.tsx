@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { getSettingsContent } from "@/content/settings";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import { getMe } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
@@ -28,7 +29,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
 
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   const profile = await getMe(session.accessToken);
   const content = getSettingsContent(locale);

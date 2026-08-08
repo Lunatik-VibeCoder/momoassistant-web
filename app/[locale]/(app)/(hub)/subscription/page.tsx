@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSubscriptionContent } from "@/content/subscription";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import { getMe, getSubscription } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
@@ -32,7 +33,7 @@ export default async function SubscriptionPage({ params }: SubscriptionPageProps
 
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   const profile = await getMe(session.accessToken);
   const organizationId = profile.organization!.id;

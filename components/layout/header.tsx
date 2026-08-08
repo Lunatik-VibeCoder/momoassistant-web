@@ -30,7 +30,7 @@ import { getAuthNavText, getProductMenu, getResourcesMenu } from "@/content/navi
 import { useScrollPosition } from "@/hooks";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import { siteConfig } from "@/lib/constants";
+import { appDashboardPath, siteConfig } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -145,7 +145,7 @@ export function Header({ locale }: HeaderProps) {
           </div>
 
           {isAuthenticated ? (
-            <CTAButton href="/app" event="header_dashboard" className="hidden lg:inline-flex">
+            <CTAButton href={appDashboardPath(locale)} event="header_dashboard" className="hidden lg:inline-flex">
               {auth.dashboardLabel}
             </CTAButton>
           ) : (
@@ -220,7 +220,7 @@ export function Header({ locale }: HeaderProps) {
               <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
                 <LocaleSwitcher />
                 {isAuthenticated ? (
-                  <CTAButton href="/app" event="header_dashboard_mobile">
+                  <CTAButton href={appDashboardPath(locale)} event="header_dashboard_mobile">
                     {auth.dashboardLabel}
                   </CTAButton>
                 ) : (

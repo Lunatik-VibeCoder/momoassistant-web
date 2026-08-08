@@ -59,7 +59,11 @@ export function HubSidebar({ items, organizationName }: HubSidebarProps) {
   return (
     <>
       <aside className="hidden w-56 shrink-0 border-r border-border md:flex md:flex-col md:gap-6 md:px-4 md:py-6">
-        <NavLink href="/app" className="flex items-center px-3">
+        {/* "/" not "/app" -- on app.momoassistant.com the bare root IS the
+            dashboard (Middleware rewrite, proxy.ts). Only cosmetic effect
+            in local dev (no rewrite there): the dashboard nav item won't
+            show as active, since it's still served at literal /app. */}
+        <NavLink href="/" className="flex items-center px-3">
           <Logo />
         </NavLink>
         <p className="truncate px-3 text-xs font-semibold text-muted-foreground uppercase">
@@ -69,7 +73,7 @@ export function HubSidebar({ items, organizationName }: HubSidebarProps) {
       </aside>
 
       <div className="flex items-center justify-between border-b border-border px-4 py-3 md:hidden">
-        <NavLink href="/app" className="flex items-center">
+        <NavLink href="/" className="flex items-center">
           <Logo />
         </NavLink>
         <Sheet>

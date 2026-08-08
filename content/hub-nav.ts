@@ -17,7 +17,7 @@ export function getHubNavContent(locale: AppLocale): HubNavContent {
   if (locale === "fr") {
     return {
       items: [
-        { href: "/app", label: "Tableau de bord" },
+        { href: "/", label: "Tableau de bord" },
         { href: "/organization", label: "Organisation" },
         { href: "/members", label: "Membres" },
         { href: "/health", label: "État de santé" },
@@ -30,7 +30,7 @@ export function getHubNavContent(locale: AppLocale): HubNavContent {
   }
   return {
     items: [
-      { href: "/app", label: "Dashboard" },
+      { href: "/", label: "Dashboard" },
       { href: "/organization", label: "Organization" },
       { href: "/members", label: "Members" },
       { href: "/health", label: "Health" },

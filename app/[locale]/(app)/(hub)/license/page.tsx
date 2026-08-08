@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getLicenseContent } from "@/content/license";
 import type { AppLocale } from "@/i18n/routing";
+import { marketingPath } from "@/lib/constants";
 import { getLicense, getMe } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
@@ -31,7 +32,7 @@ export default async function LicensePage({ params }: LicensePageProps) {
 
   const session = await requireSession();
   if (!session) {
-    redirect(`/${locale}/login`);
+    redirect(marketingPath(locale, "/login"));
   }
   const profile = await getMe(session.accessToken);
   const organizationId = profile.organization!.id;
