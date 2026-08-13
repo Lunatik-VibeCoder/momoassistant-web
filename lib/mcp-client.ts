@@ -466,14 +466,18 @@ export async function changePassword(
   await mcpFetch("/auth/change-password", { method: "POST", body: input }, { accessToken });
 }
 
-// WS-006N (follow-up) -- Beta Distribution as the single source of truth
-// for the Android download, replacing a hardcoded static file path.
+// AND-PR-001 (was WS-006N's "Beta Distribution") -- Release Management as
+// the single source of truth for the Android download, replacing a
+// hardcoded static file path. Renamed BetaRelease -> AppRelease backend-side
+// because this stopped being a beta-only concept once Version Policy needed
+// to govern STABLE/RC the same way.
 
-export interface PublicBetaRelease {
+export interface PublicAppRelease {
   version: string;
   channel: "STABLE" | "BETA" | "RC";
   publishedAt: string | null;
   expiresAt: string | null;
+  sha256: string | null;
 }
 
 // Deliberately does NOT go through mcpFetch: that helper hardcodes
@@ -490,43 +494,45 @@ export interface PublicBetaRelease {
 // headers only affect which key TrustedForwarderThrottlerGuard rate-limits
 // by (see that guard's own getTracker) -- never a guard/auth requirement,
 // and this call only reaches the origin once per revalidate window anyway.
-export async function getPublicLatestBetaRelease(): Promise<PublicBetaRelease> {
+export async function getPublicLatestAppRelease(): Promise<PublicAppRelease> {
   if (!MCP_API_URL) {
     throw new Error("MCP_API_URL must be set");
   }
-  const response = await fetch(`${MCP_API_URL}/beta-releases/public-latest`, {
+  const response = await fetch(`${MCP_API_URL}/app-releases/public-latest`, {
     next: { revalidate: 300 },
   });
   if (!response.ok) {
     throw new McpError(statusToKind(response.status), response.status, response.statusText);
   }
-  return (await response.json()) as PublicBetaRelease;
+  return (await response.json()) as PublicAppRelease;
 }
 
-export interface BetaReleaseMetadata extends PublicBetaRelease {
+export interface AppReleaseMetadata extends PublicAppRelease {
   id: string;
   releaseNotes: string | null;
 }
 
-// GET /beta-releases/active -- the authenticated, license-gated route (the
-// Customer Hub's own download flow, distinct from the public one above).
-export async function getActiveBetaRelease(accessToken: string): Promise<BetaReleaseMetadata> {
-  return mcpFetch<BetaReleaseMetadata>("/beta-releases/active", { method: "GET" }, { accessToken });
+// GET /app-releases/active -- the authenticated route (the Customer Hub's
+// own download flow, distinct from the public one above). AND-PR-001
+// removed the License gate that used to sit behind this: an authenticated
+// user who's completed onboarding is enough, no paid License required.
+export async function getActiveAppRelease(accessToken: string): Promise<AppReleaseMetadata> {
+  return mcpFetch<AppReleaseMetadata>("/app-releases/active", { method: "GET" }, { accessToken });
 }
 
-export interface BetaReleaseAuthorization {
+export interface AppReleaseAuthorization {
   downloadUrl: string;
   version: string;
   channel: "STABLE" | "BETA" | "RC";
   expiresAt: string | null;
 }
 
-export async function authorizeBetaDownload(
+export async function authorizeAppDownload(
   accessToken: string,
   releaseId: string,
-): Promise<BetaReleaseAuthorization> {
-  return mcpFetch<BetaReleaseAuthorization>(
-    `/beta-releases/${releaseId}/authorize-download`,
+): Promise<AppReleaseAuthorization> {
+  return mcpFetch<AppReleaseAuthorization>(
+    `/app-releases/${releaseId}/authorize-download`,
     { method: "POST" },
     { accessToken },
   );

@@ -5,19 +5,19 @@ import { MotionItem } from "@/components/shared/motion-item";
 import { MotionSection } from "@/components/shared/motion-section";
 import { getDownloadContent } from "@/content/download";
 import type { AppLocale } from "@/i18n/routing";
-import type { PublicBetaRelease } from "@/lib/mcp-client";
+import type { PublicAppRelease } from "@/lib/mcp-client";
 import { staggerContainer } from "@/lib/motion";
 
 interface BetaInfoProps {
-  release: PublicBetaRelease | null;
+  release: PublicAppRelease | null;
 }
 
-// WS-006N (follow-up) -- version/channel/last-updated used to be static
-// content; now prepended live from the backend's public-latest release,
-// falling back to unavailableLabel ("—") rather than a stale hardcoded
-// value if the fetch failed. Every other entry in betaInfo stays static
-// (BetaRelease has no column for Android-minimum/version-code/architecture
-// today -- would need a schema migration to make those live too).
+// AND-PR-001 (was WS-006N) -- version/channel/last-updated used to be
+// static content; now prepended live from the backend's public-latest
+// release, falling back to unavailableLabel ("—") rather than a stale
+// hardcoded value if the fetch failed. Every other entry in betaInfo stays
+// static (AppRelease has no column for Android-minimum/version-code/
+// architecture today -- would need a schema migration to make those live too).
 export async function BetaInfo({ release }: BetaInfoProps) {
   const locale = (await getLocale()) as AppLocale;
   const {
