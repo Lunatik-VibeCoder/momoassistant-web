@@ -3,15 +3,23 @@ import { getLocale } from "next-intl/server";
 import { Section } from "@/components/layout/section";
 import { getDownloadContent } from "@/content/download";
 import type { AppLocale } from "@/i18n/routing";
+import type { PublicAppRelease } from "@/lib/mcp-client";
 
-// No SHA-256 has been published for this build yet — rather than compute
-// or guess one, this section simply doesn't render until a real checksum
-// is added to content/download.ts.
-export async function Integrity() {
+interface IntegrityProps {
+  release: PublicAppRelease | null;
+}
+
+// AND-PR-001 -- sha256 now comes live from the backend's published
+// AppRelease (release.sha256), falling back to the static content value
+// (frozen at whatever build originally computed it) only if the live fetch
+// failed, same fallback pattern as beta-info.tsx. Still doesn't render at
+// all if neither source has a value.
+export async function Integrity({ release }: IntegrityProps) {
   const locale = (await getLocale()) as AppLocale;
   const { integrity } = getDownloadContent(locale);
+  const sha256 = release?.sha256 ?? integrity.value;
 
-  if (!integrity.value) return null;
+  if (!sha256) return null;
 
   return (
     <Section className="pt-0" aria-labelledby="integrity-heading">
@@ -26,7 +34,7 @@ export async function Integrity() {
           {integrity.label}
         </span>
         <code className="break-all font-mono text-sm text-foreground">
-          {integrity.value}
+          {sha256}
         </code>
       </div>
     </Section>

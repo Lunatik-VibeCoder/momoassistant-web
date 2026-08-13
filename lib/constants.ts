@@ -76,8 +76,8 @@ export const PLAYSTORE_URL: string | null = null;
 // TECHNICAL DEBT (WS-006N follow-up) -- signed release APK (RELEASE-001,
 // 2026-07-24), served as a static file from public/downloads/. No longer
 // the primary path: every download now goes through /api/download, which
-// redirects to whatever the backend's Beta Distribution system currently
-// has published (see lib/mcp-client.ts getPublicLatestBetaRelease /
+// redirects to whatever the backend's Release Management system currently
+// has published (see lib/mcp-client.ts getPublicLatestAppRelease /
 // app/api/download/route.ts). This constant is only a fallback for that
 // route's own failure path (backend unreachable, nothing published yet).
 // Remove once Beta Distribution has run in production for 2-4 weeks with

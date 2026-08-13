@@ -16,8 +16,8 @@ export interface DownloadContent {
   unavailableLabel: string;
   channelNames: { STABLE: string; BETA: string; RC: string };
   betaInfo: SpecItem[];
-  // Not published anywhere yet -- BetaRelease has no fileSizeBytes column
-  // (WS-006N follow-up scoped that out; would need a schema migration).
+  // Not published anywhere yet -- AppRelease has no fileSizeBytes column
+  // (out of scope for AND-PR-001 too; would need a schema migration).
   // Kept as its own field, separate from the static betaInfo array, so
   // BetaInfo (features/download-page/beta-info.tsx) can append it to the
   // grid the moment a real size is known, with no

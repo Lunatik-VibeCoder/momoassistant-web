@@ -4,10 +4,10 @@ import { FALLBACK_APK_URL } from "@/lib/constants";
 
 const MCP_API_URL = process.env.MCP_API_URL;
 
-// WS-006N (follow-up) -- the single entry point every "Download" button on
-// the marketing site now links to. Deliberately does NOT redirect the
-// browser straight to MCP_API_URL/beta-releases/public-download: RFC-0011's
-// invariant that "the browser never sees MCP's base URL" (see
+// AND-PR-001 (was WS-006N) -- the single entry point every "Download"
+// button on the marketing site now links to. Deliberately does NOT redirect
+// the browser straight to MCP_API_URL/app-releases/public-download:
+// RFC-0011's invariant that "the browser never sees MCP's base URL" (see
 // lib/mcp-client.ts) would otherwise be broken by this one route, since a
 // browser redirect target is visible to the browser by definition. Instead
 // this route follows that redirect itself, server-side, and re-redirects
@@ -16,7 +16,7 @@ const MCP_API_URL = process.env.MCP_API_URL;
 export async function GET(request: NextRequest): Promise<NextResponse> {
   if (MCP_API_URL) {
     try {
-      const response = await fetch(`${MCP_API_URL}/beta-releases/public-download`, {
+      const response = await fetch(`${MCP_API_URL}/app-releases/public-download`, {
         redirect: "manual",
         cache: "no-store",
       });
