@@ -10,15 +10,21 @@ import { staggerContainer } from "@/lib/motion";
 
 interface BetaInfoProps {
   release: PublicAppRelease | null;
+  // AND-PR-001 follow-up (2026-08-26) -- separate from `release` on purpose:
+  // versionCode is deliberately not part of PublicAppRelease (see
+  // lib/mcp-client.ts's getPublicLatestVersionCode for why), so it's fetched
+  // and passed down independently rather than bolted onto that type.
+  latestVersionCode: number | null;
 }
 
-// AND-PR-001 (was WS-006N) -- version/channel/last-updated used to be
-// static content; now prepended live from the backend's public-latest
-// release, falling back to unavailableLabel ("—") rather than a stale
-// hardcoded value if the fetch failed. Every other entry in betaInfo stays
-// static (AppRelease has no column for Android-minimum/version-code/
-// architecture today -- would need a schema migration to make those live too).
-export async function BetaInfo({ release }: BetaInfoProps) {
+// AND-PR-001 (was WS-006N) -- version/channel/last-updated/version-code
+// used to be static content (version-code was still hardcoded "10001" long
+// after Beta 2 shipped -- the exact staleness this follow-up fixes); now all
+// four are prepended live, falling back to unavailableLabel ("—") rather
+// than a stale hardcoded value if the fetch failed. Android-minimum/
+// architecture stay static (AppRelease has no column for either -- would
+// need a schema migration to make those live too).
+export async function BetaInfo({ release, latestVersionCode }: BetaInfoProps) {
   const locale = (await getLocale()) as AppLocale;
   const {
     betaInfo,
@@ -28,6 +34,7 @@ export async function BetaInfo({ release }: BetaInfoProps) {
     currentVersionLabel,
     releaseChannelLabel,
     lastUpdatedLabel,
+    versionCodeLabel,
     unavailableLabel,
     channelNames,
   } = getDownloadContent(locale);
@@ -47,6 +54,10 @@ export async function BetaInfo({ release }: BetaInfoProps) {
             day: "numeric",
           })
         : unavailableLabel,
+    },
+    {
+      label: versionCodeLabel,
+      value: latestVersionCode != null ? String(latestVersionCode) : unavailableLabel,
     },
   ];
 

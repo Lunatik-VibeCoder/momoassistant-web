@@ -13,6 +13,12 @@ export interface DownloadContent {
   currentVersionLabel: string;
   releaseChannelLabel: string;
   lastUpdatedLabel: string;
+  // AND-PR-001 follow-up (2026-08-26) -- versionCode moved from a static
+  // betaInfo entry (frozen at 10001, stale the moment Beta 2 shipped) to a
+  // live one, same treatment version/channel/lastUpdated already got
+  // (WS-006N). Sourced from lib/mcp-client.ts's getPublicLatestVersionCode,
+  // not PublicAppRelease -- see that function's own comment for why.
+  versionCodeLabel: string;
   unavailableLabel: string;
   channelNames: { STABLE: string; BETA: string; RC: string };
   betaInfo: SpecItem[];
@@ -55,14 +61,14 @@ function build(locale: AppLocale): DownloadContent {
       currentVersionLabel: "Version actuelle",
       releaseChannelLabel: "Canal de diffusion",
       lastUpdatedLabel: "Dernière mise à jour",
+      versionCodeLabel: "Code de version",
       unavailableLabel: "Indisponible",
       channelNames: { STABLE: "Stable", BETA: "Bêta publique", RC: "Release Candidate" },
-      // "Version actuelle" / "Canal de diffusion" / "Dernière mise à jour"
-      // are no longer static entries here (WS-006N follow-up) -- BetaInfo
-      // prepends them live from the backend's public-latest release.
+      // "Version actuelle" / "Canal de diffusion" / "Dernière mise à jour" /
+      // "Code de version" are no longer static entries here (WS-006N +
+      // AND-PR-001 follow-up) -- BetaInfo prepends them live.
       betaInfo: [
         { label: "Android minimum", value: "Android 8.0 (Oreo) ou ultérieur" },
-        { label: "Code de version", value: "10001" },
         { label: "Architecture", value: "APK universel (tous les appareils)" },
       ],
       fileSizeLabel: "Taille du fichier",
@@ -114,7 +120,11 @@ function build(locale: AppLocale): DownloadContent {
       integrity: {
         heading: "Vérifier l'intégrité",
         label: "Somme de contrôle SHA-256",
-        value: "4406baffded6641d89df7d37b35ec0483bc47fd882c036f9546fa495a9f7218a",
+        // Fallback only -- Integrity component prefers release.sha256 live
+        // (features/download-page/integrity.tsx). Frozen at whatever build
+        // last updated this file by hand (was Beta 1's checksum until this
+        // AND-PR-001 follow-up refreshed it to Beta 2's real published sha256).
+        value: "64c0e47296deb44f76b2adbe7e630b8b8949ff0543a8996bce51a9f3f3937506",
       },
       feedback: {
         heading: "Vous avez trouvé un bug ?",
@@ -141,14 +151,14 @@ function build(locale: AppLocale): DownloadContent {
     currentVersionLabel: "Current version",
     releaseChannelLabel: "Release channel",
     lastUpdatedLabel: "Last updated",
+    versionCodeLabel: "Version code",
     unavailableLabel: "Unavailable",
     channelNames: { STABLE: "Stable", BETA: "Public Beta", RC: "Release Candidate" },
-    // "Current version" / "Release channel" / "Last updated" are no longer
-    // static entries here (WS-006N follow-up) -- BetaInfo prepends them
-    // live from the backend's public-latest release.
+    // "Current version" / "Release channel" / "Last updated" / "Version
+    // code" are no longer static entries here (WS-006N + AND-PR-001
+    // follow-up) -- BetaInfo prepends them live.
     betaInfo: [
       { label: "Android minimum", value: "Android 8.0 (Oreo) or later" },
-      { label: "Version code", value: "10001" },
       { label: "Architecture", value: "Universal APK (all devices)" },
     ],
     fileSizeLabel: "File size",

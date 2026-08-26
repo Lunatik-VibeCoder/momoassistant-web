@@ -12,7 +12,11 @@ import {
   ReleaseNotes,
 } from "@/features/download-page";
 import type { AppLocale } from "@/i18n/routing";
-import { getPublicLatestAppRelease, type PublicAppRelease } from "@/lib/mcp-client";
+import {
+  getPublicLatestAppRelease,
+  getPublicLatestVersionCode,
+  type PublicAppRelease,
+} from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 
 interface DownloadPageProps {
@@ -37,9 +41,16 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
   setRequestLocale(locale);
   const { hero } = getDownloadContent(locale);
   // AND-PR-001 (was WS-006N) -- fetched once here and passed down, rather
-  // than each section independently calling this itself, so the page makes
-  // exactly one live call to the backend per render/revalidation.
-  const release: PublicAppRelease | null = await getPublicLatestAppRelease().catch(() => null);
+  // than each section independently calling this itself. Two separate live
+  // calls now (both public-latest and version-policy), run in parallel --
+  // versionCode is deliberately not part of public-latest's response (see
+  // getPublicLatestVersionCode's own comment), so it can't be folded into
+  // the single release object above.
+  const [release, latestVersionCode]: [PublicAppRelease | null, number | null] =
+    await Promise.all([
+      getPublicLatestAppRelease().catch(() => null),
+      getPublicLatestVersionCode().catch(() => null),
+    ]);
 
   return (
     <>
@@ -50,7 +61,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
         breadcrumbs={[{ label: hero.eyebrow, href: "/download" }]}
       />
       <DownloadCta />
-      <BetaInfo release={release} />
+      <BetaInfo release={release} latestVersionCode={latestVersionCode} />
       <ReleaseNotes />
       <BeforeYouInstall />
       <Integrity release={release} />

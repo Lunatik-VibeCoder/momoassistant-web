@@ -507,6 +507,43 @@ export async function getPublicLatestAppRelease(): Promise<PublicAppRelease> {
   return (await response.json()) as PublicAppRelease;
 }
 
+// AND-PR-001 follow-up (2026-08-26) -- versionCode is deliberately stripped
+// from public-latest (see AppReleasesController.getPublicLatest's own
+// tests: `expect(result).not.toHaveProperty('versionCode')`, both unit and
+// e2e), so it can't be added to PublicAppRelease above without reversing a
+// tested backend decision. version-policy is Android's own already-public,
+// unauthenticated endpoint and *does* return latestVersionCode by design --
+// reused here for exactly one field, nothing else in its payload (title/
+// message/status/etc. are Android-gate copy, not meaningful on a marketing
+// page). MARKETING_SITE_PROBE_VERSION_CODE is deliberately high so this
+// call always lands on getVersionPolicy's final SUPPORTED fallthrough
+// (the only branch guaranteed to carry the real release's versionCode) --
+// a low/0 caller version could otherwise trip API_TOO_OLD or
+// SECURITY_UPDATE_REQUIRED, both of which are real, meaningful statuses for
+// an actual outdated Android client but meaningless noise here.
+const MARKETING_SITE_PROBE_VERSION_CODE = 999_999_999;
+
+export interface PublicVersionPolicy {
+  latestVersionCode: number;
+}
+
+export async function getPublicLatestVersionCode(
+  channel: PublicAppRelease["channel"] = "BETA",
+): Promise<number | null> {
+  if (!MCP_API_URL) {
+    throw new Error("MCP_API_URL must be set");
+  }
+  const response = await fetch(
+    `${MCP_API_URL}/app-releases/version-policy?channel=${channel}&versionCode=${MARKETING_SITE_PROBE_VERSION_CODE}`,
+    { next: { revalidate: 300 } },
+  );
+  if (!response.ok) {
+    throw new McpError(statusToKind(response.status), response.status, response.statusText);
+  }
+  const policy = (await response.json()) as PublicVersionPolicy;
+  return policy.latestVersionCode || null;
+}
+
 export interface AppReleaseMetadata extends PublicAppRelease {
   id: string;
   releaseNotes: string | null;
