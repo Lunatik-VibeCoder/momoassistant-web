@@ -22,6 +22,16 @@ export function formatDate(locale: AppLocale, value: string | Date | null): stri
   )
 }
 
+// WS-009 (Dashboard / Live Operations) -- formatDate above is date-only
+// (dateStyle: "medium"), too coarse for "recent" activity that's often all
+// on the same day. Same native-Intl approach, just adds a time component.
+export function formatDateTime(locale: AppLocale, value: string | Date | null): string {
+  if (!value) return "—"
+  return new Intl.DateTimeFormat(DATE_LOCALE[locale], { dateStyle: "medium", timeStyle: "short" }).format(
+    new Date(value)
+  )
+}
+
 export function formatCurrency(locale: AppLocale, amount: string | number, currency: string): string {
   return new Intl.NumberFormat(DATE_LOCALE[locale], { style: "currency", currency }).format(
     Number(amount)

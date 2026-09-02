@@ -564,6 +564,67 @@ export interface AppReleaseAuthorization {
   expiresAt: string | null;
 }
 
+// WS-009 (Dashboard / Live Operations, CONTRACT-V1) -- both mirror
+// momoassistant-platform's own response shape field-for-field (commit
+// 81506a8, DevicesService.findByOrganization / TransactionsService.
+// findRecentByOrganization), same convention as every type above. Deliberately
+// no currency/country/operator field on RecentTransactionSummary -- the
+// backend contract doesn't expose them (privacy/scope decision made at
+// CONTRACT-V1 time), so this UI shows the raw amount only, never a guessed
+// currency suffix.
+
+export interface OrganizationDeviceSummary {
+  deviceId: string;
+  deviceName: string;
+  stationId: string | null;
+  stationName: string | null;
+  batteryLevel: number | null;
+  lastHeartbeatAt: string | null;
+  isStale: boolean;
+  currentCommunicationProfile: {
+    id: string;
+    type: string;
+    iccid: string | null;
+    eid: string | null;
+    operatorId: string;
+    countryId: string;
+    logicalSlot: number | null;
+    physicalSlot: number | null;
+  } | null;
+}
+
+export async function listOrganizationDevices(
+  accessToken: string,
+  organizationId: string,
+): Promise<OrganizationDeviceSummary[]> {
+  return mcpFetch<OrganizationDeviceSummary[]>(
+    `/organizations/${organizationId}/devices`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+export interface RecentTransactionSummary {
+  transactionUid: string;
+  stationId: string | null;
+  stationName: string | null;
+  status: string;
+  transactionType: string;
+  amount: string;
+  createdAt: string;
+}
+
+export async function listRecentTransactions(
+  accessToken: string,
+  organizationId: string,
+): Promise<RecentTransactionSummary[]> {
+  return mcpFetch<RecentTransactionSummary[]>(
+    `/organizations/${organizationId}/transactions/recent`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
 export async function authorizeAppDownload(
   accessToken: string,
   releaseId: string,
