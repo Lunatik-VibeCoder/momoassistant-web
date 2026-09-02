@@ -573,6 +573,30 @@ export interface AppReleaseAuthorization {
 // CONTRACT-V1 time), so this UI shows the raw amount only, never a guessed
 // currency suffix.
 
+// POST-WS009-REMEDIATION-01C-G -- mirrors momoassistant-platform's
+// CommunicationProfileSummary field-for-field (devices.service.ts, commit
+// fb3233f). No currency field -- deliberately not invented here either,
+// same discipline as RecentTransactionSummary above: this UI shows the raw
+// verifiedBalance number with operator/country as context, never a guessed
+// GHS/XOF suffix (formatCurrency() elsewhere in this repo is only ever
+// called with a currency field the backend explicitly provided on that same
+// object -- invoice.currency, license.plan.currency -- there is no
+// country-to-currency mapping anywhere in this codebase to reuse here).
+export interface CommunicationProfileSummary {
+  id: string;
+  type: string;
+  iccid: string | null;
+  eid: string | null;
+  operatorId: string;
+  countryId: string;
+  logicalSlot: number | null;
+  physicalSlot: number | null;
+  verifiedBalance: string | null;
+  balanceConfidence: string | null;
+  balanceVerifiedAt: string | null;
+  merchantLineId: string | null;
+}
+
 export interface OrganizationDeviceSummary {
   deviceId: string;
   deviceName: string;
@@ -581,16 +605,12 @@ export interface OrganizationDeviceSummary {
   batteryLevel: number | null;
   lastHeartbeatAt: string | null;
   isStale: boolean;
-  currentCommunicationProfile: {
-    id: string;
-    type: string;
-    iccid: string | null;
-    eid: string | null;
-    operatorId: string;
-    countryId: string;
-    logicalSlot: number | null;
-    physicalSlot: number | null;
-  } | null;
+  // POST-WS009-REMEDIATION-01C-G -- was `currentCommunicationProfile: ... |
+  // null` (singular), which silently dropped every SIM past the first on a
+  // dual-SIM device (fixed backend-side, commit fb3233f). This type had zero
+  // real consumers before this sprint (DeviceStatusCard never read the old
+  // field), so this is a straight rename, no compatibility shim.
+  communicationProfiles: CommunicationProfileSummary[];
 }
 
 export async function listOrganizationDevices(

@@ -24,6 +24,17 @@ export interface DashboardContent {
     stationUnknown: string;
     lastHeartbeat: (value: string) => string;
     neverSeen: string;
+    // POST-WS009-REMEDIATION-01C-G-WEB -- per-SIM balance display, one entry
+    // per communicationProfiles[] item.
+    sim: {
+      label: (logicalSlot: number) => string;
+      noProfiles: string;
+      noBalance: string;
+      verifiedAt: (value: string) => string;
+      verifiedAtStale: (value: string) => string;
+      estimated: string;
+      unknownConfidence: string;
+    };
   };
 }
 
@@ -48,6 +59,15 @@ export function getDashboardContent(locale: AppLocale): DashboardContent {
         stationUnknown: "Non assigné",
         lastHeartbeat: (value) => `Dernier signal : ${value}`,
         neverSeen: "Jamais connecté",
+        sim: {
+          label: (logicalSlot) => `SIM ${logicalSlot + 1}`,
+          noProfiles: "Aucune SIM configurée",
+          noBalance: "Solde non disponible",
+          verifiedAt: (value) => `Vérifié à ${value}`,
+          verifiedAtStale: (value) => `Vérifié à ${value} (ancien)`,
+          estimated: "Solde estimé",
+          unknownConfidence: "Solde non vérifié",
+        },
       },
     };
   }
@@ -70,6 +90,15 @@ export function getDashboardContent(locale: AppLocale): DashboardContent {
       stationUnknown: "Unassigned",
       lastHeartbeat: (value) => `Last seen: ${value}`,
       neverSeen: "Never seen",
+      sim: {
+        label: (logicalSlot) => `SIM ${logicalSlot + 1}`,
+        noProfiles: "No SIM configured",
+        noBalance: "Balance unavailable",
+        verifiedAt: (value) => `Verified at ${value}`,
+        verifiedAtStale: (value) => `Verified at ${value} (stale)`,
+        estimated: "Estimated balance",
+        unknownConfidence: "Unverified balance",
+      },
     },
   };
 }
