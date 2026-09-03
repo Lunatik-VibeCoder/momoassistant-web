@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardContent } from "@/content/dashboard";
 import type { AppLocale } from "@/i18n/routing";
 import type { RecentTransactionSummary } from "@/lib/mcp-client";
-import { formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 
 interface RecentTransactionsCardProps {
   locale: AppLocale;
@@ -43,30 +43,47 @@ export function RecentTransactionsCard({
           <p className="text-sm text-muted-foreground">{content.empty}</p>
         ) : (
           <ul className="flex flex-col divide-y divide-border">
-            {transactions.map((transaction) => (
-              <li
-                key={transaction.transactionUid}
-                className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
-                      {transaction.status}
-                    </Badge>
-                    <span className="text-sm font-medium text-foreground">
-                      {transaction.transactionType}
-                    </span>
+            {transactions.map((transaction) => {
+              // WS-010-DASHBOARD-V2-IMPL-01 -- the audit's own guardrail:
+              // reuse existing tokens only, no new color. bg-destructive/10
+              // is the exact background the Badge component's own
+              // "destructive" variant already uses (components/ui/badge.tsx)
+              // -- applying it to the row too keeps a FAILED transaction
+              // immediately scannable in a list, not just on the small badge.
+              const failed = transaction.status === "FAILED";
+              return (
+                <li
+                  key={transaction.transactionUid}
+                  className={cn(
+                    "flex items-center justify-between gap-3 rounded-md px-2 py-3 first:pt-0 last:pb-0",
+                    failed && "bg-destructive/10",
+                  )}
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
+                        {transaction.status}
+                      </Badge>
+                      <span className="text-sm font-medium text-foreground">
+                        {transaction.transactionType}
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {transaction.stationName ?? content.stationUnknown} ·{" "}
+                      {formatDateTime(locale, transaction.createdAt)}
+                    </p>
                   </div>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {transaction.stationName ?? content.stationUnknown} ·{" "}
-                    {formatDateTime(locale, transaction.createdAt)}
-                  </p>
-                </div>
-                <span className="shrink-0 text-sm font-medium text-foreground">
-                  {transaction.amount}
-                </span>
-              </li>
-            ))}
+                  <span
+                    className={cn(
+                      "shrink-0 text-sm font-medium",
+                      failed ? "text-destructive" : "text-foreground",
+                    )}
+                  >
+                    {transaction.amount}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </CardContent>

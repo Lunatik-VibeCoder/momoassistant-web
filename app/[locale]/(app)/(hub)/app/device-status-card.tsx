@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardContent } from "@/content/dashboard";
 import type { AppLocale } from "@/i18n/routing";
 import type { CommunicationProfileSummary, OrganizationDeviceSummary } from "@/lib/mcp-client";
@@ -7,7 +7,7 @@ import { formatDateTime } from "@/lib/utils";
 
 interface DeviceStatusCardProps {
   locale: AppLocale;
-  content: DashboardContent["devices"];
+  content: DashboardContent["operationalHealth"];
   devices: OrganizationDeviceSummary[];
 }
 
@@ -35,7 +35,7 @@ function SimRow({
   profile,
 }: {
   locale: AppLocale;
-  content: DashboardContent["devices"]["sim"];
+  content: DashboardContent["operationalHealth"]["sim"];
   profile: CommunicationProfileSummary;
 }) {
   const label =
@@ -77,11 +77,32 @@ function SimRow({
   );
 }
 
+// WS-010-DASHBOARD-V2-IMPL-01 -- the audit explicitly rejected a bare
+// device-count "KPI" as the headline: this summary line EXPLAINS the list
+// below it, it never replaces it (device rows always render underneath,
+// same as before). `attention` is device-level isStale only -- SIM balance
+// staleness is already shown inline per-SIM ("(ancien)"/"(stale)") and is
+// deliberately not double-counted into this line, to avoid conflating two
+// different staleness concepts into one number.
 export function DeviceStatusCard({ locale, content, devices }: DeviceStatusCardProps) {
+  const activeCount = devices.filter((device) => !device.isStale).length;
+  const attentionCount = devices.length - activeCount;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{content.title}</CardTitle>
+        {devices.length > 0 && (
+          <CardDescription>
+            {content.summary(devices.length, activeCount)}
+            {attentionCount > 0 && (
+              <>
+                {" · "}
+                <span className="text-warning">{content.attention(attentionCount)}</span>
+              </>
+            )}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent>
         {devices.length === 0 ? (
