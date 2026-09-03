@@ -645,6 +645,184 @@ export async function listRecentTransactions(
   );
 }
 
+// ---------------------------------------------------------------------------
+// WS-013 (Report Hub) -- every type below mirrors momoassistant-platform's
+// WS-012 TransactionsService/TransactionsController field-for-field
+// (WS-011 CONTRACT.md, production-verified WS-012 Phase 9), same discipline
+// as the WS-006 block above. Deliberately NO country/operator field on
+// ReportTransaction -- the real, locked backend DTO never exposed them
+// (verified against the live endpoint, not just the doc); never invented
+// here to match an illustrative UI mock.
+
+export type ReportPeriod = "TODAY" | "LAST_7_DAYS" | "LAST_30_DAYS" | "CUSTOM";
+export type ReportCurrency = "GHS" | "XOF";
+export type ReportTransactionStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+
+export interface ReportQueryParams {
+  period?: ReportPeriod;
+  // WS-011 CONTRACT.md §6.2 -- required together for period: "CUSTOM", ISO
+  // 8601. Half-open [start, end) UTC is enforced entirely server-side; this
+  // client never recomputes or second-guesses the boundary.
+  startDate?: string;
+  endDate?: string;
+  status?: ReportTransactionStatus;
+  transactionType?: string;
+  stationId?: string;
+  currency?: ReportCurrency;
+}
+
+export interface ListTransactionsParams extends ReportQueryParams {
+  cursor?: string;
+  limit?: number;
+}
+
+// Typed as the two real param interfaces (not Record<string, ...>) so
+// callers get real autocomplete/type-checking on the fields that exist --
+// the cast inside is a value-level assertion (always legal in TS, unlike a
+// parameter-position assignment), not a loosening of what callers can pass.
+function buildReportQuery(params: ReportQueryParams | ListTransactionsParams): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params as Record<string, string | number | undefined>)) {
+    if (value !== undefined && value !== "") {
+      search.set(key, String(value));
+    }
+  }
+  const query = search.toString();
+  return query ? `?${query}` : "";
+}
+
+// WS-011 CONTRACT.md §7.5 -- field-for-field mirror of the real
+// TransactionsService.ReportTransaction. userId never included (never was,
+// on the backend side either -- not a redaction happening here).
+export interface ReportTransaction {
+  transactionUid: string;
+  status: string;
+  transactionType: string;
+  amount: string;
+  currency: string | null;
+  fee: string;
+  commission: string;
+  stationId: string | null;
+  stationName: string | null;
+  reference: string;
+  createdAt: string;
+}
+
+export interface ReportTransactionPage {
+  items: ReportTransaction[];
+  nextCursor: string | null;
+}
+
+export async function listTransactions(
+  accessToken: string,
+  organizationId: string,
+  params: ListTransactionsParams,
+): Promise<ReportTransactionPage> {
+  return mcpFetch<ReportTransactionPage>(
+    `/organizations/${organizationId}/transactions${buildReportQuery(params)}`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+// WS-011 CONTRACT.md §8.2 -- one row per currency, never a combined total.
+export interface ReportCurrencyAggregate {
+  currency: string;
+  transactionCount: number;
+  volume: string;
+  fees: string;
+  commissions: string;
+}
+
+// WS-011 CONTRACT.md §8.2/§8.4 -- transactionCount/byStatus/byCurrency/
+// successRate are ALL scoped to money-movement types only (BALANCE_CHECK/
+// COMMISSION_CHECK excluded server-side, §4.2). successRate is null (never
+// NaN/0/a guessed 100%) when the denominator is 0 -- rendered as-is, never
+// coerced to a number here.
+export interface ReportSummary {
+  transactionCount: number;
+  byStatus: { SUCCESS: number; FAILED: number; PENDING: number; CANCELLED: number };
+  byCurrency: ReportCurrencyAggregate[];
+  successRate: number | null;
+}
+
+export async function getTransactionsSummary(
+  accessToken: string,
+  organizationId: string,
+  params: ReportQueryParams,
+): Promise<ReportSummary> {
+  return mcpFetch<ReportSummary>(
+    `/organizations/${organizationId}/transactions/summary${buildReportQuery(params)}`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+// WS-011 CONTRACT.md §9.2 -- one row per (day, currency) pair, daily UTC
+// buckets, same money-movement scope as summary (locked 2026-09-03, see
+// momoassistant-platform commit a516cc3) -- never merged/summed across
+// currency here, matching what the backend already refuses to do.
+export interface ReportTrendPoint {
+  period: string;
+  currency: string;
+  transactionCount: number;
+  volume: string;
+}
+
+export async function getTransactionsTrends(
+  accessToken: string,
+  organizationId: string,
+  params: ReportQueryParams,
+): Promise<ReportTrendPoint[]> {
+  return mcpFetch<ReportTrendPoint[]>(
+    `/organizations/${organizationId}/transactions/trends${buildReportQuery(params)}`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+export interface TransactionsExportResult {
+  body: string;
+  contentType: string;
+  filename: string;
+}
+
+// WS-011 CONTRACT.md §12 -- deliberately bypasses mcpFetch (same rationale
+// as getPublicLatestAppRelease above, different reason): the backend
+// returns raw CSV text with Content-Disposition, not JSON. The Route
+// Handler at app/[locale]/(app)/(hub)/reports/export/route.ts is the only
+// caller -- the browser never talks to MCP or sees its base URL/token
+// directly (RFC-0011), same boundary as every other function in this file.
+export async function exportTransactionsCsv(
+  accessToken: string,
+  organizationId: string,
+  params: ReportQueryParams,
+): Promise<TransactionsExportResult> {
+  if (!MCP_API_URL) {
+    throw new Error("MCP_API_URL must be set");
+  }
+  const response = await fetch(
+    `${MCP_API_URL}/organizations/${organizationId}/transactions/export${buildReportQuery(params)}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    },
+  );
+  if (!response.ok) {
+    const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
+    const message = Array.isArray(body.message) ? body.message.join(", ") : (body.message ?? response.statusText);
+    throw new McpError(statusToKind(response.status), response.status, message);
+  }
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const filenameMatch = /filename="([^"]+)"/.exec(disposition);
+  return {
+    body: await response.text(),
+    contentType: response.headers.get("content-type") ?? "text/csv",
+    filename: filenameMatch?.[1] ?? `transactions-${organizationId}.csv`,
+  };
+}
+
 export async function authorizeAppDownload(
   accessToken: string,
   releaseId: string,

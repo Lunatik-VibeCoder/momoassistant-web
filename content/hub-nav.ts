@@ -18,6 +18,7 @@ export function getHubNavContent(locale: AppLocale): HubNavContent {
     return {
       items: [
         { href: "/", label: "Tableau de bord" },
+        { href: "/reports", label: "Rapports" },
         { href: "/organization", label: "Organisation" },
         { href: "/members", label: "Membres" },
         { href: "/health", label: "État de santé" },
@@ -31,6 +32,7 @@ export function getHubNavContent(locale: AppLocale): HubNavContent {
   return {
     items: [
       { href: "/", label: "Dashboard" },
+      { href: "/reports", label: "Reports" },
       { href: "/organization", label: "Organization" },
       { href: "/members", label: "Members" },
       { href: "/health", label: "Health" },

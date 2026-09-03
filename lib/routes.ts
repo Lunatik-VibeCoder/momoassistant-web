@@ -24,6 +24,7 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/status",
   // WS-006 (Customer Hub) -- authenticated (app)/(hub) routes.
   "/app",
+  "/reports",
   "/organization",
   "/members",
   "/health",
