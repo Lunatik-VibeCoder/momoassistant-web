@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getOrganizationContent, type OrganizationContent } from "@/content/organization";
 import type { AppLocale } from "@/i18n/routing";
 import type { OrganizationDeviceSummary, StationSummary, WorkspaceSummary } from "@/lib/mcp-client";
+import { hasPermission } from "@/lib/permissions";
 import { formatDateTime } from "@/lib/utils";
 import { assignDeviceStationAction, unassignDeviceAction } from "./actions";
 import { CreateStationSheet } from "./create-station-sheet";
@@ -24,6 +25,11 @@ interface OrganizationStationTreeProps {
   organizationId: string;
   workspaceGroups: WorkspaceGroup[];
   devices: OrganizationDeviceSummary[];
+  // WEB-RBAC-GATING-1 -- McpUserProfile.permissions, verbatim from the
+  // backend (RolesService.getPermissionsForRole). Gates the 3 write
+  // controls this tree renders; the backend's own 403 remains the real
+  // enforcement (RequirePermission on each endpoint) -- this is UX only.
+  permissions: string[];
 }
 
 interface StationOption {
@@ -123,11 +129,13 @@ function DeviceRow({
   content,
   device,
   stationOptions,
+  canManageDevices,
 }: {
   locale: AppLocale;
   content: OrganizationContent["stationTree"];
   device: OrganizationDeviceSummary;
   stationOptions: StationOption[];
+  canManageDevices: boolean;
 }) {
   return (
     <li className="flex flex-col gap-2 py-2">
@@ -144,15 +152,22 @@ function DeviceRow({
           </Badge>
         </div>
       </div>
-      <div className="flex items-center justify-end gap-2">
-        <DeviceStationSelect
-          deviceId={device.deviceId}
-          currentStationId={device.stationId}
-          options={stationOptions}
-          content={content}
-        />
-        {device.stationId !== null && <UnassignDeviceButton deviceId={device.deviceId} content={content} />}
-      </div>
+      {/* WEB-RBAC-GATING-1 -- a viewer without devices:write (AGENT) sees
+          nothing here, not a disabled control: the device's current
+          station is already conveyed by its position in the tree
+          (grouped under that station's own <li>, or under "unassigned"),
+          so hiding this row entirely loses no information. */}
+      {canManageDevices && (
+        <div className="flex items-center justify-end gap-2">
+          <DeviceStationSelect
+            deviceId={device.deviceId}
+            currentStationId={device.stationId}
+            options={stationOptions}
+            content={content}
+          />
+          {device.stationId !== null && <UnassignDeviceButton deviceId={device.deviceId} content={content} />}
+        </div>
+      )}
     </li>
   );
 }
@@ -162,6 +177,7 @@ export function OrganizationStationTree({
   organizationId,
   workspaceGroups,
   devices,
+  permissions,
 }: OrganizationStationTreeProps) {
   // HOTFIX-ORG-500 -- content/organization.ts has no server-only
   // dependency (pure/deterministic, no I/O), so it's safe to resolve here
@@ -172,6 +188,15 @@ export function OrganizationStationTree({
   // prop is ever serialized.
   const content = getOrganizationContent(locale).stationTree;
   const unassigned = devices.filter((device) => device.stationId === null);
+
+  // WEB-RBAC-GATING-1 -- computed once, matches the locked Phase B matrix
+  // exactly (SUPER_ADMIN/TENANT_ADMIN/ORG_ADMIN: all 3; STATION_MANAGER:
+  // stations+devices, not workspaces; AGENT: none) without hardcoding that
+  // matrix here -- it falls out of whatever `permissions` the backend
+  // actually sent for this viewer's real role.
+  const canManageWorkspaces = hasPermission(permissions, "workspaces", "write");
+  const canManageStations = hasPermission(permissions, "stations", "write");
+  const canManageDevices = hasPermission(permissions, "devices", "write");
 
   // Flattened across every Workspace -- the move control lets a device go
   // to any Station in the organization, not just ones in its current
@@ -187,7 +212,7 @@ export function OrganizationStationTree({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3">
         <CardTitle className="text-base">{content.title}</CardTitle>
-        <CreateWorkspaceSheet organizationId={organizationId} content={content} />
+        {canManageWorkspaces && <CreateWorkspaceSheet organizationId={organizationId} content={content} />}
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         {workspaceGroups.length === 0 ? (
@@ -197,7 +222,7 @@ export function OrganizationStationTree({
             <div key={workspace.id} className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold text-foreground">{workspace.name}</h3>
-                <CreateStationSheet workspaceId={workspace.id} content={content} />
+                {canManageStations && <CreateStationSheet workspaceId={workspace.id} content={content} />}
               </div>
               {stations.length === 0 ? (
                 <p className="text-xs text-muted-foreground">{content.emptyStations(workspace.name)}</p>
@@ -219,6 +244,7 @@ export function OrganizationStationTree({
                                 content={content}
                                 device={device}
                                 stationOptions={allStationOptions}
+                                canManageDevices={canManageDevices}
                               />
                             ))}
                           </ul>
@@ -242,6 +268,7 @@ export function OrganizationStationTree({
                   content={content}
                   device={device}
                   stationOptions={allStationOptions}
+                  canManageDevices={canManageDevices}
                 />
               ))}
             </ul>

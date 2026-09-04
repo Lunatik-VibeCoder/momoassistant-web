@@ -124,6 +124,7 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
         organizationId={organizationId}
         workspaceGroups={workspaceGroups}
         devices={devices}
+        permissions={profile.permissions}
       />
     </div>
   );

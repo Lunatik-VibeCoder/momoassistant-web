@@ -149,6 +149,17 @@ function toSessionData(tokens: McpAuthTokens, user: SessionUser): SessionData {
 // pages that need current, non-cached detail (e.g. the Organization's
 // display name), per RFC-0011 SS3: the session cookie is never a
 // permissions/data source of truth, pages call this fresh instead.
+//
+// WEB-RBAC-GATING-1 -- `role`/`permissions` were already present in this
+// endpoint's real response (UsersService.buildMeProfile,
+// `permissions: rolesService.getPermissionsForRole(record.role.code)`) --
+// this repo just never typed/read them. Adding them here is the entire
+// backend-facing half of RBAC action gating: zero new endpoint, zero new
+// network call, and it can never drift from the server's own role->
+// permission matrix (see lib/permissions.ts) the way a hardcoded map on
+// this side already once did (Phase B's STATION_MANAGER/workspaces:write
+// mistake). `permissions` is a flat `"resource:action"` string list,
+// exactly `RolesService.getPermissionsForRole`'s own format.
 export interface McpUserProfile {
   id: string;
   email: string | null;
@@ -156,6 +167,8 @@ export interface McpUserProfile {
   // Mini MCP sprint (Account Settings) -- GET /users/me now returns this;
   // null for every pre-existing user until they set it via PATCH /users/me.
   locale: "FR" | "EN" | null;
+  role: { id: string; code: string; name: string };
+  permissions: string[];
   organization: { id: string; name: string; status: string } | null;
 }
 

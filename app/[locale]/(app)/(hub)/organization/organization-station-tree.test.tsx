@@ -8,6 +8,12 @@ import { OrganizationStationTree, type WorkspaceGroup } from "./organization-sta
 const content = getOrganizationContent("en").stationTree;
 const organizationId = "org-1";
 
+// WEB-RBAC-GATING-1 -- every pre-existing test above is unrelated to
+// gating and asserts the previous, unrestricted behavior; a full-access
+// fixture keeps them exercising exactly what they did before this prop
+// existed. The dedicated gating tests below use restricted fixtures.
+const ALL_WRITE_PERMISSIONS = ["workspaces:write", "stations:write", "devices:write"];
+
 function makeDevice(overrides: Partial<OrganizationDeviceSummary> = {}): OrganizationDeviceSummary {
   return {
     deviceId: "device-1",
@@ -32,6 +38,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={groups}
         devices={[makeDevice({ stationId: "station-1" })]}
       />,
@@ -48,6 +55,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={groups}
         devices={[]}
       />,
@@ -61,6 +69,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={groups}
         devices={[]}
       />,
@@ -73,6 +82,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={[]}
         devices={[]}
       />,
@@ -86,6 +96,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={groups}
         devices={[makeDevice({ deviceId: "device-2", deviceName: "Redmi", stationId: null, stationName: null })]}
       />,
@@ -102,6 +113,7 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
         workspaceGroups={groups}
         devices={[makeDevice({ isStale: true })]}
       />,
@@ -118,6 +130,7 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
           workspaceGroups={groups}
           devices={[]}
         />,
@@ -137,6 +150,7 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
           workspaceGroups={groups}
           devices={[makeDevice({ stationId: "station-1" })]}
         />,
@@ -154,6 +168,7 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
+        permissions={ALL_WRITE_PERMISSIONS}
           workspaceGroups={groups}
           devices={[
             makeDevice({ deviceId: "device-1", stationId: "station-1" }),
@@ -163,6 +178,85 @@ describe("OrganizationStationTree", () => {
       );
       // Exactly one Unassign button -- the assigned device only.
       expect(screen.getAllByText(content.unassignButton)).toHaveLength(1);
+    });
+  });
+
+  // WEB-RBAC-GATING-1
+  describe("action gating by permissions", () => {
+    const groups: WorkspaceGroup[] = [{ workspace, stations: [station] }];
+    const assignedDevice = makeDevice({ stationId: "station-1" });
+    const unassignedDevice = makeDevice({
+      deviceId: "device-2",
+      deviceName: "Redmi",
+      stationId: null,
+      stationName: null,
+    });
+
+    it("renders all 3 write controls for a full-access role (matches locked ORG_ADMIN/SUPER_ADMIN/TENANT_ADMIN matrix)", () => {
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          permissions={["workspaces:write", "stations:write", "devices:write"]}
+          workspaceGroups={groups}
+          devices={[assignedDevice]}
+        />,
+      );
+      expect(screen.getByText(content.createWorkspaceButton)).toBeInTheDocument();
+      expect(screen.getByText(content.createStationButton)).toBeInTheDocument();
+      expect(screen.getByDisplayValue("Workspace Ghana — Station Accra")).toBeInTheDocument();
+      expect(screen.getByText(content.unassignButton)).toBeInTheDocument();
+    });
+
+    it("hides Workspace creation but shows Station creation and device controls for a STATION_MANAGER-shaped permission set (matches the locked matrix: stations+devices, not workspaces)", () => {
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          permissions={["stations:write", "devices:write"]}
+          workspaceGroups={groups}
+          devices={[assignedDevice]}
+        />,
+      );
+      expect(screen.queryByText(content.createWorkspaceButton)).not.toBeInTheDocument();
+      expect(screen.getByText(content.createStationButton)).toBeInTheDocument();
+      expect(screen.getByDisplayValue("Workspace Ghana — Station Accra")).toBeInTheDocument();
+      expect(screen.getByText(content.unassignButton)).toBeInTheDocument();
+    });
+
+    it("hides all 3 write controls for an AGENT-shaped (no write) permission set, never a disabled-but-visible control", () => {
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          permissions={[]}
+          workspaceGroups={groups}
+          devices={[assignedDevice, unassignedDevice]}
+        />,
+      );
+      expect(screen.queryByText(content.createWorkspaceButton)).not.toBeInTheDocument();
+      expect(screen.queryByText(content.createStationButton)).not.toBeInTheDocument();
+      expect(screen.queryByDisplayValue("Workspace Ghana — Station Accra")).not.toBeInTheDocument();
+      expect(screen.queryByText(content.unassignButton)).not.toBeInTheDocument();
+      // The device itself, and its current-station grouping, remain visible --
+      // only the write controls are gone, never the underlying data.
+      expect(screen.getByText("Pixel 8")).toBeInTheDocument();
+      expect(screen.getByText("Redmi")).toBeInTheDocument();
+    });
+
+    it("an unrecognized/read-only permission set never accidentally grants a write control (no fallback-to-visible)", () => {
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          permissions={["workspaces:read", "stations:read", "devices:read"]}
+          workspaceGroups={groups}
+          devices={[assignedDevice]}
+        />,
+      );
+      expect(screen.queryByText(content.createWorkspaceButton)).not.toBeInTheDocument();
+      expect(screen.queryByText(content.createStationButton)).not.toBeInTheDocument();
+      expect(screen.queryByDisplayValue("Workspace Ghana — Station Accra")).not.toBeInTheDocument();
     });
   });
 });
