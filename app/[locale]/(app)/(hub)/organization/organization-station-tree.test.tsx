@@ -32,7 +32,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ stationId: "station-1" })]}
       />,
@@ -49,7 +48,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={groups}
         devices={[]}
       />,
@@ -63,7 +61,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={groups}
         devices={[]}
       />,
@@ -76,7 +73,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={[]}
         devices={[]}
       />,
@@ -90,7 +86,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ deviceId: "device-2", deviceName: "Redmi", stationId: null, stationName: null })]}
       />,
@@ -107,7 +102,6 @@ describe("OrganizationStationTree", () => {
       <OrganizationStationTree
         locale="en"
         organizationId={organizationId}
-        content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ isStale: true })]}
       />,
@@ -124,7 +118,6 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
-          content={content}
           workspaceGroups={groups}
           devices={[]}
         />,
@@ -144,7 +137,6 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
-          content={content}
           workspaceGroups={groups}
           devices={[makeDevice({ stationId: "station-1" })]}
         />,
@@ -162,7 +154,6 @@ describe("OrganizationStationTree", () => {
         <OrganizationStationTree
           locale="en"
           organizationId={organizationId}
-          content={content}
           workspaceGroups={groups}
           devices={[
             makeDevice({ deviceId: "device-1", stationId: "station-1" }),

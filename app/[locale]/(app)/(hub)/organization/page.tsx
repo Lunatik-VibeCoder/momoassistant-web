@@ -122,7 +122,6 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
       <OrganizationStationTree
         locale={locale}
         organizationId={organizationId}
-        content={content.stationTree}
         workspaceGroups={workspaceGroups}
         devices={devices}
       />

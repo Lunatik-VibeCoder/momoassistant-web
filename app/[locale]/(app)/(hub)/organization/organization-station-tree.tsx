@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { OrganizationContent } from "@/content/organization";
+import { getOrganizationContent, type OrganizationContent } from "@/content/organization";
 import type { AppLocale } from "@/i18n/routing";
 import type { OrganizationDeviceSummary, StationSummary, WorkspaceSummary } from "@/lib/mcp-client";
 import { formatDateTime } from "@/lib/utils";
@@ -22,7 +22,6 @@ export interface WorkspaceGroup {
 interface OrganizationStationTreeProps {
   locale: AppLocale;
   organizationId: string;
-  content: OrganizationContent["stationTree"];
   workspaceGroups: WorkspaceGroup[];
   devices: OrganizationDeviceSummary[];
 }
@@ -161,10 +160,17 @@ function DeviceRow({
 export function OrganizationStationTree({
   locale,
   organizationId,
-  content,
   workspaceGroups,
   devices,
 }: OrganizationStationTreeProps) {
+  // HOTFIX-ORG-500 -- content/organization.ts has no server-only
+  // dependency (pure/deterministic, no I/O), so it's safe to resolve here
+  // from `locale` (a plain string) instead of receiving the content object
+  // as a prop from the Server Component. stationTree carries function
+  // fields (emptyStations, device.lastHeartbeat) that cannot cross the
+  // Server->Client boundary -- resolving locally means no function-valued
+  // prop is ever serialized.
+  const content = getOrganizationContent(locale).stationTree;
   const unassigned = devices.filter((device) => device.stationId === null);
 
   // Flattened across every Workspace -- the move control lets a device go
