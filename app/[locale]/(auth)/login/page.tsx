@@ -9,6 +9,7 @@ import { LoginForm } from "./login-form";
 
 interface LoginPageProps {
   params: Promise<{ locale: AppLocale }>;
+  searchParams: Promise<{ email?: string }>;
 }
 
 export async function generateMetadata({ params }: LoginPageProps): Promise<Metadata> {
@@ -20,15 +21,16 @@ export async function generateMetadata({ params }: LoginPageProps): Promise<Meta
   };
 }
 
-export default async function LoginPage({ params }: LoginPageProps) {
+export default async function LoginPage({ params, searchParams }: LoginPageProps) {
   const { locale } = await params;
+  const { email } = await searchParams;
   setRequestLocale(locale);
   const content = getLoginContent(locale);
 
   return (
     <>
       <PageHero eyebrow={content.hero.eyebrow} title={content.hero.title} description={content.hero.description} />
-      <LoginForm content={content} locale={locale} />
+      <LoginForm content={content} locale={locale} email={email} />
     </>
   );
 }

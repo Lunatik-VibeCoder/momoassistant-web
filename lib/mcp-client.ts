@@ -217,19 +217,48 @@ export async function previewInvitation(token: string): Promise<InvitationPrevie
   );
 }
 
-// MEMBERS-INVITATION-001 Piece 2 -- mirrors verifyEmail() exactly: MCP's
-// POST /invitations/accept auto-issues a session on success (same response
-// shape as /auth/verify-email). This function never touches cookies --
-// the calling Server Action is responsible for createSession(), same
+// INVITATION-ACCEPT-ACCOUNT-STATE-001 -- MCP's accept() response is now a
+// discriminated union (never assume a session exists): SESSION_ISSUED for a
+// brand-new or freshly-activated (was INVITED) account, same shape
+// /auth/verify-email already returns; LOGIN_REQUIRED for an already-ACTIVE
+// account -- Member access was just granted, but MCP deliberately minted no
+// session (an invitation must never become an account-takeover vector, see
+// InvitationsService.accept()'s own contract comment) -- the invitee's
+// EXISTING password (never the one just typed on this form) is required.
+export type AcceptInvitationOutcome =
+  | { outcome: "SESSION_ISSUED"; session: SessionData }
+  | { outcome: "LOGIN_REQUIRED"; email: string };
+
+interface McpAcceptInvitationResponse {
+  outcome: "SESSION_ISSUED" | "LOGIN_REQUIRED";
+  accessToken?: string;
+  refreshToken?: string;
+  email?: string;
+}
+
+// This function never touches cookies -- the calling Server Action is
+// responsible for createSession() on the SESSION_ISSUED branch, same
 // division of responsibility as verifyEmailAction() already establishes.
 export async function acceptInvitation(input: {
   token: string;
   password?: string;
   displayName?: string;
-}): Promise<SessionData> {
-  const tokens = await mcpFetch<McpAuthTokens>("/invitations/accept", { method: "POST", body: input });
+}): Promise<AcceptInvitationOutcome> {
+  const response = await mcpFetch<McpAcceptInvitationResponse>(
+    "/invitations/accept",
+    { method: "POST", body: input },
+  );
+
+  if (response.outcome === "LOGIN_REQUIRED") {
+    return { outcome: "LOGIN_REQUIRED", email: response.email! };
+  }
+
+  const tokens: McpAuthTokens = {
+    accessToken: response.accessToken!,
+    refreshToken: response.refreshToken!,
+  };
   const profile = await fetchProfile(tokens.accessToken);
-  return toSessionData(tokens, toSessionUser(profile));
+  return { outcome: "SESSION_ISSUED", session: toSessionData(tokens, toSessionUser(profile)) };
 }
 
 export async function completeOnboarding(

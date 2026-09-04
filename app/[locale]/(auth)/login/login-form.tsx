@@ -14,7 +14,15 @@ import type { AppLocale } from "@/i18n/routing";
 
 const initialState: LoginFormState = { status: "idle" };
 
-export function LoginForm({ content, locale }: { content: LoginContent; locale: AppLocale }) {
+export function LoginForm({
+  content,
+  locale,
+  email,
+}: {
+  content: LoginContent;
+  locale: AppLocale;
+  email?: string;
+}) {
   const [state, formAction, isPending] = useActionState(loginAction.bind(null, locale), initialState);
 
   return (
@@ -28,7 +36,7 @@ export function LoginForm({ content, locale }: { content: LoginContent; locale: 
           )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">{content.emailLabel}</Label>
-            <Input id="email" name="email" type="email" required autoComplete="email" />
+            <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={email} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="password">{content.passwordLabel}</Label>

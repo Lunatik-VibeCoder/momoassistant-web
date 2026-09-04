@@ -61,6 +61,10 @@ export default async function AcceptInvitationPage({ params, searchParams }: Acc
         passwordLabel={content.passwordLabel}
         displayNameLabel={content.displayNameLabel}
         submitLabel={content.submitLabel}
+        alreadyActiveTitle={content.alreadyActiveTitle}
+        alreadyActiveDescription={content.alreadyActiveDescription(preview.organizationName)}
+        alreadyActiveHint={content.alreadyActiveHint}
+        loginCta={content.loginCta}
         locale={locale}
         token={token}
       />
