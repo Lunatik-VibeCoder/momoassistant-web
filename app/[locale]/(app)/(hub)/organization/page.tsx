@@ -12,12 +12,14 @@ import {
   getMe,
   getOrganization,
   listMembers,
+  listOrganizationDevices,
   listStations,
   listWorkspaces,
 } from "@/lib/mcp-client";
 import { createMetadata } from "@/lib/seo";
 import { requireSession } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
+import { OrganizationStationTree } from "./organization-station-tree";
 
 interface OrganizationPageProps {
   params: Promise<{ locale: AppLocale }>;
@@ -47,11 +49,12 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
   const profile = await getMe(session.accessToken);
   const organizationId = profile.organization!.id;
 
-  const [organization, license, allMembers, workspaces] = await Promise.all([
+  const [organization, license, allMembers, workspaces, devices] = await Promise.all([
     getOrganization(session.accessToken, organizationId),
     getLicense(session.accessToken, organizationId),
     listMembers(session.accessToken, organizationId),
     listWorkspaces(session.accessToken, organizationId),
+    listOrganizationDevices(session.accessToken, organizationId),
   ]);
   // REMOVED is a soft-delete (R5.1) -- the list endpoint returns every
   // status, so a removed member would otherwise still count here.
@@ -64,47 +67,64 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
     workspaces.map((workspace) => listStations(session.accessToken, workspace.id)),
   );
   const stationCount = stationLists.reduce((total, stations) => total + stations.length, 0);
+  // STATION-TREE-PHASE-A -- zips workspaces with their already-fetched
+  // stationLists (same Promise.all order preserved above) into a real,
+  // renderable tree. Read-only: no create/assign/move UI here, Phase B
+  // (blocked on AssignmentsService having no HTTP controller yet, see the
+  // WEB STATION / MULTI-DEVICE DYNAMIC BEHAVIOR audit).
+  const workspaceGroups = workspaces.map((workspace, index) => ({
+    workspace,
+    stations: stationLists[index],
+  }));
 
   const content = getOrganizationContent(locale);
   const isOwner = session.user.id === organization.ownerUserId;
 
   return (
-    <Card className="mx-auto max-w-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl">
-          {organization.name}
-          {isOwner && <Badge variant="secondary">{content.ownerBadge}</Badge>}
-          <Badge variant="outline">{organization.status}</Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.slug}</dt>
-            <dd className="text-sm">{organization.slug}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.code}</dt>
-            <dd className="text-sm">{organization.organizationCode}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.created}</dt>
-            <dd className="text-sm">{formatDate(locale, organization.createdAt)}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.plan}</dt>
-            <dd className="text-sm">{license?.plan.name ?? content.noLicense}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.members}</dt>
-            <dd className="text-sm">{members.length}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground uppercase">{content.fields.stations}</dt>
-            <dd className="text-sm">{stationCount}</dd>
-          </div>
-        </dl>
-      </CardContent>
-    </Card>
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            {organization.name}
+            {isOwner && <Badge variant="secondary">{content.ownerBadge}</Badge>}
+            <Badge variant="outline">{organization.status}</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.slug}</dt>
+              <dd className="text-sm">{organization.slug}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.code}</dt>
+              <dd className="text-sm">{organization.organizationCode}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.created}</dt>
+              <dd className="text-sm">{formatDate(locale, organization.createdAt)}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.plan}</dt>
+              <dd className="text-sm">{license?.plan.name ?? content.noLicense}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.members}</dt>
+              <dd className="text-sm">{members.length}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground uppercase">{content.fields.stations}</dt>
+              <dd className="text-sm">{stationCount}</dd>
+            </div>
+          </dl>
+        </CardContent>
+      </Card>
+      <OrganizationStationTree
+        locale={locale}
+        content={content.stationTree}
+        workspaceGroups={workspaceGroups}
+        devices={devices}
+      />
+    </div>
   );
 }
