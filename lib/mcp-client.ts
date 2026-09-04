@@ -197,6 +197,41 @@ export async function login(input: { email: string; password: string }): Promise
   return toSessionData(tokens, toSessionUser(profile));
 }
 
+// MEMBERS-INVITATION-001 Piece 2 -- MCP's InvitationPreview shape
+// (GET /invitations/preview), deliberately narrow: shown to an
+// UNAUTHENTICATED invitee before they've proven anything, never an id or
+// anything that would let a caller enumerate invitations by probing tokens.
+export interface InvitationPreview {
+  organizationName: string;
+  roleName: string;
+  email: string;
+  status: "PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED";
+}
+
+// MEMBERS-INVITATION-001 Piece 2 -- public, unauthenticated (RFC-0011: the
+// invitee has no session yet), same shape as getMe() but with no accessToken.
+export async function previewInvitation(token: string): Promise<InvitationPreview> {
+  return mcpFetch<InvitationPreview>(
+    `/invitations/preview?token=${encodeURIComponent(token)}`,
+    { method: "GET" },
+  );
+}
+
+// MEMBERS-INVITATION-001 Piece 2 -- mirrors verifyEmail() exactly: MCP's
+// POST /invitations/accept auto-issues a session on success (same response
+// shape as /auth/verify-email). This function never touches cookies --
+// the calling Server Action is responsible for createSession(), same
+// division of responsibility as verifyEmailAction() already establishes.
+export async function acceptInvitation(input: {
+  token: string;
+  password?: string;
+  displayName?: string;
+}): Promise<SessionData> {
+  const tokens = await mcpFetch<McpAuthTokens>("/invitations/accept", { method: "POST", body: input });
+  const profile = await fetchProfile(tokens.accessToken);
+  return toSessionData(tokens, toSessionUser(profile));
+}
+
 export async function completeOnboarding(
   accessToken: string,
   input: { tenantName: string; organizationName: string; agentName?: string },
