@@ -498,6 +498,20 @@ export async function listWorkspaces(
   );
 }
 
+// STATION-TREE-PHASE-B -- same POST-returns-the-created-resource shape as
+// inviteMember above.
+export async function createWorkspace(
+  accessToken: string,
+  organizationId: string,
+  name: string,
+): Promise<WorkspaceSummary> {
+  return mcpFetch<WorkspaceSummary>(
+    `/organizations/${organizationId}/workspaces`,
+    { method: "POST", body: { name } },
+    { accessToken },
+  );
+}
+
 export interface StationSummary {
   id: string;
   name: string;
@@ -510,6 +524,19 @@ export async function listStations(
   return mcpFetch<StationSummary[]>(
     `/workspaces/${workspaceId}/stations`,
     { method: "GET" },
+    { accessToken },
+  );
+}
+
+// STATION-TREE-PHASE-B -- same shape as createWorkspace above.
+export async function createStation(
+  accessToken: string,
+  workspaceId: string,
+  name: string,
+): Promise<StationSummary> {
+  return mcpFetch<StationSummary>(
+    `/workspaces/${workspaceId}/stations`,
+    { method: "POST", body: { name } },
     { accessToken },
   );
 }
@@ -684,6 +711,40 @@ export async function listOrganizationDevices(
   return mcpFetch<OrganizationDeviceSummary[]>(
     `/organizations/${organizationId}/devices`,
     { method: "GET" },
+    { accessToken },
+  );
+}
+
+// STATION-TREE-PHASE-B -- same POST assigns-or-moves-a-Device endpoint
+// backend-side (idempotent no-op if the Device already holds that Station,
+// per the locked Phase B contract) -- one function covers both "assign"
+// (currently unassigned) and "move" (already on another Station), same as
+// the backend's own single assignStation() service method. Response is the
+// backend's bare DeviceSummary (no stationId field) -- unused here, the
+// caller revalidates the page and re-fetches listOrganizationDevices for
+// the updated tree, same as removeMember's fire-and-forget shape below.
+export async function assignDeviceToStation(
+  accessToken: string,
+  deviceId: string,
+  stationId: string,
+  reason?: string,
+): Promise<void> {
+  await mcpFetch(
+    `/devices/${deviceId}/station`,
+    { method: "POST", body: { stationId, reason } },
+    { accessToken },
+  );
+}
+
+// STATION-TREE-PHASE-B -- Station -> Unassigned.
+export async function unassignDevice(
+  accessToken: string,
+  deviceId: string,
+  reason?: string,
+): Promise<void> {
+  await mcpFetch(
+    `/devices/${deviceId}/station`,
+    { method: "DELETE", body: { reason } },
     { accessToken },
   );
 }

@@ -6,6 +6,7 @@ import type { OrganizationDeviceSummary } from "@/lib/mcp-client";
 import { OrganizationStationTree, type WorkspaceGroup } from "./organization-station-tree";
 
 const content = getOrganizationContent("en").stationTree;
+const organizationId = "org-1";
 
 function makeDevice(overrides: Partial<OrganizationDeviceSummary> = {}): OrganizationDeviceSummary {
   return {
@@ -30,6 +31,7 @@ describe("OrganizationStationTree", () => {
     render(
       <OrganizationStationTree
         locale="en"
+        organizationId={organizationId}
         content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ stationId: "station-1" })]}
@@ -43,18 +45,42 @@ describe("OrganizationStationTree", () => {
 
   it("shows the empty-stations message for a workspace with zero stations, never a blank group", () => {
     const groups: WorkspaceGroup[] = [{ workspace, stations: [] }];
-    render(<OrganizationStationTree locale="en" content={content} workspaceGroups={groups} devices={[]} />);
+    render(
+      <OrganizationStationTree
+        locale="en"
+        organizationId={organizationId}
+        content={content}
+        workspaceGroups={groups}
+        devices={[]}
+      />,
+    );
     expect(screen.getByText(content.emptyStations("Workspace Ghana"))).toBeInTheDocument();
   });
 
   it("shows the empty-devices message for a station with zero devices attached", () => {
     const groups: WorkspaceGroup[] = [{ workspace, stations: [station] }];
-    render(<OrganizationStationTree locale="en" content={content} workspaceGroups={groups} devices={[]} />);
+    render(
+      <OrganizationStationTree
+        locale="en"
+        organizationId={organizationId}
+        content={content}
+        workspaceGroups={groups}
+        devices={[]}
+      />,
+    );
     expect(screen.getByText(content.emptyDevices)).toBeInTheDocument();
   });
 
   it("shows the empty-workspaces message when the organization has no workspaces at all", () => {
-    render(<OrganizationStationTree locale="en" content={content} workspaceGroups={[]} devices={[]} />);
+    render(
+      <OrganizationStationTree
+        locale="en"
+        organizationId={organizationId}
+        content={content}
+        workspaceGroups={[]}
+        devices={[]}
+      />,
+    );
     expect(screen.getByText(content.emptyWorkspaces)).toBeInTheDocument();
   });
 
@@ -63,6 +89,7 @@ describe("OrganizationStationTree", () => {
     render(
       <OrganizationStationTree
         locale="en"
+        organizationId={organizationId}
         content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ deviceId: "device-2", deviceName: "Redmi", stationId: null, stationName: null })]}
@@ -79,6 +106,7 @@ describe("OrganizationStationTree", () => {
     render(
       <OrganizationStationTree
         locale="en"
+        organizationId={organizationId}
         content={content}
         workspaceGroups={groups}
         devices={[makeDevice({ isStale: true })]}
@@ -86,5 +114,64 @@ describe("OrganizationStationTree", () => {
     );
     expect(screen.getByText(content.device.stale)).toBeInTheDocument();
     expect(screen.queryByText(content.device.online)).not.toBeInTheDocument();
+  });
+
+  // STATION-TREE-PHASE-B
+  describe("Phase B -- creation and reassignment controls", () => {
+    it("renders a '+ Workspace' trigger at the tree root and a '+ Station' trigger per workspace", () => {
+      const groups: WorkspaceGroup[] = [{ workspace, stations: [station] }];
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          content={content}
+          workspaceGroups={groups}
+          devices={[]}
+        />,
+      );
+      expect(screen.getByText(content.createWorkspaceButton)).toBeInTheDocument();
+      expect(screen.getByText(content.createStationButton)).toBeInTheDocument();
+    });
+
+    it("renders a Station move <select> for every device, offering every Station across every Workspace (never scoped to the device's own workspace only)", () => {
+      const otherWorkspace = { id: "workspace-2", organizationId: "org-1", name: "Workspace Benin" };
+      const otherStation = { id: "station-2", name: "Station Cotonou" };
+      const groups: WorkspaceGroup[] = [
+        { workspace, stations: [station] },
+        { workspace: otherWorkspace, stations: [otherStation] },
+      ];
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          content={content}
+          workspaceGroups={groups}
+          devices={[makeDevice({ stationId: "station-1" })]}
+        />,
+      );
+
+      const select = screen.getByDisplayValue("Workspace Ghana — Station Accra") as HTMLSelectElement;
+      const optionLabels = Array.from(select.options).map((option) => option.textContent);
+      expect(optionLabels).toContain("Workspace Ghana — Station Accra");
+      expect(optionLabels).toContain("Workspace Benin — Station Cotonou");
+    });
+
+    it("shows the Unassign button for a device currently on a Station, never for an already-unassigned one", () => {
+      const groups: WorkspaceGroup[] = [{ workspace, stations: [station] }];
+      render(
+        <OrganizationStationTree
+          locale="en"
+          organizationId={organizationId}
+          content={content}
+          workspaceGroups={groups}
+          devices={[
+            makeDevice({ deviceId: "device-1", stationId: "station-1" }),
+            makeDevice({ deviceId: "device-2", deviceName: "Redmi", stationId: null, stationName: null }),
+          ]}
+        />,
+      );
+      // Exactly one Unassign button -- the assigned device only.
+      expect(screen.getAllByText(content.unassignButton)).toHaveLength(1);
+    });
   });
 });

@@ -32,6 +32,24 @@ export interface OrganizationContent {
       lastHeartbeat: (value: string) => string;
       neverSeen: string;
     };
+    // Phase B (Station Management) -- mirrors content/members.ts's
+    // invite*/remove* field shape exactly (same Sheet+useActionState /
+    // confirm+useTransition patterns reused for these).
+    createWorkspaceButton: string;
+    createWorkspaceSheetTitle: string;
+    createStationButton: string;
+    createStationSheetTitle: string;
+    nameLabel: string;
+    createSubmitLabel: string;
+    createSuccess: string;
+    createError: string;
+    movePlaceholder: string;
+    moveSuccess: string;
+    moveError: string;
+    unassignButton: string;
+    unassignConfirm: string;
+    unassignSuccess: string;
+    unassignError: string;
   };
 }
 
@@ -63,6 +81,21 @@ export function getOrganizationContent(locale: AppLocale): OrganizationContent {
           lastHeartbeat: (value) => `Dernier signal : ${value}`,
           neverSeen: "Jamais connecté",
         },
+        createWorkspaceButton: "+ Workspace",
+        createWorkspaceSheetTitle: "Créer un espace de travail",
+        createStationButton: "+ Station",
+        createStationSheetTitle: "Créer une station",
+        nameLabel: "Nom",
+        createSubmitLabel: "Créer",
+        createSuccess: "Créé avec succès",
+        createError: "Impossible de créer",
+        movePlaceholder: "Déplacer vers…",
+        moveSuccess: "Appareil déplacé",
+        moveError: "Impossible de déplacer l'appareil",
+        unassignButton: "Désassigner",
+        unassignConfirm: "Retirer cet appareil de sa station ? Il restera rattaché à l'organisation.",
+        unassignSuccess: "Appareil désassigné",
+        unassignError: "Impossible de désassigner l'appareil",
       },
     };
   }
@@ -92,6 +125,21 @@ export function getOrganizationContent(locale: AppLocale): OrganizationContent {
         lastHeartbeat: (value) => `Last seen: ${value}`,
         neverSeen: "Never seen",
       },
+      createWorkspaceButton: "+ Workspace",
+      createWorkspaceSheetTitle: "Create a workspace",
+      createStationButton: "+ Station",
+      createStationSheetTitle: "Create a station",
+      nameLabel: "Name",
+      createSubmitLabel: "Create",
+      createSuccess: "Created successfully",
+      createError: "Could not create",
+      movePlaceholder: "Move to…",
+      moveSuccess: "Device moved",
+      moveError: "Could not move the device",
+      unassignButton: "Unassign",
+      unassignConfirm: "Remove this device from its station? It will stay part of the organization.",
+      unassignSuccess: "Device unassigned",
+      unassignError: "Could not unassign the device",
     },
   };
 }
