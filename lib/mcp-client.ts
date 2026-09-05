@@ -698,6 +698,15 @@ export interface CommunicationProfileSummary {
   verifiedBalance: string | null;
   balanceConfidence: string | null;
   balanceVerifiedAt: string | null;
+  // WEB-TX-PRESENTATION-004-A -- sibling of the three balance fields above,
+  // same discipline (no currency, no fabricated 0 -- null until a Commission
+  // Check has actually synced). A distinct wallet snapshot on the same SIM,
+  // never the same value as verifiedBalance and never merged with
+  // Transaction.commission (a different fact -- money credited to the
+  // agent, not a wallet snapshot; rendered nowhere near Reports/Transactions).
+  verifiedCommission: string | null;
+  commissionConfidence: string | null;
+  commissionVerifiedAt: string | null;
   merchantLineId: string | null;
 }
 

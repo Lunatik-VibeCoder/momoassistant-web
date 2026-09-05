@@ -43,6 +43,14 @@ export interface DashboardContent {
       verifiedAtStale: (value: string) => string;
       estimated: string;
       unknownConfidence: string;
+      // WEB-TX-PRESENTATION-004-A -- sibling of the balance keys above, same
+      // shape, rendered as a second line under the balance line (never
+      // merged into one string -- two distinct wallets on the same SIM).
+      noCommission: string;
+      commissionVerifiedAt: (value: string) => string;
+      commissionVerifiedAtStale: (value: string) => string;
+      commissionEstimated: string;
+      commissionUnknownConfidence: string;
     };
   };
   // WS-009 (Dashboard / Live Operations, CONTRACT-V1) -- "how is my
@@ -98,6 +106,11 @@ export function getDashboardContent(locale: AppLocale): DashboardContent {
           verifiedAtStale: (value) => `Vérifié à ${value} (ancien)`,
           estimated: "Solde estimé",
           unknownConfidence: "Solde non vérifié",
+          noCommission: "Commission non disponible",
+          commissionVerifiedAt: (value) => `Commission vérifiée à ${value}`,
+          commissionVerifiedAtStale: (value) => `Commission vérifiée à ${value} (ancienne)`,
+          commissionEstimated: "Commission estimée",
+          commissionUnknownConfidence: "Commission non vérifiée",
         },
       },
       recentTransactions: {
@@ -131,6 +144,11 @@ export function getDashboardContent(locale: AppLocale): DashboardContent {
         verifiedAtStale: (value) => `Verified at ${value} (stale)`,
         estimated: "Estimated balance",
         unknownConfidence: "Unverified balance",
+        noCommission: "Commission unavailable",
+        commissionVerifiedAt: (value) => `Commission verified at ${value}`,
+        commissionVerifiedAtStale: (value) => `Commission verified at ${value} (stale)`,
+        commissionEstimated: "Estimated commission",
+        commissionUnknownConfidence: "Unverified commission",
       },
     },
     recentTransactions: {

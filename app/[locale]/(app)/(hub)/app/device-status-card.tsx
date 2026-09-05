@@ -29,6 +29,14 @@ function isBalanceStale(balanceVerifiedAt: string): boolean {
   return Date.now() - new Date(balanceVerifiedAt).getTime() > BALANCE_STALE_THRESHOLD_MS;
 }
 
+// WEB-TX-PRESENTATION-004-A -- reuses the same 30-minute threshold as
+// isBalanceStale above, not a new constant (per the approved contract): a
+// Commission Check snapshot's staleness has no reason to follow a different
+// cadence than a Balance Check's.
+function isCommissionStale(commissionVerifiedAt: string): boolean {
+  return Date.now() - new Date(commissionVerifiedAt).getTime() > BALANCE_STALE_THRESHOLD_MS;
+}
+
 function SimRow({
   locale,
   content,
@@ -64,14 +72,39 @@ function SimRow({
             content.unknownConfidence
           )}
         </p>
+        {/* WEB-TX-PRESENTATION-004-A -- a second, independent line: Commission
+            Check is a distinct wallet on the same SIM, never merged into the
+            balance line above. Never rendered in Reports/Transactions. */}
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {profile.verifiedCommission === null ? (
+            content.noCommission
+          ) : profile.commissionConfidence === "VERIFIED" ? (
+            profile.commissionVerifiedAt !== null && isCommissionStale(profile.commissionVerifiedAt) ? (
+              content.commissionVerifiedAtStale(formatDateTime(locale, profile.commissionVerifiedAt))
+            ) : (
+              content.commissionVerifiedAt(formatDateTime(locale, profile.commissionVerifiedAt))
+            )
+          ) : profile.commissionConfidence === "ESTIMATED" ? (
+            content.commissionEstimated
+          ) : (
+            content.commissionUnknownConfidence
+          )}
+        </p>
       </div>
       {/* No currency shown -- CommunicationProfileSummary carries none,
           never guessed here (same discipline as RecentTransactionSummary's
-          amount above). */}
-      {profile.verifiedBalance !== null && (
-        <span className="shrink-0 text-sm font-medium text-foreground">
-          {profile.verifiedBalance}
-        </span>
+          amount above). WEB-TX-PRESENTATION-004-A -- commission amount
+          stacked under the balance amount, its own independent figure,
+          never combined into a single number. */}
+      {(profile.verifiedBalance !== null || profile.verifiedCommission !== null) && (
+        <div className="flex shrink-0 flex-col items-end gap-0.5">
+          {profile.verifiedBalance !== null && (
+            <span className="text-sm font-medium text-foreground">{profile.verifiedBalance}</span>
+          )}
+          {profile.verifiedCommission !== null && (
+            <span className="text-xs font-medium text-muted-foreground">{profile.verifiedCommission}</span>
+          )}
+        </div>
       )}
     </li>
   );
