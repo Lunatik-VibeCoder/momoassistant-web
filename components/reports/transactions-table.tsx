@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import type { ReportsContent } from "@/content/reports";
 import type { AppLocale } from "@/i18n/routing";
 import type { ReportTransaction } from "@/lib/mcp-client";
-import { presentTreasuryDirection } from "@/lib/treasury-direction";
+import { presentTreasuryDirection, resolveTreasuryDirection } from "@/lib/treasury-direction";
 import { formatDateTime } from "@/lib/utils";
 
 interface TransactionsTableProps {
@@ -29,9 +29,30 @@ const STATUS_BADGE_VARIANT: Record<string, "secondary" | "destructive" | "outlin
 // when currency is null (a genuine possible value on ReportTransaction --
 // e.g. a not-yet-backfilled edge case), an explicit "—" is shown instead of
 // guessing GHS/XOF or silently formatting a bare number.
-function AmountCell({ amount, currency }: { amount: string; currency: string | null }) {
+//
+// WEB-TX-PRESENTATION-003-A -- the sign is derived from the exact same
+// resolveTreasuryDirection() already used by TransactionTypeCell below
+// (lib/treasury-direction.ts, ported verbatim from Android's own
+// classifyTreasury()/resolveTreasuryDirection()), never a second/independent
+// direction system and never inferred from the amount string itself.
+// MONEY_OUT -> "-", MONEY_IN -> "+", null (Balance/Commission Check, an
+// unrecognized ExternalSubtype) -> no sign at all.
+function AmountCell({
+  amount,
+  currency,
+  transactionType,
+  externalSubtype,
+}: {
+  amount: string;
+  currency: string | null;
+  transactionType: string;
+  externalSubtype: string | null;
+}) {
+  const direction = resolveTreasuryDirection(transactionType, externalSubtype);
+  const sign = direction === "MONEY_OUT" ? "-" : direction === "MONEY_IN" ? "+" : "";
   return (
     <span className="font-medium text-foreground">
+      {sign}
       {amount} {currency ?? "—"}
     </span>
   );
@@ -104,7 +125,12 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                   </Badge>
                 </td>
                 <td className="px-4 py-3">
-                  <AmountCell amount={transaction.amount} currency={transaction.currency} />
+                  <AmountCell
+                    amount={transaction.amount}
+                    currency={transaction.currency}
+                    transactionType={transaction.transactionType}
+                    externalSubtype={transaction.externalSubtype}
+                  />
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {transaction.stationName ?? content.stationUnavailable}
@@ -145,7 +171,12 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                 <p className="mt-1 truncate text-xs text-muted-foreground">{transaction.reference}</p>
               </div>
               <span className="shrink-0">
-                <AmountCell amount={transaction.amount} currency={transaction.currency} />
+                <AmountCell
+                  amount={transaction.amount}
+                  currency={transaction.currency}
+                  transactionType={transaction.transactionType}
+                  externalSubtype={transaction.externalSubtype}
+                />
               </span>
             </div>
           </li>

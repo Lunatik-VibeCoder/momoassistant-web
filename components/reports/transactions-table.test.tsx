@@ -231,4 +231,111 @@ describe("TransactionsTable", () => {
       expect(screen.queryByText((text) => text.includes("MONEY OUT"))).not.toBeInTheDocument();
     });
   });
+
+  // WEB-TX-PRESENTATION-003-A -- the sign is derived from the exact same
+  // resolveTreasuryDirection() as the direction label above, never a second
+  // system and never inferred from the amount string itself.
+  describe("signed amounts (WEB-TX-PRESENTATION-003-A)", () => {
+    it("prefixes a MONEY_OUT amount with '-' (CASH_IN)", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ transactionType: "CASH_IN", amount: "2.00", currency: "XOF" })]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("-2.00") && text.includes("XOF")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("prefixes a MONEY_IN amount with '+' (CASH_OUT)", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ transactionType: "CASH_OUT", amount: "221.00", currency: "GHS" })]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("+221.00") && text.includes("GHS")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("prefixes a MONEY_OUT amount with '-' for EXTERNAL_TRANSACTION + CASH_IN subtype", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({
+              transactionType: "EXTERNAL_TRANSACTION",
+              externalSubtype: "CASH_IN",
+              amount: "10225.00",
+              currency: "XOF",
+            }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("-10225.00") && text.includes("XOF")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("prefixes a MONEY_IN amount with '+' for EXTERNAL_TRANSACTION + CASH_OUT subtype", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({
+              transactionType: "EXTERNAL_TRANSACTION",
+              externalSubtype: "CASH_OUT",
+              amount: "450.00",
+              currency: "GHS",
+            }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("+450.00") && text.includes("GHS")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("never signs a neutral amount (COMMISSION_CHECK)", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "COMMISSION_CHECK", amount: "0.00", currency: "XOF" }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText((text) => text.includes("+0.00"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("-0.00"))).not.toBeInTheDocument();
+      expect(screen.getAllByText((text) => text.includes("0.00") && text.includes("XOF")).length).toBeGreaterThan(
+        0,
+      );
+    });
+
+    it("never signs a neutral amount for an EXTERNAL_TRANSACTION with no recognized subtype", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({
+              transactionType: "EXTERNAL_TRANSACTION",
+              externalSubtype: null,
+              amount: "50.00",
+              currency: "GHS",
+            }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText((text) => text.includes("+50.00"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("-50.00"))).not.toBeInTheDocument();
+    });
+  });
 });
