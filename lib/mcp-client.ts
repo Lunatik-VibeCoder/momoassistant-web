@@ -762,6 +762,11 @@ export async function unassignDevice(
   );
 }
 
+// EXT-TX-UNIFICATION-001 -- explicit decision reopening the "no
+// currency/country/operator" exclusion above for exactly this pair of
+// fields. Both independently nullable -- never both required, never one
+// derived from the other. Render whichever is non-null; never a
+// "null"/"N/A" placeholder when both are absent (e.g. a commission credit).
 export interface RecentTransactionSummary {
   transactionUid: string;
   stationId: string | null;
@@ -770,6 +775,8 @@ export interface RecentTransactionSummary {
   transactionType: string;
   amount: string;
   createdAt: string;
+  counterpartyName: string | null;
+  counterpartyPhone: string | null;
 }
 
 export async function listRecentTransactions(
@@ -844,6 +851,9 @@ export interface ReportTransaction {
   stationName: string | null;
   reference: string;
   createdAt: string;
+  // EXT-TX-UNIFICATION-001 -- see RecentTransactionSummary's own comment.
+  counterpartyName: string | null;
+  counterpartyPhone: string | null;
 }
 
 export interface ReportTransactionPage {

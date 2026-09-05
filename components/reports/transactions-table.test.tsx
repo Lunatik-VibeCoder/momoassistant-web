@@ -20,6 +20,8 @@ function makeTransaction(overrides: Partial<ReportTransaction> = {}): ReportTran
     stationName: "Accra Station",
     reference: "MA-260903-AAAAAA",
     createdAt: "2026-09-03T10:00:00.000Z",
+    counterpartyName: null,
+    counterpartyPhone: null,
     ...overrides,
   };
 }
@@ -80,5 +82,60 @@ describe("TransactionsTable", () => {
     );
     expect(screen.getAllByText("FAILED").length).toBeGreaterThan(0);
     expect(screen.getAllByText("MA-999").length).toBeGreaterThan(0);
+  });
+
+  // EXT-TX-UNIFICATION-001 -- counterpartyName/counterpartyPhone, each
+  // independently nullable, never a "null"/"N/A" placeholder.
+  describe("counterparty identity (EXT-TX-UNIFICATION-001)", () => {
+    it("renders name and phone together when both are known", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ counterpartyName: "David Koku Togbe", counterpartyPhone: "+22890123456" }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("David Koku Togbe") && text.includes("+22890123456"))
+          .length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("renders name only when phone is unknown", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ counterpartyName: "Angela Donkor", counterpartyPhone: null })]}
+        />,
+      );
+      expect(screen.getAllByText("Angela Donkor").length).toBeGreaterThan(0);
+    });
+
+    it("renders phone only when name is unknown", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ counterpartyName: null, counterpartyPhone: "+233241234567" })]}
+        />,
+      );
+      expect(screen.getAllByText("+233241234567").length).toBeGreaterThan(0);
+    });
+
+    it("renders neither placeholder text nor a stray separator when both are unknown", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ counterpartyName: null, counterpartyPhone: null })]}
+        />,
+      );
+      expect(screen.queryByText(/null/i)).not.toBeInTheDocument();
+      expect(screen.queryByText("N/A")).not.toBeInTheDocument();
+      expect(screen.queryByText("·")).not.toBeInTheDocument();
+    });
   });
 });

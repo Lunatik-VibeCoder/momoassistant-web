@@ -25,6 +25,18 @@ const STATUS_BADGE_VARIANT: Record<string, "secondary" | "destructive" | "outlin
   CANCELLED: "outline",
 };
 
+// EXT-TX-UNIFICATION-001 -- counterpartyName/counterpartyPhone are each
+// independently nullable and never invented from one another (e.g. a
+// commission credit has no counterparty at all). Renders whichever of the
+// two is present, joined when both are; renders nothing (never a
+// "null"/"N/A" placeholder) when neither is known.
+function counterpartyLabel(transaction: RecentTransactionSummary): string | null {
+  const parts = [transaction.counterpartyName, transaction.counterpartyPhone].filter(
+    (part): part is string => Boolean(part),
+  );
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 export function RecentTransactionsCard({
   locale,
   content,
@@ -51,6 +63,7 @@ export function RecentTransactionsCard({
               // -- applying it to the row too keeps a FAILED transaction
               // immediately scannable in a list, not just on the small badge.
               const failed = transaction.status === "FAILED";
+              const counterparty = counterpartyLabel(transaction);
               return (
                 <li
                   key={transaction.transactionUid}
@@ -68,6 +81,9 @@ export function RecentTransactionsCard({
                         {transaction.transactionType}
                       </span>
                     </div>
+                    {counterparty ? (
+                      <p className="mt-1 truncate text-sm text-foreground">{counterparty}</p>
+                    ) : null}
                     <p className="mt-1 truncate text-xs text-muted-foreground">
                       {transaction.stationName ?? content.stationUnknown} ·{" "}
                       {formatDateTime(locale, transaction.createdAt)}

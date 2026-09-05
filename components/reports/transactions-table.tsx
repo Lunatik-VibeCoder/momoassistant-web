@@ -36,6 +36,20 @@ function AmountCell({ amount, currency }: { amount: string; currency: string | n
   );
 }
 
+// EXT-TX-UNIFICATION-001 -- counterpartyName/counterpartyPhone are each
+// independently nullable and never invented from one another (e.g. a
+// commission credit has no counterparty at all). Renders whichever of the
+// two is present, joined when both are; renders nothing (never a
+// "null"/"N/A" placeholder) when neither is known. No new column/header --
+// shown as a secondary line under the station cell, same footprint as the
+// existing reference line below it.
+function counterpartyLabel(transaction: ReportTransaction): string | null {
+  const parts = [transaction.counterpartyName, transaction.counterpartyPhone].filter(
+    (part): part is string => Boolean(part),
+  );
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 export function TransactionsTable({ locale, content, transactions }: TransactionsTableProps) {
   if (transactions.length === 0) {
     return <p className="text-sm text-muted-foreground">{content.empty}</p>;
@@ -75,6 +89,9 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {transaction.stationName ?? content.stationUnavailable}
+                  {counterpartyLabel(transaction) ? (
+                    <p className="mt-0.5 text-xs">{counterpartyLabel(transaction)}</p>
+                  ) : null}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{transaction.reference}</td>
               </tr>
@@ -91,12 +108,15 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
                     {transaction.status}
                   </Badge>
-                  <span className="text-sm font-medium text-foreground">{transaction.transactionType}</span>
+                  <span className="truncate text-sm font-medium text-foreground">{transaction.transactionType}</span>
                 </div>
+                {counterpartyLabel(transaction) ? (
+                  <p className="mt-1 truncate text-sm text-foreground">{counterpartyLabel(transaction)}</p>
+                ) : null}
                 <p className="mt-1 truncate text-xs text-muted-foreground">
                   {transaction.stationName ?? content.stationUnavailable} ·{" "}
                   {formatDateTime(locale, transaction.createdAt)}
