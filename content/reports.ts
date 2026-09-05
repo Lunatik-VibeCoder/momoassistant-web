@@ -52,6 +52,15 @@ export interface ReportsContent {
     nextPage: string;
     previousPage: string;
     stationUnavailable: string;
+    // WEB-TX-PRESENTATION-005 -- labels for the Amount column when a row is
+    // BALANCE_CHECK/COMMISSION_CHECK: a historical check result, never a
+    // transaction amount. `unavailable` mirrors Android's own "—" fallback
+    // (TransactionRow.kt) -- never a fabricated 0.00.
+    checkResult: {
+      balanceLabel: string;
+      commissionLabel: string;
+      unavailable: string;
+    };
   };
   filters: {
     title: string;
@@ -120,6 +129,11 @@ export function getReportsContent(locale: AppLocale): ReportsContent {
         nextPage: "Page suivante",
         previousPage: "Page précédente",
         stationUnavailable: "—",
+        checkResult: {
+          balanceLabel: "Solde :",
+          commissionLabel: "Commission :",
+          unavailable: "—",
+        },
       },
       filters: {
         title: "Filtres",
@@ -186,6 +200,11 @@ export function getReportsContent(locale: AppLocale): ReportsContent {
       nextPage: "Next page",
       previousPage: "Previous page",
       stationUnavailable: "—",
+      checkResult: {
+        balanceLabel: "Balance:",
+        commissionLabel: "Commission:",
+        unavailable: "—",
+      },
     },
     filters: {
       title: "Filters",

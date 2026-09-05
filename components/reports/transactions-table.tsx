@@ -37,17 +37,42 @@ const STATUS_BADGE_VARIANT: Record<string, "secondary" | "destructive" | "outlin
 // direction system and never inferred from the amount string itself.
 // MONEY_OUT -> "-", MONEY_IN -> "+", null (Balance/Commission Check, an
 // unrecognized ExternalSubtype) -> no sign at all.
+//
+// WEB-TX-PRESENTATION-005 -- BALANCE_CHECK/COMMISSION_CHECK never render
+// `amount` (always "0.00" -- these types take no user-entered amount, see
+// TransactionFormUiState.requiredFormFields() on the Android side) or a
+// sign (they never move money). They render `checkResult` instead -- the
+// historically-exact result of THIS specific check, ported verbatim from
+// Android's own TransactionRow.kt (checkKeywordFor -> extractMtnAvailableAmount
+// -> "—" fallback). Never CommunicationProfile's current snapshot -- there
+// is deliberately no query/join to it anywhere in this component.
 function AmountCell({
   amount,
   currency,
   transactionType,
   externalSubtype,
+  checkResult,
+  content,
 }: {
   amount: string;
   currency: string | null;
   transactionType: string;
   externalSubtype: string | null;
+  checkResult: string | null;
+  content: ReportsContent["table"]["checkResult"];
 }) {
+  if (transactionType === "BALANCE_CHECK" || transactionType === "COMMISSION_CHECK") {
+    if (checkResult === null) {
+      return <span className="font-medium text-foreground">{content.unavailable}</span>;
+    }
+    const label = transactionType === "BALANCE_CHECK" ? content.balanceLabel : content.commissionLabel;
+    return (
+      <span className="font-medium text-foreground">
+        {label} {checkResult} {currency ?? "—"}
+      </span>
+    );
+  }
+
   const direction = resolveTreasuryDirection(transactionType, externalSubtype);
   const sign = direction === "MONEY_OUT" ? "-" : direction === "MONEY_IN" ? "+" : "";
   return (
@@ -130,6 +155,8 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                     currency={transaction.currency}
                     transactionType={transaction.transactionType}
                     externalSubtype={transaction.externalSubtype}
+                    checkResult={transaction.checkResult}
+                    content={content.checkResult}
                   />
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
@@ -176,6 +203,8 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                   currency={transaction.currency}
                   transactionType={transaction.transactionType}
                   externalSubtype={transaction.externalSubtype}
+                  checkResult={transaction.checkResult}
+                  content={content.checkResult}
                 />
               </span>
             </div>

@@ -19,6 +19,7 @@ function makeTransaction(overrides: Partial<RecentTransactionSummary> = {}): Rec
     counterpartyName: null,
     counterpartyPhone: null,
     externalSubtype: null,
+    checkResult: null,
     ...overrides,
   };
 }

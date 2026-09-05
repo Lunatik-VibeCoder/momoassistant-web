@@ -792,6 +792,12 @@ export interface RecentTransactionSummary {
   // classifyTreasury()/resolveTreasuryDirection() mapping consumed at
   // render time.
   externalSubtype: string | null;
+  // WEB-TX-PRESENTATION-005 -- the historically-exact Balance/Commission
+  // Check result for THIS transaction (Android's own resultMessage,
+  // extracted at sync time), never the device's current
+  // CommunicationProfile snapshot. `null` for every non-check type, or a
+  // check whose result was never extractable -- never a fabricated 0.
+  checkResult: string | null;
 }
 
 export async function listRecentTransactions(
@@ -871,6 +877,8 @@ export interface ReportTransaction {
   counterpartyPhone: string | null;
   // EXT-TX-UNIFICATION-002 -- see RecentTransactionSummary's own comment.
   externalSubtype: string | null;
+  // WEB-TX-PRESENTATION-005 -- see RecentTransactionSummary's own comment.
+  checkResult: string | null;
 }
 
 export interface ReportTransactionPage {

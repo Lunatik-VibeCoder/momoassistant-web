@@ -23,6 +23,7 @@ function makeTransaction(overrides: Partial<ReportTransaction> = {}): ReportTran
     counterpartyName: null,
     counterpartyPhone: null,
     externalSubtype: null,
+    checkResult: null,
     ...overrides,
   };
 }
@@ -302,7 +303,7 @@ describe("TransactionsTable", () => {
       ).toBeGreaterThan(0);
     });
 
-    it("never signs a neutral amount (COMMISSION_CHECK)", () => {
+    it("never signs a neutral amount (COMMISSION_CHECK) -- and never renders the underlying 0.00 amount either (WEB-TX-PRESENTATION-005: renders '—' with no checkResult)", () => {
       render(
         <TransactionsTable
           locale="en"
@@ -314,9 +315,8 @@ describe("TransactionsTable", () => {
       );
       expect(screen.queryByText((text) => text.includes("+0.00"))).not.toBeInTheDocument();
       expect(screen.queryByText((text) => text.includes("-0.00"))).not.toBeInTheDocument();
-      expect(screen.getAllByText((text) => text.includes("0.00") && text.includes("XOF")).length).toBeGreaterThan(
-        0,
-      );
+      expect(screen.queryByText((text) => text.includes("0.00") && text.includes("XOF"))).not.toBeInTheDocument();
+      expect(screen.getAllByText(content.checkResult.unavailable).length).toBeGreaterThan(0);
     });
 
     it("never signs a neutral amount for an EXTERNAL_TRANSACTION with no recognized subtype", () => {
@@ -336,6 +336,96 @@ describe("TransactionsTable", () => {
       );
       expect(screen.queryByText((text) => text.includes("+50.00"))).not.toBeInTheDocument();
       expect(screen.queryByText((text) => text.includes("-50.00"))).not.toBeInTheDocument();
+    });
+  });
+
+  // WEB-TX-PRESENTATION-005 -- BALANCE_CHECK/COMMISSION_CHECK render the
+  // historically-exact checkResult, never Transaction.amount, never a sign,
+  // never CommunicationProfile's current snapshot (no such query exists in
+  // this component at all).
+  describe("check results (WEB-TX-PRESENTATION-005)", () => {
+    it("renders 'Balance: {checkResult} {currency}' for BALANCE_CHECK, never a sign", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({
+              transactionType: "BALANCE_CHECK",
+              amount: "0.00",
+              currency: "GHS",
+              checkResult: "12714.29",
+            }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("Balance: 12714.29 GHS")).length,
+      ).toBeGreaterThan(0);
+      expect(screen.queryByText((text) => text.includes("+12714.29"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("-12714.29"))).not.toBeInTheDocument();
+    });
+
+    it("renders 'Commission: {checkResult} {currency}' for COMMISSION_CHECK, never a sign", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({
+              transactionType: "COMMISSION_CHECK",
+              amount: "0.00",
+              currency: "GHS",
+              checkResult: "86.19",
+            }),
+          ]}
+        />,
+      );
+      expect(screen.getAllByText((text) => text.includes("Commission: 86.19 GHS")).length).toBeGreaterThan(0);
+      expect(screen.queryByText((text) => text.includes("+86.19"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("-86.19"))).not.toBeInTheDocument();
+    });
+
+    it("renders '—' for a BALANCE_CHECK row with no checkResult (old row, resultMessage never synced), never a fabricated 0.00", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "BALANCE_CHECK", amount: "0.00", checkResult: null }),
+          ]}
+        />,
+      );
+      expect(screen.getAllByText(content.checkResult.unavailable).length).toBeGreaterThan(0);
+      expect(screen.queryByText((text) => text.includes("0.00"))).not.toBeInTheDocument();
+    });
+
+    it("renders '—' for a COMMISSION_CHECK row with no checkResult", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "COMMISSION_CHECK", amount: "0.00", checkResult: null }),
+          ]}
+        />,
+      );
+      expect(screen.getAllByText(content.checkResult.unavailable).length).toBeGreaterThan(0);
+    });
+
+    it("never renders a check-result prefix for an ordinary transaction type, even if checkResult were somehow set", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "CASH_IN", amount: "100.00", checkResult: "999.00" }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText((text) => text.includes("Balance:"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("Commission:"))).not.toBeInTheDocument();
+      expect(screen.getAllByText((text) => text.includes("-100.00")).length).toBeGreaterThan(0);
     });
   });
 });
