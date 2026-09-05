@@ -22,6 +22,7 @@ function makeTransaction(overrides: Partial<ReportTransaction> = {}): ReportTran
     createdAt: "2026-09-03T10:00:00.000Z",
     counterpartyName: null,
     counterpartyPhone: null,
+    externalSubtype: null,
     ...overrides,
   };
 }
@@ -136,6 +137,98 @@ describe("TransactionsTable", () => {
       expect(screen.queryByText(/null/i)).not.toBeInTheDocument();
       expect(screen.queryByText("N/A")).not.toBeInTheDocument();
       expect(screen.queryByText("·")).not.toBeInTheDocument();
+    });
+  });
+
+  // EXT-TX-UNIFICATION-002 -- ported Android TreasuryDirection semantics,
+  // never inferred from amount sign/name/timestamp. transactionType must
+  // remain visible alongside the direction, never replaced by it.
+  describe("treasury direction (EXT-TX-UNIFICATION-002)", () => {
+    it("renders MONEY OUT for CASH_IN, matching Android's TreasuryDirection", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ transactionType: "CASH_IN" })]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("MONEY OUT") && text.includes("CASH_IN")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("renders MONEY IN for CASH_OUT, matching Android's TreasuryDirection", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ transactionType: "CASH_OUT" })]}
+        />,
+      );
+      expect(
+        screen.getAllByText((text) => text.includes("MONEY IN") && text.includes("CASH_OUT")).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("renders MONEY OUT for EXTERNAL_TRANSACTION + CASH_IN, transactionType still visible", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "EXTERNAL_TRANSACTION", externalSubtype: "CASH_IN" }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText(
+          (text) => text.includes("MONEY OUT") && text.includes("EXTERNAL_TRANSACTION"),
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("renders MONEY IN for EXTERNAL_TRANSACTION + CASH_OUT", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "EXTERNAL_TRANSACTION", externalSubtype: "CASH_OUT" }),
+          ]}
+        />,
+      );
+      expect(
+        screen.getAllByText(
+          (text) => text.includes("MONEY IN") && text.includes("EXTERNAL_TRANSACTION"),
+        ).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("renders no direction for EXTERNAL_TRANSACTION with a null subtype -- never guessed", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[
+            makeTransaction({ transactionType: "EXTERNAL_TRANSACTION", externalSubtype: null }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText((text) => text.includes("MONEY IN"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("MONEY OUT"))).not.toBeInTheDocument();
+      expect(screen.getAllByText("EXTERNAL_TRANSACTION").length).toBeGreaterThan(0);
+    });
+
+    it("renders no direction for a genuinely neutral type (BALANCE_CHECK)", () => {
+      render(
+        <TransactionsTable
+          locale="en"
+          content={content}
+          transactions={[makeTransaction({ transactionType: "BALANCE_CHECK" })]}
+        />,
+      );
+      expect(screen.queryByText((text) => text.includes("MONEY IN"))).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes("MONEY OUT"))).not.toBeInTheDocument();
     });
   });
 });

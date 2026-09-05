@@ -777,6 +777,12 @@ export interface RecentTransactionSummary {
   createdAt: string;
   counterpartyName: string | null;
   counterpartyPhone: string | null;
+  // EXT-TX-UNIFICATION-002 -- raw Android ExternalSubtype.name, only ever
+  // non-null when transactionType === "EXTERNAL_TRANSACTION". Never a
+  // derived direction -- see lib/treasury-direction.ts for the ported
+  // classifyTreasury()/resolveTreasuryDirection() mapping consumed at
+  // render time.
+  externalSubtype: string | null;
 }
 
 export async function listRecentTransactions(
@@ -854,6 +860,8 @@ export interface ReportTransaction {
   // EXT-TX-UNIFICATION-001 -- see RecentTransactionSummary's own comment.
   counterpartyName: string | null;
   counterpartyPhone: string | null;
+  // EXT-TX-UNIFICATION-002 -- see RecentTransactionSummary's own comment.
+  externalSubtype: string | null;
 }
 
 export interface ReportTransactionPage {

@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import type { ReportsContent } from "@/content/reports";
 import type { AppLocale } from "@/i18n/routing";
 import type { ReportTransaction } from "@/lib/mcp-client";
+import { presentTreasuryDirection } from "@/lib/treasury-direction";
 import { formatDateTime } from "@/lib/utils";
 
 interface TransactionsTableProps {
@@ -50,6 +51,22 @@ function counterpartyLabel(transaction: ReportTransaction): string | null {
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
+// EXT-TX-UNIFICATION-002 -- ported from Android's own classifyTreasury()/
+// resolveTreasuryDirection() (lib/treasury-direction.ts), never inferred
+// from amount sign/name/timestamp here. `null` for a genuinely neutral
+// transaction (Balance/Commission Check) or an EXTERNAL_TRANSACTION with no
+// recognized subtype -- renders nothing, never a guessed direction.
+// transactionType always stays visible -- direction is additive.
+function TransactionTypeCell({ transaction }: { transaction: ReportTransaction }) {
+  const direction = presentTreasuryDirection(transaction.transactionType, transaction.externalSubtype);
+  return (
+    <span className={direction.label === "MONEY OUT" ? "text-destructive" : undefined}>
+      {direction.label ? `${direction.icon} ${direction.label} · ` : null}
+      {transaction.transactionType}
+    </span>
+  );
+}
+
 export function TransactionsTable({ locale, content, transactions }: TransactionsTableProps) {
   if (transactions.length === 0) {
     return <p className="text-sm text-muted-foreground">{content.empty}</p>;
@@ -78,7 +95,9 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                 <td className="px-4 py-3 text-muted-foreground">
                   {formatDateTime(locale, transaction.createdAt)}
                 </td>
-                <td className="px-4 py-3 font-medium text-foreground">{transaction.transactionType}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  <TransactionTypeCell transaction={transaction} />
+                </td>
                 <td className="px-4 py-3">
                   <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
                     {transaction.status}
@@ -112,7 +131,9 @@ export function TransactionsTable({ locale, content, transactions }: Transaction
                   <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
                     {transaction.status}
                   </Badge>
-                  <span className="truncate text-sm font-medium text-foreground">{transaction.transactionType}</span>
+                  <span className="truncate text-sm font-medium text-foreground">
+                    <TransactionTypeCell transaction={transaction} />
+                  </span>
                 </div>
                 {counterpartyLabel(transaction) ? (
                   <p className="mt-1 truncate text-sm text-foreground">{counterpartyLabel(transaction)}</p>

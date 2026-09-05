@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardContent } from "@/content/dashboard";
 import type { AppLocale } from "@/i18n/routing";
 import type { RecentTransactionSummary } from "@/lib/mcp-client";
+import { presentTreasuryDirection } from "@/lib/treasury-direction";
 import { cn, formatDateTime } from "@/lib/utils";
 
 interface RecentTransactionsCardProps {
@@ -64,6 +65,17 @@ export function RecentTransactionsCard({
               // immediately scannable in a list, not just on the small badge.
               const failed = transaction.status === "FAILED";
               const counterparty = counterpartyLabel(transaction);
+              // EXT-TX-UNIFICATION-002 -- ported from Android's own
+              // classifyTreasury()/resolveTreasuryDirection(), never
+              // inferred here from amount sign/name/timestamp. `null` for a
+              // genuinely neutral transaction (Balance/Commission Check) or
+              // an EXTERNAL_TRANSACTION with no recognized subtype -- never
+              // a guessed direction.
+              const direction = presentTreasuryDirection(
+                transaction.transactionType,
+                transaction.externalSubtype,
+              );
+              const isMoneyOut = direction.label === "MONEY OUT";
               return (
                 <li
                   key={transaction.transactionUid}
@@ -77,7 +89,13 @@ export function RecentTransactionsCard({
                       <Badge variant={STATUS_BADGE_VARIANT[transaction.status] ?? "outline"}>
                         {transaction.status}
                       </Badge>
-                      <span className="text-sm font-medium text-foreground">
+                      <span
+                        className={cn(
+                          "text-sm font-medium",
+                          isMoneyOut ? "text-destructive" : "text-foreground",
+                        )}
+                      >
+                        {direction.icon ? `${direction.icon} ${direction.label} · ` : null}
                         {transaction.transactionType}
                       </span>
                     </div>
@@ -92,7 +110,7 @@ export function RecentTransactionsCard({
                   <span
                     className={cn(
                       "shrink-0 text-sm font-medium",
-                      failed ? "text-destructive" : "text-foreground",
+                      failed || isMoneyOut ? "text-destructive" : "text-foreground",
                     )}
                   >
                     {transaction.amount}
