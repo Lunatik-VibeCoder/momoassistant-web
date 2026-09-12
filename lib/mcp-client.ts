@@ -798,6 +798,49 @@ export async function revokeDevice(
   );
 }
 
+// AUTH-SECURITY-2 Phase C Contract Lock v3, PC-5 -- Security Center,
+// Recovery Requests triage. Mirrors the backend's RecoveryRequestSummary
+// field-for-field (recovery-requests.service.ts). `organizationId` is
+// derived server-side from the linked Device -- RecoveryRequest has no
+// such column of its own, same as OrganizationDeviceSummary's own device
+// relation above.
+export interface RecoveryRequestSummary {
+  id: string;
+  organizationId: string;
+  status: string;
+  deviceCertificationStatusAtDenial: string | null;
+  createdAt: string;
+  routedAt: string | null;
+  device: { id: string; deviceName: string };
+  user: { id: string; displayName: string; email: string | null };
+}
+
+export async function listRecoveryRequests(
+  accessToken: string,
+  organizationId: string,
+): Promise<RecoveryRequestSummary[]> {
+  return mcpFetch<RecoveryRequestSummary[]>(
+    `/organizations/${organizationId}/recovery-requests`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+// "Route to Case B" backend-side -- a pure triage action, no request body.
+// It only ever changes RecoveryRequestSummary.status/routedAt: never
+// reactivates, replaces, or re-enrolls the underlying Device (Case B
+// itself remains unimplemented, out of scope here).
+export async function routeRecoveryRequestToCaseB(
+  accessToken: string,
+  id: string,
+): Promise<RecoveryRequestSummary> {
+  return mcpFetch<RecoveryRequestSummary>(
+    `/recovery-requests/${id}/route-to-case-b`,
+    { method: "PATCH" },
+    { accessToken },
+  );
+}
+
 // EXT-TX-UNIFICATION-001 -- explicit decision reopening the "no
 // currency/country/operator" exclusion above for exactly this pair of
 // fields. Both independently nullable -- never both required, never one

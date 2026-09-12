@@ -14,7 +14,10 @@ export interface SettingsContent {
     // AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4 -- same grouped-hub
     // link-row pattern as system/plan above (SETTINGS-NAV-1), not a new
     // primary-nav item.
-    security: { title: string; devices: string };
+    // AUTH-SECURITY-2 Phase C Contract Lock v3, PC-5 -- second row in the
+    // same Security group, distinct page from `devices` above (locked
+    // decision: two clear responsibilities).
+    security: { title: string; devices: string; recoveryRequests: string };
     preferencesTitle: string;
   };
   profile: {
@@ -45,7 +48,11 @@ export function getSettingsContent(locale: AppLocale): SettingsContent {
           subscription: "Abonnement",
           billing: "Facturation",
         },
-        security: { title: "Sécurité", devices: "Appareils de confiance" },
+        security: {
+          title: "Sécurité",
+          devices: "Appareils de confiance",
+          recoveryRequests: "Demandes de récupération",
+        },
         preferencesTitle: "Préférences",
       },
       profile: {
@@ -74,7 +81,11 @@ export function getSettingsContent(locale: AppLocale): SettingsContent {
         subscription: "Subscription",
         billing: "Billing",
       },
-      security: { title: "Security", devices: "Trusted Devices" },
+      security: {
+        title: "Security",
+        devices: "Trusted Devices",
+        recoveryRequests: "Recovery Requests",
+      },
       preferencesTitle: "Preferences",
     },
     profile: {
