@@ -41,6 +41,7 @@ function makeDevice(
     lastHeartbeatAt: "2026-09-05T10:00:00.000Z",
     isStale: false,
     communicationProfiles: profiles,
+    certificationStatus: null,
     ...overrides,
   };
 }

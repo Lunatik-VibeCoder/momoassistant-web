@@ -60,6 +60,16 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         </Card>
       </div>
 
+      {/* AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4. */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-foreground">{content.groups.security.title}</h2>
+        <Card>
+          <CardContent className="flex flex-col gap-1 p-2">
+            <SettingsNavRow href="/devices" label={content.groups.security.devices} />
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="flex flex-col gap-4">
         <h2 className="text-sm font-semibold text-foreground">{content.groups.preferencesTitle}</h2>
         <ProfileForm content={content} displayName={profile.displayName} locale={profile.locale} />

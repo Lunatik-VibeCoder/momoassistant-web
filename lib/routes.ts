@@ -32,6 +32,8 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/subscription",
   "/billing",
   "/settings",
+  // AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4.
+  "/devices",
 ]);
 
 export function isRouteImplemented(href: string): boolean {

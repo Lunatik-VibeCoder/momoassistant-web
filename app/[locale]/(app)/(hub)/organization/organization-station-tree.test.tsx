@@ -24,6 +24,7 @@ function makeDevice(overrides: Partial<OrganizationDeviceSummary> = {}): Organiz
     lastHeartbeatAt: null,
     isStale: false,
     communicationProfiles: [],
+    certificationStatus: null,
     ...overrides,
   };
 }

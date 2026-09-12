@@ -724,6 +724,12 @@ export interface OrganizationDeviceSummary {
   // real consumers before this sprint (DeviceStatusCard never read the old
   // field), so this is a straight rename, no compatibility shim.
   communicationProfiles: CommunicationProfileSummary[];
+  // AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4 -- mirrors the backend's
+  // additive field field-for-field (devices.service.ts,
+  // DevicesService.findByOrganization). `null` means no DeviceCertification
+  // row exists yet -- shown as-is, never fabricated into "PENDING" on this
+  // side either.
+  certificationStatus: string | null;
 }
 
 export async function listOrganizationDevices(
@@ -767,6 +773,27 @@ export async function unassignDevice(
   await mcpFetch(
     `/devices/${deviceId}/station`,
     { method: "DELETE", body: { reason } },
+    { accessToken },
+  );
+}
+
+// AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4 -- Device Revocation
+// Authority (devices.service.ts). Unlike assignDeviceToStation/unassignDevice
+// above, `reason` is REQUIRED backend-side (RevokeDeviceDto, min 10 chars) --
+// a security-incident action, not a routine lifecycle change. This is
+// exclusively a certification-status change: it never implies device
+// reactivation, replacement, or re-enrollment (Case B, out of scope here).
+// Response is the backend's bare DeviceSummary (no certificationStatus
+// field there either) -- unused here, same fire-and-forget-then-revalidate
+// shape as every other write function in this file.
+export async function revokeDevice(
+  accessToken: string,
+  deviceId: string,
+  reason: string,
+): Promise<void> {
+  await mcpFetch(
+    `/devices/${deviceId}/revoke`,
+    { method: "POST", body: { reason } },
     { accessToken },
   );
 }
