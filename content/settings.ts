@@ -17,7 +17,16 @@ export interface SettingsContent {
     // AUTH-SECURITY-2 Phase C Contract Lock v3, PC-5 -- second row in the
     // same Security group, distinct page from `devices` above (locked
     // decision: two clear responsibilities).
-    security: { title: string; devices: string; recoveryRequests: string };
+    // AUTH-SECURITY-2 Case B B1.8 -- third row, Web admin triage/approval
+    // for ReplacementRequest, distinct from recoveryRequests above (CB-0:
+    // RecoveryRequest is a triage journal only, never an approval
+    // mechanism).
+    security: {
+      title: string;
+      devices: string;
+      recoveryRequests: string;
+      replacementRequests: string;
+    };
     preferencesTitle: string;
   };
   profile: {
@@ -52,6 +61,7 @@ export function getSettingsContent(locale: AppLocale): SettingsContent {
           title: "Sécurité",
           devices: "Appareils de confiance",
           recoveryRequests: "Demandes de récupération",
+          replacementRequests: "Remplacements d'appareil",
         },
         preferencesTitle: "Préférences",
       },
@@ -85,6 +95,7 @@ export function getSettingsContent(locale: AppLocale): SettingsContent {
         title: "Security",
         devices: "Trusted Devices",
         recoveryRequests: "Recovery Requests",
+        replacementRequests: "Device Replacements",
       },
       preferencesTitle: "Preferences",
     },

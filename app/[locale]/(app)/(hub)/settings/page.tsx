@@ -60,7 +60,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         </Card>
       </div>
 
-      {/* AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4/PC-5. */}
+      {/* AUTH-SECURITY-2 Phase C Contract Lock v3, PC-4/PC-5; Case B B1.8. */}
       <div className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-foreground">{content.groups.security.title}</h2>
         <Card>
@@ -69,6 +69,10 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
             <SettingsNavRow
               href="/recovery-requests"
               label={content.groups.security.recoveryRequests}
+            />
+            <SettingsNavRow
+              href="/replacement-requests"
+              label={content.groups.security.replacementRequests}
             />
           </CardContent>
         </Card>

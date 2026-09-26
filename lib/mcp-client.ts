@@ -841,6 +841,92 @@ export async function routeRecoveryRequestToCaseB(
   );
 }
 
+// AUTH-SECURITY-2 Case B B1.8 -- Web admin triage/approval for
+// ReplacementRequest (CASE_B_CONTRACT_LOCK.md CB-1). Mirrors the backend's
+// ReplacementRequestListItem field-for-field
+// (replacement-requests.service.ts's own toListItem) -- deliberately
+// carries only requesterId/oldDeviceId/newDeviceId (raw ids, no server-side
+// join, unlike RecoveryRequestSummary above), because Case B's list route
+// (B1.6, locked) was never asked to enrich this response. Resolving these
+// to display names is done page-side using listMembers/
+// listOrganizationDevices, already-existing data sources -- no new backend
+// endpoint (per the B1.8 GO's explicit "no new backend endpoints").
+export interface ReplacementRequestListItem {
+  requestId: string;
+  requesterId: string;
+  oldDeviceId: string;
+  newDeviceId: string | null;
+  status:
+    | "PENDING_OTP"
+    | "PENDING_APPROVAL"
+    | "APPROVED"
+    | "REJECTED"
+    | "EXPIRED"
+    | "COMPLETED";
+  createdAt: string;
+  expiresAt: string;
+  otpVerifiedAt: string | null;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  rejectedBy: string | null;
+  rejectedAt: string | null;
+  rejectionReason: string | null;
+}
+
+export interface ReplacementRequestListPage {
+  items: ReplacementRequestListItem[];
+  nextCursor: string | null;
+}
+
+// No cursor/limit params exposed yet -- B1.8's scope is a single triage
+// page, same "first page only" simplification already accepted for
+// listRecoveryRequests above (no pagination UI exists for either list
+// today). nextCursor is still returned/typed for forward compatibility,
+// simply unused by this first page.
+export async function listReplacementRequests(
+  accessToken: string,
+  organizationId: string,
+): Promise<ReplacementRequestListPage> {
+  return mcpFetch<ReplacementRequestListPage>(
+    `/organizations/${organizationId}/replacement-requests`,
+    { method: "GET" },
+    { accessToken },
+  );
+}
+
+// CB-6 (self-approval) and PENDING_APPROVAL-only eligibility are enforced
+// exclusively by the backend (approveReplacementRequest, B1.3, locked) --
+// this client never duplicates that check, per the B1.8 GO's explicit
+// "do not implement client-side authorization logic that duplicates
+// backend rules."
+export async function approveReplacementRequest(
+  accessToken: string,
+  id: string,
+): Promise<ReplacementRequestListItem> {
+  return mcpFetch<ReplacementRequestListItem>(
+    `/replacement-requests/${id}/approve`,
+    { method: "PATCH" },
+    { accessToken },
+  );
+}
+
+// reason is forwarded verbatim -- the backend's own normalizeRejectionReason
+// (B1.3, locked) remains the sole authority on trimming/length validation;
+// the 10-500 char constraint enforced client-side (reject-dialog.tsx) is
+// UX-only, same convention as RevokeDeviceDto's mirrored textarea minLength/
+// maxLength above.
+export async function rejectReplacementRequest(
+  accessToken: string,
+  id: string,
+  reason: string,
+): Promise<ReplacementRequestListItem> {
+  return mcpFetch<ReplacementRequestListItem>(
+    `/replacement-requests/${id}/reject`,
+    { method: "PATCH", body: { reason } },
+    { accessToken },
+  );
+}
+
 // EXT-TX-UNIFICATION-001 -- explicit decision reopening the "no
 // currency/country/operator" exclusion above for exactly this pair of
 // fields. Both independently nullable -- never both required, never one
