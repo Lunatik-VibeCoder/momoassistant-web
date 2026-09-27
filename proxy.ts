@@ -29,6 +29,9 @@ const HUB_SEGMENTS = new Set([
   "health",
   "settings",
   "reports",
+  "devices",
+  "recovery-requests",
+  "replacement-requests",
 ]);
 
 // The subdomain split (marketing on www.*, Customer Hub on app.*) --
