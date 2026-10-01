@@ -7,6 +7,12 @@ export interface LoginContent {
   submitLabel: string;
   registerPrompt: string;
   registerLinkLabel: string;
+  // PASSWORD-RESET-WEB-2 decision 8 -- static link, deliberately never
+  // carries forward whatever email the agent already typed into this form.
+  forgotPasswordLabel: string;
+  // PASSWORD-RESET-WEB-2 decision 4 -- rendered as a server-rendered Alert
+  // above the form when ?reset=success is present, never a toast.
+  resetSuccessMessage: string;
 }
 
 export function getLoginContent(locale: AppLocale): LoginContent {
@@ -22,6 +28,8 @@ export function getLoginContent(locale: AppLocale): LoginContent {
       submitLabel: "Se connecter",
       registerPrompt: "Pas encore de compte ?",
       registerLinkLabel: "Créer un compte",
+      forgotPasswordLabel: "Mot de passe oublié ?",
+      resetSuccessMessage: "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.",
     };
   }
   return {
@@ -35,5 +43,7 @@ export function getLoginContent(locale: AppLocale): LoginContent {
     submitLabel: "Sign in",
     registerPrompt: "Don't have an account yet?",
     registerLinkLabel: "Create an account",
+    forgotPasswordLabel: "Forgot your password?",
+    resetSuccessMessage: "Your password has been reset. You can now sign in.",
   };
 }

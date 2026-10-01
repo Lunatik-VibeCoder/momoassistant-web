@@ -38,6 +38,9 @@ const IMPLEMENTED_ROUTES = new Set<string>([
   "/recovery-requests",
   // AUTH-SECURITY-2 Case B B1.8.
   "/replacement-requests",
+  // PASSWORD-RESET-WEB-2.
+  "/forgot-password",
+  "/reset-password",
 ]);
 
 export function isRouteImplemented(href: string): boolean {

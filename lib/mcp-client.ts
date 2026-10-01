@@ -34,7 +34,21 @@ async function getVisitorIp(): Promise<string | null> {
   return null;
 }
 
-export type McpErrorKind = "unauthorized" | "forbidden" | "not_found" | "conflict" | "validation" | "unknown";
+// PASSWORD-RESET-WEB-2 -- "rate_limited" (HTTP 429) added for
+// /auth/forgot-password and /auth/reset-password, both unauthenticated and
+// guessable/abusable (an email address; a 6-digit code), so both are
+// expected to be throttled server-side. Never shown verbatim to the
+// caller -- see content/forgot-password.ts and content/reset-password.ts's
+// own rateLimitedMessage for the dedicated, friendly copy every consumer
+// of this kind must use instead.
+export type McpErrorKind =
+  | "unauthorized"
+  | "forbidden"
+  | "not_found"
+  | "conflict"
+  | "validation"
+  | "rate_limited"
+  | "unknown";
 
 // RFC-0011 SS5 -- the one place MCP's raw error shape gets translated into
 // something every page switches on consistently. No raw MCP error body
@@ -62,6 +76,8 @@ function statusToKind(status: number): McpErrorKind {
       return "conflict";
     case 400:
       return "validation";
+    case 429:
+      return "rate_limited";
     default:
       return "unknown";
   }
@@ -208,6 +224,37 @@ export async function login(input: { email: string; password: string }): Promise
   const tokens = await mcpFetch<McpAuthTokens>("/auth/login", { method: "POST", body: input });
   const profile = await fetchProfile(tokens.accessToken);
   return toSessionData(tokens, toSessionUser(profile));
+}
+
+// PASSWORD-RESET-WEB-2 -- deliberately anti-enumeration: MCP always
+// responds 204, whether or not `email` belongs to a real account (never a
+// 404/"email not found"). The only error branch any caller should ever
+// special-case is 429 (kind "rate_limited" above) -- see
+// forgot-password/actions.ts's own comment on why every other error
+// funnels into one generic message instead of error.message verbatim
+// (unlike every other action in this file's callers).
+export async function forgotPassword(input: { email: string }): Promise<void> {
+  await mcpFetch("/auth/forgot-password", { method: "POST", body: input });
+}
+
+// PASSWORD-RESET-WEB-2 -- unlike verifyEmail/login/acceptInvitation above,
+// MCP deliberately mints no session/token on a successful reset (204, no
+// body): the caller must sign in again afterward with the new password.
+// This function never touches cookies, same division of responsibility as
+// every other function in this file -- the calling Server Action
+// (reset-password/actions.ts) redirects to /login on success, it never
+// calls createSession()/login().
+//
+// A 401 covers an invalid, expired, or already-used code -- one generic
+// backend message by design, never distinguishing which of the three
+// occurred (rendered verbatim by the caller, same "universal convention
+// for every other auth error" as login/verifyEmail/acceptInvitation).
+export async function resetPassword(input: {
+  email: string;
+  code: string;
+  newPassword: string;
+}): Promise<void> {
+  await mcpFetch("/auth/reset-password", { method: "POST", body: input });
 }
 
 // MEMBERS-INVITATION-001 Piece 2 -- MCP's InvitationPreview shape

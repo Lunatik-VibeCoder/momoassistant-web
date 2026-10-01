@@ -39,7 +39,17 @@ export function LoginForm({
             <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={email} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">{content.passwordLabel}</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">{content.passwordLabel}</Label>
+              {/* PASSWORD-RESET-WEB-2 decision 8 -- static link, never
+                  carries forward the email already typed above. */}
+              <Link
+                href={`/${locale}/forgot-password`}
+                className="text-sm text-primary underline-offset-4 hover:underline"
+              >
+                {content.forgotPasswordLabel}
+              </Link>
+            </div>
             <Input
               id="password"
               name="password"

@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   exportTransactionsCsv,
+  forgotPassword,
   getTransactionsSummary,
   getTransactionsTrends,
   listTransactions,
   McpError,
+  resetPassword,
 } from "@/lib/mcp-client";
 
 // WS-013 -- covers the 4 new Report Hub functions in lib/mcp-client.ts
@@ -254,6 +256,104 @@ describe("lib/mcp-client.ts -- WS-013 Report Hub functions", () => {
     it("throws McpError on a 404 (organization not found / not a member)", async () => {
       fetchMock.mockResolvedValue(jsonResponse(404, { message: "Not Found" }));
       await expect(exportTransactionsCsv("t", "org-missing", {})).rejects.toMatchObject({ kind: "not_found" });
+    });
+  });
+});
+
+// PASSWORD-RESET-WEB-2 -- forgotPassword/resetPassword, plus the new
+// McpErrorKind "rate_limited" (HTTP 429) exercised through both.
+describe("lib/mcp-client.ts -- PASSWORD-RESET-WEB-2", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  function jsonResponse(status: number, body: unknown): Response {
+    return new Response(JSON.stringify(body), {
+      status,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  function noContentResponse(): Response {
+    return new Response(null, { status: 204 });
+  }
+
+  beforeEach(() => {
+    fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  describe("forgotPassword", () => {
+    it("calls POST /auth/forgot-password with the email in the body", async () => {
+      fetchMock.mockResolvedValue(noContentResponse());
+
+      await forgotPassword({ email: "agent@example.com" });
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(url).toBe("https://mcp.test.invalid/auth/forgot-password");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual({ email: "agent@example.com" });
+    });
+
+    it("resolves on a 204, the same response whether or not the email exists (anti-enumeration)", async () => {
+      fetchMock.mockResolvedValue(noContentResponse());
+      await expect(forgotPassword({ email: "unknown@example.com" })).resolves.toBeUndefined();
+    });
+
+    it("throws McpError(kind='rate_limited') on a 429", async () => {
+      fetchMock.mockResolvedValue(jsonResponse(429, { message: "ThrottlerException: Too Many Requests" }));
+      await expect(forgotPassword({ email: "agent@example.com" })).rejects.toMatchObject({
+        kind: "rate_limited",
+        status: 429,
+      });
+    });
+
+    it("throws a generic McpError(kind='unknown') on an unexpected 500", async () => {
+      fetchMock.mockResolvedValue(jsonResponse(500, { message: "Internal Server Error" }));
+      await expect(forgotPassword({ email: "agent@example.com" })).rejects.toMatchObject({
+        kind: "unknown",
+        status: 500,
+      });
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("calls POST /auth/reset-password with email/code/newPassword in the body", async () => {
+      fetchMock.mockResolvedValue(noContentResponse());
+
+      await resetPassword({ email: "agent@example.com", code: "123456", newPassword: "newSecret1" });
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(url).toBe("https://mcp.test.invalid/auth/reset-password");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual({
+        email: "agent@example.com",
+        code: "123456",
+        newPassword: "newSecret1",
+      });
+    });
+
+    it("resolves on a 204, never minting a session (no accessToken/refreshToken in the response)", async () => {
+      fetchMock.mockResolvedValue(noContentResponse());
+      await expect(
+        resetPassword({ email: "agent@example.com", code: "123456", newPassword: "newSecret1" }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("throws McpError(kind='unauthorized') on a 401 (invalid/expired/already-used code)", async () => {
+      fetchMock.mockResolvedValue(jsonResponse(401, { message: "Invalid or expired reset code" }));
+      await expect(
+        resetPassword({ email: "agent@example.com", code: "000000", newPassword: "newSecret1" }),
+      ).rejects.toMatchObject({ kind: "unauthorized", status: 401 });
+    });
+
+    it("throws McpError(kind='rate_limited') on a 429", async () => {
+      fetchMock.mockResolvedValue(jsonResponse(429, { message: "ThrottlerException: Too Many Requests" }));
+      await expect(
+        resetPassword({ email: "agent@example.com", code: "123456", newPassword: "newSecret1" }),
+      ).rejects.toMatchObject({ kind: "rate_limited", status: 429 });
     });
   });
 });
